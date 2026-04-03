@@ -131,11 +131,18 @@ label,
   }
 }
 
-/* Prevent horizontal overflow on narrow viewports */
-@media (max-width: 768px) {
-  body {
-    overflow-x: hidden;
-  }
+/* Prevent horizontal overflow — all viewports.
+   The announcement bar sticky plugin sets inline width: window.outerWidth on
+   .announcement-bar__container at init time, which can exceed viewport width.
+   max-width + overflow-x clamp it without breaking sticky behaviour. */
+body {
+  overflow-x: hidden;
+}
+
+.announcement-sticky-wrapper,
+.announcement-bar__container {
+  max-width: 100% !important;
+  overflow-x: hidden;
 }
 
 /* Hidden scrollbar — scroll still functions; no visible bar */
@@ -401,11 +408,17 @@ button.button--primary-action,
   }
 }
 
-/* Secondary button — matching size to primary-action */
+/* Secondary button — matching size to primary-action.
+   Selector matches the specificity of styles.css rule
+   "a.button--secondary.button" (0,2,1) which otherwise wins
+   and sets font-size:1rem (17px) and padding:0.65em (11.05px). */
+a.button--secondary.button,
+button.button--secondary.button,
 .button--secondary {
   padding-top: 14px;
   padding-bottom: 14px;
   font-size: 16px;
+  line-height: 1.2;
   border-radius: var(--radius-pill);
 }
 
