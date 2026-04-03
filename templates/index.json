@@ -511,7 +511,7 @@
         "collection_ADPYgf"
       ],
       "settings": {
-        "collections_per_row": 5,
+        "collections_per_row": 3,
         "align_height": false,
         "collection_height": 200,
         "enable_zoom": true,

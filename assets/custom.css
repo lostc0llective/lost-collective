@@ -250,6 +250,15 @@ h1, h2, h3, h4, h5, h6 {
    6. Header
 ================================ */
 
+/* Fix: header must be full-width at page load when in overlay/absolute state.
+   The sticky JS sets position:absolute but omits width:100%, causing ~520px
+   gap on the right side before scrolling. */
+.header,
+.mobile-header {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
 /* Slightly transparent dark header — lets the hero image bleed through subtly.
    backdrop-filter adds a frosted-glass blur so text remains legible. */
 .header,
@@ -356,7 +365,11 @@ gravity-button.accelerated-checkout-button {
   border-radius: var(--radius-pill) !important;
 }
 
-/* Primary action — dark background, gold text (main CTAs) */
+/* Primary action — dark background, gold text (main CTAs)
+   Selector includes a.button--primary-action to match the specificity of
+   a.button (0,1,1), which otherwise overrides the 14px padding here. */
+a.button--primary-action,
+button.button--primary-action,
 .button--primary-action {
   display: inline-flex;
   align-items: center;
@@ -578,6 +591,14 @@ p a:not(.button):not([class*="logo"]):hover::after {
    section initialises. Mobile layout is handled by Flickity
    (.flickity-enabled present) — these rules apply to both states.
 ================================ */
+
+/* Fix: collection list wrapper forces width to ~1716px with 5+ columns,
+   causing all ancestor block elements to overflow the viewport.
+   overflow:hidden prevents the flex container expanding beyond 100vw. */
+.collection-list__wrapper {
+  max-width: 100%;
+  overflow: hidden;
+}
 
 /* Rounded corners + shadow on every card */
 .jsCollectionList .collection-list__thumbnail {
