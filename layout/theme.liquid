@@ -208,7 +208,7 @@
 
 {% for line in cfh_lines %}
   {% unless line contains '.atom' %}
-    {% assign filtered_lines = filtered_lines | append: line | append: "\n" %}
+    {% assign filtered_lines = filtered_lines | append: line %}
   {% endunless %}
 {% endfor %}
 
