@@ -1,0 +1,60 @@
+{% comment %}
+Required values
+index: <value>
+______________
+Optional values
+prefix: <string>
+{% endcomment %}
+
+<input 
+  class="no-js-main-navigation" 
+  type="radio" 
+  id="dropdown-{{ link.title | handleize }}" 
+  name="no-js-main-navigation"
+  aria-hidden="true">
+
+<div class="navbar-dropdown navbar-dropdown--{{ settings.dropdown_position }} is-{{ settings.dropdown_style }} has-{{ settings.dropdown_link_spacing }}-vertical-spacing"
+     aria-labelledby="dropdown-{{ link.title | handleize }}">
+  
+  {% for sub_link in link.links %}
+    {% if sub_link.links == blank %}
+      <a class="navbar-item {% if sub_link.active %}is-active{% endif %}" href="{{ sub_link.url }}">
+        {{ sub_link.title }}
+      </a>
+    {% else %}
+      <div class="has-submenu">
+        <input 
+          class="visually-hidden" 
+          type="checkbox" 
+          id="{{ prefix | default: 'dropdown' }}submenu{% if block.id %}-{{ block.id }}{% endif %}-{{ index }}-{{ forloop.index }}" 
+          tabindex="-1"
+          aria-hidden="true">
+        
+        <label 
+          for="{{ prefix }}submenu{% if block.id %}-{{ block.id }}{% endif %}-{{ index }}-{{ forloop.index }}" 
+          aria-expanded="false"
+          aria-controls="dropdown-{{ link.title | handleize }}">
+          
+          {% if sub_link.url == 'http://' or sub_link.url == '' or sub_link.url == '/' or sub_link.url == 'https://' or sub_link.url == '#' %}
+            <span class="navbar-link {% if sub_link.active %}is-active{% endif %}">
+              {{ sub_link.title }}
+            </span>
+          {% else %}
+            <a href="{{ sub_link.url }}" class="navbar-link {% if sub_link.active %}is-active{% endif %}">
+              <span>{{ sub_link.title }}</span>
+            </a>
+          {% endif %}
+          <span class="close-dropdown"></span>
+        </label>
+        
+        <ul class="navbar-submenu">
+          {% for sub_sub_link in sub_link.links %}
+            <li>
+              <a class="navbar-item" href="{{ sub_sub_link.url }}">{{ sub_sub_link.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

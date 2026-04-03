@@ -1,0 +1,85 @@
+{%- assign price_valid_until = 'now' | date: '%s' | plus: 63072000 | date: '%Y-%m-%d' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | escape | json }},
+  "description": {{ product.description | strip_html | escape | json }},
+  "url": {{ canonical_url | json }},
+  "image": [
+    {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }}
+  ],
+  {%- if product.selected_or_first_available_variant.sku != blank -%}
+  "sku": {{ product.selected_or_first_available_variant.sku | json }},
+  {%- endif -%}
+  "brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | json }}
+  },
+  {%- assign _has_ap = false -%}
+  {%- if product.metafields.custom.collection_series != blank or product.metafields.custom.location != blank or product.metafields.custom.year_photographed != blank or product.metafields.custom.print_technique != blank or product.metafields.custom.paper_type != blank -%}{%- assign _has_ap = true -%}{%- endif -%}
+  {%- assign _ap_size = product.selected_or_first_available_variant.option1 -%}
+  {%- if _ap_size == 'M' or _ap_size == 'L' or _ap_size == 'XL' -%}{%- assign _has_ap = true -%}{%- endif -%}
+  {%- if _has_ap -%}
+  "additionalProperty": [
+    {%- assign _ap_comma = false -%}
+    {%- if product.metafields.custom.collection_series != blank -%}
+      {"@type":"PropertyValue","name":"Series","value":{{ product.metafields.custom.collection_series | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.location != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Location","value":{{ product.metafields.custom.location | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.year_photographed != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Year Photographed","value":{{ product.metafields.custom.year_photographed | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.print_technique != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Print Technique","value":{{ product.metafields.custom.print_technique | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.paper_type != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Paper","value":{{ product.metafields.custom.paper_type | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- assign _schema_size = product.selected_or_first_available_variant.option1 -%}
+    {%- if _schema_size == 'M' or _schema_size == 'L' or _schema_size == 'XL' -%}
+      {%- case _schema_size -%}
+        {%- when 'M' -%}{%- assign _schema_edition = 100 -%}
+        {%- when 'L' -%}{%- assign _schema_edition = 50 -%}
+        {%- when 'XL' -%}{%- assign _schema_edition = 25 -%}
+      {%- endcase -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Edition Size","value":{{ _schema_edition | json }}}
+    {%- endif -%}
+  ],
+  {%- endif -%}
+  {%- if product.metafields.reviews.rating.value != blank and product.metafields.reviews.rating_count != blank %}
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ product.metafields.reviews.rating.value.rating }}",
+    "reviewCount": "{{ product.metafields.reviews.rating_count }}",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  {%- endif %}
+  {%- if product.price_min != product.price_max -%}
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "{{ shop.currency }}",
+    "lowPrice": "{{ product.price_min | money_without_currency | remove: ',' }}",
+    "highPrice": "{{ product.price_max | money_without_currency | remove: ',' }}",
+    "offerCount": "{{ product.variants.size }}",
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "url": {{ canonical_url | json }},
+    "priceValidUntil": "{{ price_valid_until }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+  {%- else -%}
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "{{ shop.currency }}",
+    "price": "{{ product.price | money_without_currency | remove: ',' }}",
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "url": {{ canonical_url | json }},
+    "priceValidUntil": "{{ price_valid_until }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+  {%- endif -%}
+}
+</script>

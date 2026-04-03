@@ -1,0 +1,544 @@
+{% comment %}
+    Product snippet
+
+    @param product
+    @param selected_variant
+    @param width
+    @param css_class
+    @param display_social_buttons
+    @param display_thumbnails
+    @param enable_product_lightbox
+    @param enable_thumbnail_slider
+    @param enable_zoom
+    @param gallery_arrows
+    @param product_description_position
+    @param product_height
+    @param set_product_height
+    @param slideshow_transition
+    @param stickers_enabled
+    @param tag_style
+    @param thumbnail_position
+    @param video_looping
+    @param section_onboarding
+  {% endcomment %}
+
+{% comment %} HTML markup {% endcomment %}
+
+<div class="product_section
+            js-product_section
+            container
+            is-justify-space-between
+            has-padding-bottom
+            {% if product_images_position == 'right' %}
+              is-flex-row-reverse
+            {% endif %}">
+
+  <div class="product__images
+              one-half
+              column
+              medium-down--one-whole">
+    {% if section_onboarding %}
+      <div class="featured-product__images">
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg placeholder-svg--product' }}
+      </div>
+    {% else %}
+      
+      {%
+        render 'product__images',
+        product: product,
+        display_thumbnails: display_thumbnails,
+        thumbnail_position: thumbnail_position,
+        enable_thumbnail_slider: enable_thumbnail_slider,
+        product_height: product_height,
+        set_product_height: set_product_height,
+        video_looping: video_looping
+        gallery_arrows: gallery_arrows,
+        slideshow_transition: slideshow_transition,
+        enable_product_lightbox: enable_product_lightbox,
+        enable_zoom: enable_zoom
+      %}
+    {% endif %}
+  </div>
+
+  <div
+    class="
+      product__information
+      has-product-sticker
+      one-half
+      column
+      medium-down--one-whole
+    "
+  >
+    {% if stickers_enabled %}
+      {% assign collection_handles = product.collections | map: 'handle' %}
+      {%
+        render 'product-thumbnail__sticker',
+        product: product,
+        context: 'product',
+        collection_handles: collection_handles,
+      %}
+    {% endif %}
+
+
+
+
+
+
+    
+    
+    {%- for block in section.blocks -%}
+      <div
+        class="
+          product-block
+          product-block--{{ block.type | downcase | replace: '_', '-' }}
+          {% if forloop.first == true %}
+            product-block--first
+          {% endif %}
+        "
+        {{ block.shopify_attributes }}
+      >
+        {%- if block.type == 'vendor' -%}
+          {% comment %} Vendor {% endcomment %}
+          <p class="vendor">
+            <span class="vendor">
+              {% if section_onboarding %}
+                Vendor name
+              {% else %}
+                {{ product.vendor | link_to_vendor }}
+              {% endif %}
+            </span>
+          </p>
+
+        {%- elsif block.type == 'sku' -%}
+          {% comment %} Sku {% endcomment %}
+          <p class="sku">
+            {% if section_onboarding %}
+              1234567890
+            {% else %}
+              {{ selected_variant.sku }}
+            {% endif %}
+          </p>
+
+        {%- elsif block.type == 'title' -%}
+          {% comment %} Name {% endcomment %}
+          <h1 class="product-title title">
+            {% if is_product_modal %}
+              <a href="{{ product.url }}">{{ product.title }}</a>
+            {% elsif section_onboarding %}
+              {{ 'homepage.onboarding.product_title' | t }}
+            {% else %}
+              {{ product.title }}
+            {% endif %}
+          </h1>
+
+        {%- elsif block.type == 'size-chart' -%}
+          {% comment %} Size chart {% endcomment %}
+          {% for tag in product.tags %}
+            {% if tag contains 'meta-size-chart-' %}
+              {% assign meta_size_chart = true %}
+            {% endif %}
+          {% endfor %}
+
+          {% if settings.size_chart != blank or block.settings.size_chart != blank or meta_size_chart %}
+           
+            <a
+              class="product__size-chart"
+              href="javascript:;"
+              data-fancybox
+              data-src="#size-chart{{ product.id }}"
+              data-type="inline"
+            >
+              {{ block.settings.title | escape }}
+            </a>
+        
+            {%
+              render 'popup-size-chart',
+              block: block,
+              product_id: product.id,
+            %}
+          {% endif %}
+
+        {%- elsif block.type == 'price' -%}
+          {% comment %} Price {% endcomment %}
+          <div class="modal_price subtitle" data-display-savings="{{ block.settings.display_savings }}">
+            {% if section_onboarding %}
+              <span class="money">$49.00</span>
+            {% elsif product.available == false %}
+              <span class="sold_out">
+                {{- 'products.product.sold_out' | t -}}
+              </span>
+            {% else %}
+              {% comment %}Inject @pixelunion/shopify-price-ui/price-ui begin{% endcomment %}
+              <div class="price-ui price-ui--loading" data-price-ui>
+                <noscript>
+                  <style>
+                    .price-ui--loading {
+                      display: block !important;
+                      opacity: 1 !important;
+                    }
+                  </style>
+                </noscript>
+                {% assign compare_at_price = false %}
+              
+                {% if product.compare_at_price and product.compare_at_price != product.price %}
+                  {% if product.compare_at_price_varies %}
+                    {%- capture price_min -%}
+                      {%-
+                        render 'price-ui-templates',
+                        template: 'price-min',
+                        value: product.compare_at_price_min,
+                      -%}
+                    {%- endcapture -%}
+              
+                    {%- capture price_max -%}
+                      {%-
+                        render 'price-ui-templates',
+                        template: 'price-max',
+                        value: product.compare_at_price_max,
+                      -%}
+                    {%- endcapture -%}
+              
+                    {%- assign compare_at_price = 'product.price.range_html' | t: price_min: price_min, price_max: price_max -%}
+                  {% else %}
+                    {%- capture compare_at_price -%}
+                      {%-
+                        render 'price-ui-templates',
+                        template: 'price',
+                        value: product.compare_at_price,
+                      -%}
+                    {%- endcapture -%}
+                  {% endif %}
+                {% endif %}
+              
+                {% if product.price_varies %}
+                  {%- capture price_min -%}
+                    {%-
+                      render 'price-ui-templates',
+                      template: 'price-min',
+                      value: product.price_min,
+                    -%}
+                  {%- endcapture -%}
+              
+                  {%- capture price_max -%}
+                    {%-
+                      render 'price-ui-templates',
+                      template: 'price-max',
+                      value: product.price_max,
+                    -%}
+                  {%- endcapture -%}
+              
+                  {%- assign price = 'product.price.range_html' | t: price_min: price_min, price_max: price_max -%}
+                {% else %}
+                  {%- capture price -%}
+                    {%-
+                      render 'price-ui-templates',
+                      template: 'price',
+                      value: product.price,
+                    -%}
+                  {%- endcapture -%}
+                {% endif %}
+              
+                {%-
+                  render 'price-ui-templates',
+                  template: 'price-ui',
+                  compare_at_price: compare_at_price,
+                  price: price,
+                  unit_pricing: false,
+                -%}
+              </div>
+              {% comment %}Inject @pixelunion/shopify-price-ui/price-ui end{% endcomment %}
+
+            {% endif %}
+          </div>
+
+        {%- elsif block.type == 'complementary_products' -%}
+          {% comment %} Complementary products {% endcomment %}
+          {%
+            render 'complementary-products',
+            product: product,
+            block: block,
+          %}
+
+        {%- elsif block.type == 'description' -%}
+          {% liquid
+            if block.settings.product_description != blank
+              assign product_description = block.settings.product_description
+            elsif product.description != blank
+              if is_product_modal and block.settings.truncate_words
+                assign product_description = product.description | strip_html | truncatewords: block.settings.truncate_words_limit | escape | split: '<!-- split -->' | first
+              else
+                assign product_description = product.description | split: '<!-- split -->' | first
+              endif
+            elsif section_onboarding
+              assign product_description = 'homepage.onboarding.product_description' | t
+            endif
+          %}
+
+          <div class="product__description content">
+            <div
+              class="
+                has-padding-top
+                {% if block.settings.mobile_product_description != blank %}
+                  is-hidden-mobile-only
+                {% endif %}
+              "
+            >
+              {{- product_description -}}
+            </div>
+
+            {% if block.settings.mobile_product_description != blank %}
+              <div class="is-hidden-desktop-only has-padding-top">
+                {{- block.settings.mobile_product_description -}}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if is_product_modal %}
+            <a
+              class="product__view-details"
+              href="{{ product.url }}"
+              title="{{ product.title | escape }}"
+            >
+              {{- 'collections.general.view_product_details' | t -}}
+            </a>
+          {% endif %}
+
+        {%- elsif block.type == 'form' -%}
+          {% comment %} Purchase form {% endcomment %}
+          {% if section_onboarding %}
+            <div class="product-form-container has-padding-top">
+              <div class="purchase-details">
+                <div class="purchase-details__buttons purchase-details__spb--false">
+                  <button name="add" class="action_button button button--add-to-cart add_to_cart" data-label={{ add_to_cart_label | json }}><span class="text">{{ 'products.product.add_to_cart' | t }}</span></button>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="product-form-container has-padding-top">
+
+              {% comment %} Notify form {% endcomment %}
+              {% render 'product__notify-me-form', product: product %}
+
+              {% comment %} Product form {% endcomment %}
+              {% unless collection_handles contains 'coming-soon' %}
+                {%
+                  render 'product__form',
+                  context: 'product',
+                  product: product,
+                  sold_out_options: sold_out_options,
+                  selected_variant: selected_variant,
+                  show_payment_button: block.settings.show_payment_button,
+                  show_recipient_form: block.settings.show_gift_card_recipient_form,
+                  collection_handles: collection_handles
+                %}
+              {% endunless %}
+            </div>
+          {% endif %}
+
+        {%- elsif block.type == 'product-links' -%}
+          {% comment %} Collections, type, tags {% endcomment %}
+          {% if block.settings.show_collections or block.settings.show_tags or block.settings.show_type %}
+            <div class="product__classification-links has-padding-top">
+              {% if block.settings.show_collections %}
+                <p class="product__collections-list tags">
+                  <span class="product__classification-title">{{ 'products.product.collections' | t }}:</span>
+                  {% for col in product.collections %}
+                    <span class="tag tag--{{ tag_style }}">
+                      <a href="{{ col.url }}" title="{{ col.title }}">{{ col.title }}</a>
+                    </span>
+                  {% endfor %}
+                </p>
+              {% endif %}
+
+              {% if block.settings.show_type %}
+                <p class="product__type-list tags">
+                  <span class="product__classification-title">{{ 'products.product.product_types' | t }}:</span>
+                  <span class="tag tag--{{ tag_style }}">{{ product.type | link_to_type }}</span>
+                </p>
+              {% endif %}
+
+              {% if block.settings.show_tags and product.tags.size > 0 %}
+                <p class="product__tags-list tags">
+                  <span class="product__classification-title">{{ 'products.product.tags' | t }}:</span>
+                  {% for tag in product.tags %}
+                    {% unless tag contains 'meta-' %}
+                      <span class="tag tag--{{ tag_style }}">
+                        <a href="{{ routes.collections_url }}/{% if collection %}{{ collection.handle }}{% else %}all{% endif %}/{{ tag | handle }}" title="{{ 'products.product.products_tagged' | t: tag: tag }}">{{ tag }}</a>
+                      </span>
+                    {% endunless %}
+                  {% endfor %}
+                </p>
+              {% endif %}
+            </div>
+          {% endif %}
+
+        {%- elsif block.type == 'rating' -%}
+          {% render 'product-rating', product: product %}
+
+        {%- elsif block.type == 'art-details' -%}
+          {% comment %} Art provenance & edition details from custom metafields {% endcomment %}
+          {% liquid
+            assign has_art_details = false
+            assign _first_size = product.selected_or_first_available_variant.option1
+            if _first_size == 'M' or _first_size == 'L' or _first_size == 'XL'
+              assign has_art_details = true
+            elsif product.metafields.custom.print_technique != blank
+              assign has_art_details = true
+            elsif product.metafields.custom.paper_type != blank
+              assign has_art_details = true
+            elsif product.metafields.custom.year_photographed != blank
+              assign has_art_details = true
+            elsif product.metafields.custom.location != blank
+              assign has_art_details = true
+            elsif product.metafields.custom.collection_series != blank
+              assign has_art_details = true
+            endif
+          %}
+          {% if has_art_details %}
+            <div class="product__art-details">
+              <dl class="product__art-details-list">
+                {% if product.metafields.custom.collection_series != blank %}
+                  <div class="product__art-detail">
+                    <dt>Series</dt>
+                    <dd>{{ product.metafields.custom.collection_series }}</dd>
+                  </div>
+                {% endif %}
+                {% if product.metafields.custom.year_photographed != blank %}
+                  <div class="product__art-detail">
+                    <dt>Year</dt>
+                    <dd>{{ product.metafields.custom.year_photographed }}</dd>
+                  </div>
+                {% endif %}
+                {% if product.metafields.custom.location != blank %}
+                  <div class="product__art-detail">
+                    <dt>Location</dt>
+                    <dd>{{ product.metafields.custom.location }}</dd>
+                  </div>
+                {% endif %}
+                {% comment %} Edition size derived from selected variant's Size option — M=100, L=50, XL=25 {% endcomment %}
+                {%- assign _initial_size = product.selected_or_first_available_variant.option1 -%}
+                {%- case _initial_size -%}
+                  {%- when 'M' -%}{%- assign _initial_edition = 100 -%}
+                  {%- when 'L' -%}{%- assign _initial_edition = 50 -%}
+                  {%- when 'XL' -%}{%- assign _initial_edition = 25 -%}
+                  {%- else -%}{%- assign _initial_edition = nil -%}
+                {%- endcase -%}
+                <div class="product__art-detail{% unless _initial_edition %} is-hidden{% endunless %}"
+                     id="edition-detail-{{ product.id }}"
+                     data-edition-detail>
+                  <dt>Edition</dt>
+                  <dd data-edition-value>{% if _initial_edition %}Edition of {{ _initial_edition }}{% endif %}</dd>
+                </div>
+                <script>
+                  (function() {
+                    var el = document.getElementById('edition-detail-{{ product.id }}');
+                    if (!el) return;
+                    var val = el.querySelector('[data-edition-value]');
+                    var map = { 'M': 100, 'L': 50, 'XL': 25 };
+                    var inputs = document.querySelectorAll(
+                      'input[data-variant-option-value][data-variant-option-value-index="0"][id$="-{{ product.id }}"]'
+                    );
+                    inputs.forEach(function(input) {
+                      input.addEventListener('change', function() {
+                        var edition = map[this.value];
+                        if (edition) {
+                          el.classList.remove('is-hidden');
+                          val.textContent = 'Edition of ' + edition;
+                        } else {
+                          el.classList.add('is-hidden');
+                          val.textContent = '';
+                        }
+                      });
+                    });
+                  })();
+                </script>
+                {% if product.metafields.custom.print_technique != blank %}
+                  <div class="product__art-detail">
+                    <dt>Process</dt>
+                    <dd>{{ product.metafields.custom.print_technique }}</dd>
+                  </div>
+                {% endif %}
+                {% if product.metafields.custom.paper_type != blank %}
+                  <div class="product__art-detail">
+                    <dt>Substrate</dt>
+                    <dd>{{ product.metafields.custom.paper_type }}</dd>
+                  </div>
+                {% endif %}
+                {% if product.metafields.custom.certificate_included == true %}
+                  <div class="product__art-detail product__art-detail--cert">
+                    <dt>Certificate</dt>
+                    <dd>Included</dd>
+                  </div>
+                {% endif %}
+              </dl>
+            </div>
+          {% endif %}
+
+        {%- elsif block.type == 'share' -%}
+          {% comment %} Social share icons {% endcomment %}
+          <div class="product__social-share has-padding-top">
+            {% render 'social-share-buttons' %}
+          </div>
+
+        {%- elsif block.type == 'text' -%}
+          {% comment %} Text {% endcomment %}
+          <div class="product-text">
+            {{ block.settings.text }}
+          </div>
+        {% elsif block.type == '@app' %}
+          <div class="product-app">
+            {% render block %}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% comment %} Mobile sticky add-to-cart bar {% endcomment %}
+{% unless is_product_modal or section_onboarding %}
+  <div class="product__sticky-atc" id="product-sticky-atc-{{ product.id }}" aria-hidden="true">
+    <div class="product__sticky-atc-inner">
+      <div class="product__sticky-atc-info">
+        <span class="product__sticky-atc-title">{{ product.title }}</span>
+        <span class="product__sticky-atc-price money" data-sticky-price>
+          {{ selected_variant.price | money }}
+        </span>
+      </div>
+      <button
+        class="product__sticky-atc-btn button"
+        type="button"
+        data-sticky-atc-trigger
+        aria-label="{{ 'products.product.add_to_cart' | t }}"
+      >
+        {{ 'products.product.add_to_cart' | t }}
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var stickyBar = document.getElementById('product-sticky-atc-{{ product.id }}');
+      var formContainer = document.querySelector('#product-form-{{ product.id }} [data-add-to-cart-trigger]');
+      if (!stickyBar || !formContainer) return;
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) {
+            stickyBar.classList.add('is-visible');
+            stickyBar.setAttribute('aria-hidden', 'false');
+          } else {
+            stickyBar.classList.remove('is-visible');
+            stickyBar.setAttribute('aria-hidden', 'true');
+          }
+        });
+      }, { threshold: 0 });
+
+      observer.observe(formContainer);
+
+      stickyBar.querySelector('[data-sticky-atc-trigger]').addEventListener('click', function() {
+        formContainer.click();
+      });
+    })();
+  </script>
+{% endunless %}

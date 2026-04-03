@@ -1,0 +1,34 @@
+{% comment %}
+  Renders the product star-rating badge from the Shopify Product Reviews app metafields.
+  Outputs nothing if no rating data exists — null-safe by design.
+
+  @param product {Product}  — required
+  @param align   {String}   — optional Bulma alignment token (e.g. settings.thumbnail_text_alignment).
+                              Adds is-justify-{align} class to the wrapper div when present.
+{% endcomment %}
+{% if product.metafields.reviews.rating.value != blank %}
+  <div class="product__rating rating{% if align != blank %} is-justify-{{ align }}{% endif %}">
+    {%
+      render 'rating-stars',
+      value: product.metafields.reviews.rating.value.rating,
+      scale_max: product.metafields.reviews.rating.value.scale_max,
+    %}
+
+    <p class="rating__text">
+      <span aria-hidden="true">
+        {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+      </span>
+    </p>
+
+    <p class="rating__count">
+      <span aria-hidden="true">
+        {{ product.metafields.reviews.rating_count }}
+        {% if product.metafields.reviews.rating_count > 1 %}
+          {{ 'general.accessibility.star_reviews_text' | t }}
+        {% else %}
+          {{ 'general.accessibility.star_review_text' | t }}
+        {% endif %}
+      </span>
+    </p>
+  </div>
+{% endif %}

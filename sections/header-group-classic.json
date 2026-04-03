@@ -1,0 +1,158 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "disabled": true,
+      "settings": {
+        "homepage_only": false,
+        "enable_sticky": false,
+        "show_close_icon": true,
+        "icon_label": "tag",
+        "text": "<p>Draw attention to promos + sales!</p>",
+        "mobile_text": "",
+        "alignment": "center",
+        "size": "regular",
+        "button_label": "",
+        "link": "",
+        "button_style": "button--primary",
+        "background": "#000000",
+        "text_color": "#ffffff",
+        "width": "wide",
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "header_top_bar": {
+      "type": "header__top-bar",
+      "disabled": true,
+      "settings": {
+        "background": "#ffffff",
+        "link_color": "rgba(0,0,0,0)",
+        "link_hover_color": "rgba(0,0,0,0)",
+        "text_color": "rgba(0,0,0,0)",
+        "font": "open_sans_n4",
+        "font_style": "none",
+        "font_size": 14,
+        "letter_spacing": 0,
+        "show_locale_selector": true,
+        "show_currency_selector": true,
+        "width": "standard",
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "header": {
+      "type": "header-classic",
+      "settings": {
+        "logo": "shopify://shop_images/Logo.jpg",
+        "logo_width": 80,
+        "main_linklist": "header-menu",
+        "menu_alignment": "center",
+        "dropdown_click": false,
+        "display_search": true,
+        "icon_style": "icons",
+        "enable_overlay": false,
+        "show_text_shadow": false,
+        "overlay_link_color": "rgba(0,0,0,0)",
+        "overlay_link_hover_color": "rgba(0,0,0,0)",
+        "overlay_background": "rgba(0,0,0,0)",
+        "overlay_background_opacity": 80,
+        "overlay_logo_width": 80,
+        "enable_sticky": true,
+        "sticky_background_opacity": 100,
+        "scroll_logo_width": 80,
+        "width": "wide",
+        "vertical_alignment": "center",
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "mega_menu": {
+      "type": "mega-menu",
+      "blocks": {
+        "menu_n63aVP": {
+          "type": "menu",
+          "settings": {
+            "menu_1": "commercial",
+            "menu_1_link": "shopify://collections/commercial"
+          }
+        },
+        "menu": {
+          "type": "menu",
+          "settings": {
+            "menu_1": "industrial",
+            "menu_1_link": "shopify://collections/industrial"
+          }
+        },
+        "menu_RThman": {
+          "type": "menu",
+          "settings": {
+            "menu_1": "medical",
+            "menu_1_link": "shopify://collections/medical"
+          }
+        },
+        "menu_ETHMVF": {
+          "type": "menu",
+          "settings": {
+            "menu_1": "landscapes",
+            "menu_1_link": "shopify://collections/landscapes"
+          }
+        },
+        "menu_FGLMm3": {
+          "type": "menu",
+          "settings": {
+            "menu_1": "rural",
+            "menu_1_link": "shopify://collections/rural"
+          }
+        },
+        "menu_UBdFP3": {
+          "type": "menu",
+          "settings": {
+            "menu_1": "japan",
+            "menu_1_link": "shopify://collections/japan"
+          }
+        }
+      },
+      "block_order": [
+        "menu_n63aVP",
+        "menu",
+        "menu_RThman",
+        "menu_ETHMVF",
+        "menu_FGLMm3",
+        "menu_UBdFP3"
+      ],
+      "settings": {
+        "parent_link": "ALL COLLECTIONS",
+        "mega_menu_background_color": "#f6f6f6",
+        "mega_menu_text_color": "#404040",
+        "enable_mega_menu_border": false,
+        "show_mega_bottom_bar": false,
+        "mega_bottom_bar_icon": "",
+        "mega_bottom_bar_text": "Add your deal, information or promotional text",
+        "mega_bottom_bar_link": "",
+        "size": "regular",
+        "bottom_banner_bg": "#007ace",
+        "bottom_banner_text": "#efefef",
+        "css_class": "",
+        "custom_css": ""
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "header_top_bar",
+    "header",
+    "mega_menu"
+  ]
+}
