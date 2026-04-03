@@ -49,9 +49,9 @@
   --color-light:        #f5f5f5;
   --color-sale:         #d32f2f;
 
-  /* Fonts — loaded via Google Fonts in theme.liquid */
-  --font-body:    'DM Sans', sans-serif;
-  --font-heading: 'Bebas Neue', sans-serif;
+  /* Fonts — set in settings_data.json; vars here for use in overrides */
+  --font-body:    'Lato', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
 
   /* Border radius */
   --radius-sm:   5px;
@@ -2012,34 +2012,5 @@ section.gallery-intro p {
 @media (max-width: 798px) {
   body.product {
     padding-bottom: 72px;
-  }
-}
-
-/* --- Page load fade-in ---
-   html gets .lc-loaded on DOMContentLoaded via inline script in <head>.
-   This fades the page in from invisible, masking any flash of unstyled content. */
-@keyframes lc-page-load {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-html.lc-loaded body {
-  animation: lc-page-load 0.4s ease-out both;
-}
-
-/* --- Scroll reveal ---
-   Sections (except header, footer, and first section) get .lc-reveal on
-   DOMContentLoaded. IntersectionObserver adds .lc-revealed when they enter
-   the viewport. Disabled entirely for prefers-reduced-motion. */
-@media (prefers-reduced-motion: no-preference) {
-  .lc-reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .lc-revealed {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
