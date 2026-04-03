@@ -1,0 +1,79 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "footer": {
+      "type": "footer-classic",
+      "blocks": {
+        "text_efPmEz": {
+          "type": "text",
+          "settings": {
+            "title": "Connect",
+            "content": "",
+            "social_icons_footer": true
+          }
+        },
+        "link_list_qgXY6F": {
+          "type": "link_list",
+          "settings": {
+            "menu": "categories",
+            "social_icons_footer": false
+          }
+        },
+        "link_list_6RF3dD": {
+          "type": "link_list",
+          "settings": {
+            "menu": "footer",
+            "social_icons_footer": false
+          }
+        },
+        "link_list_R8PV3d": {
+          "type": "link_list",
+          "settings": {
+            "menu": "legal",
+            "social_icons_footer": false
+          }
+        },
+        "newsletter_KfC3qz": {
+          "type": "newsletter",
+          "settings": {
+            "newsletter_title": "Stay in the Loop",
+            "newsletter_richtext": "<p>Discover the stories behind forgotten places as they happen.</p>",
+            "display_first_name": false,
+            "display_last_name": false
+          }
+        }
+      },
+      "block_order": [
+        "text_efPmEz",
+        "link_list_qgXY6F",
+        "link_list_6RF3dD",
+        "link_list_R8PV3d",
+        "newsletter_KfC3qz"
+      ],
+      "settings": {
+        "copyright_text": "<p><strong>All Rights Reserved. 🏚️</strong></p>",
+        "display_designed_by": false,
+        "display_shopify": false,
+        "show_follow_on_shop": false,
+        "show_locale_selector": false,
+        "show_currency_selector": false,
+        "display_payment_methods": true,
+        "css_class": "",
+        "custom_css": ""
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

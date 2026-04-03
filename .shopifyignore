@@ -1,0 +1,31 @@
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Node tooling (if added in future)
+node_modules/
+.env
+.env.*
+package.json
+package-lock.json
+yarn.lock
+.nvmrc
+.node-version
+
+# Build artifacts
+dist/
+build/
+
+# Editor configuration
+.editorconfig
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Shopify CLI cache
+.shopify/

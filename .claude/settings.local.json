@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk 'length > 500' /Users/brettpatman/shopify-themes/lost-collective/snippets/*.liquid)",
+      "Bash(awk 'length > 500' /Users/brettpatman/shopify-themes/lost-collective/sections/*.liquid)",
+      "Bash(shopify theme:*)",
+      "Bash(grep -n \"rel=\\\\\"canonical\\\\\"\" /Users/brettpatman/shopify-themes/lost-collective/templates/*.liquid)",
+      "Bash(sed -n '9211,9220p' /Users/brettpatman/shopify-themes/lost-collective/assets/styles.css.liquid)",
+      "Bash(sed -n '8051,8068p' /Users/brettpatman/shopify-themes/lost-collective/assets/styles.css.liquid)",
+      "Bash(npx playwright:*)",
+      "Bash(npm list:*)",
+      "Read(//private/tmp/**)",
+      "Bash(npm install:*)",
+      "Bash(node -e ':*)",
+      "Bash(curl:*)",
+      "Bash(ls -la /Users/brettpatman/shopify-themes/lost-collective/assets/styles*)",
+      "Bash(grep -o \"flex-icon.\\\\{0,100\\\\}\" /Users/brettpatman/shopify-themes/lost-collective/assets/styles.css.liquid)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(xxd /Users/brettpatman/shopify-themes/lost-collective/assets/flex-icon.woff)",
+      "Bash(find /Users/brettpatman/shopify-themes/lost-collective/templates -name \"*.json\" -exec grep -h '\"type\":' {} \\\\;)",
+      "Bash(grep -v '^$')",
+      "Bash(grep -r \"document\\\\.write\\\\|XMLHttpRequest\\\\|\\\\.on\\(\" /Users/brettpatman/shopify-themes/lost-collective/assets/*.js)",
+      "Bash(grep -r \"jQuery\\\\|\\\\.ajax\\\\|money_with_currency\" /Users/brettpatman/shopify-themes/lost-collective -name \"*.liquid\")",
+      "Bash(grep:*)",
+      "Bash(wc -l /Users/brettpatman/shopify-themes/lost-collective/assets/*.css)",
+      "Bash(find:*)",
+      "Bash(ln:*)",
+      "Bash(shopify version:*)",
+      "Bash(shopify auth:*)",
+      "Bash(export SHOPIFY_STORE=\"lost-collective.myshopify.com\")",
+      "Bash(export SHOPIFY_CLIENT_ID=\"297f31e097badf022ff863ae7ad7f871\")",
+      "Bash(export SHOPIFY_SECRET=\"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\")",
+      "Bash(echo \"PID: $!\")",
+      "Bash(kill 52008)"
+    ]
+  }
+}

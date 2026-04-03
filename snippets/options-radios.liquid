@@ -1,0 +1,324 @@
+{% comment %}
+  Display variant options for a product
+
+  @param selected_variant
+{% endcomment %}
+
+{% assign swatch_trigger = settings.swatch_trigger | strip | downcase %}
+{% assign file_extension = 'png' %}
+
+{% assign loop_index = option_index | plus: 1 %}
+{%- assign swatch_option_key = 'option' | append: loop_index -%}
+
+<fieldset class="swatch is-flex is-flex-wrap" data-option-index="{{ option_index }}">
+  <legend class="option-title label">
+    <span
+      class="options-selection__option-name"
+      data-variant-option-name="{{ 'product.variants.chosen_option_html' | t: option: option.name, value: option.selected_value | escape }}"
+      data-variant-option-choose-name="{{ 'product.variants.choose_option' | t: option: option.name }}"
+    >
+      {% if selected_variant %}
+        {{ 'product.variants.chosen_option_html' | t: option: option.name, value: option.selected_value }}
+      {% else %}
+        {{ 'product.variants.choose_option' | t: option: option.name }}
+      {% endif %}
+    </span>
+  </legend>
+  <div
+    class="swatch__options custom-{{ option.name |handleize }}"
+    data-variant-option
+    data-variant-option-index="{{ option_index }}"
+    data-variant-option-chosen-value="{% if selected_variant %}{{ option.selected_value }}{% else %}false{% endif %}"
+  >
+    {% for value in option.values %}
+      {% assign option_name = option.name | downcase %}
+
+      {% if show_swatches and option_name == swatch_trigger %}
+        {% assign is_color = true %}
+      {% endif %}
+
+      {% if option_name == swatch_trigger %}
+        {% assign swatch_search_color = value | downcase %}
+        {% for variant in product.variants %}
+          {% assign option_value_downcased = variant[swatch_option_key] | downcase %}
+          {% if option_value_downcased == swatch_search_color %}
+            {% assign swatch_file_url = variant.image | img_url: 'small' %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      <div class="swatch__option" data-variant-option-value-wrapper>
+        <input
+          class="swatch--{{ value | handle }}"
+          id="swatch-{{ option_index }}-{{ value | handle }}-{{ product.id }}"
+          type="radio"
+          aria-label="{{ value | escape }}"
+          tabindex="0"
+          name="option-{{ option_index }}"
+          value="{{ value | escape }}"
+          {% if selected_variant and option.selected_value == value %}checked{% endif %}
+          data-variant-option-value
+          data-variant-option-value-index="{{ option_index }}"
+        />
+        <div
+          aria-label="{{ value | escape }}"
+          tabindex="0"
+          data-value="{{ value | escape }}"
+          data-value-handle="{{ value | handle }}"
+          class="swatch-element {% if is_color %}color {% endif %}{{ value | handle }}-swatch {% if variant.available %}available{% else %}soldout{% endif %}"
+          style="{% if value contains "N/A" %}display: none {% endif %}"
+        >
+          {% if is_color %}
+            <div class="tooltip">{{ value }}</div>
+          {% endif %}
+          {% if is_color %}
+            <label
+              style="
+                {% if settings.swatches_option_style == 'variant_image' and product.variants[forloop.index0].image != blank %}
+                  background-image: url({{ swatch_file_url }});
+                {% else %}
+                  background-color: {{ value | split: ' ' | last | handle }};
+                {% endif %}
+              "
+              data-variant-option-value-label
+              data-variant-image="{% if settings.swatches_option_style == 'variant_image' and product.variants[forloop.index0].image != blank %}true{% endif %}"
+            >
+
+              {% if product.variants[forloop.index0].image == blank or settings.swatches_option_style != 'variant_image' %}
+                {% assign image_name = value | handle | append: '.' | append: file_extension %}
+                {% assign swatch = images[image_name] %}
+              {% endif %}
+
+              <img class="swatch__image {% if swatch == empty %}swatch__image--empty{% endif %}" src="{{ swatch | img_url: '50x' }}" alt="" loading="lazy" width="50" height="50">
+
+              <span class="crossed-out" aria-label="{{ 'products.product.sold_out' | t }}" alt="{{ 'products.product.sold_out' | t }}"></span>
+            </label>
+          {% else %}
+            <label
+              data-variant-option-value-label
+            >
+              {{ value }}
+              <span class="crossed-out" aria-label="{{ 'products.product.sold_out' | t }}" alt="{{ 'products.product.sold_out' | t }}"></span>
+            </label>
+          {% endif %}
+          <script class="id-script">
+            (function() {
+              const idScriptEl = document.querySelector('.id-script:not(.id-script--processed)');
+              const idScriptsProcessed = document.querySelectorAll('.id-script.id-script--processed').length;
+              const variantOptionValueWrapper = idScriptEl.closest('[data-variant-option-value-wrapper]');
+              const variantOptionValue = variantOptionValueWrapper.querySelector('[data-variant-option-value]');
+              const variantOptionValueLabel = variantOptionValueWrapper.querySelector('[data-variant-option-value-label]');
+              variantOptionValue.id = `{{ product.id }}-${idScriptsProcessed}`;
+              variantOptionValueLabel.setAttribute('for', `{{ product.id }}-${idScriptsProcessed}`);
+              idScriptEl.classList.add('id-script--processed');
+            })();
+          </script>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</fieldset>
+<script>
+  var size = "";
+  function showM(){
+    size = "M";
+    
+     if(size == 'M'){
+         document.getElementById('unframed-M').style.display = "block";
+          document.getElementById('unframed-S').style.display = "none";
+          document.getElementById('unframed-XS').style.display = "none";
+         document.getElementById('unframed-L').style.display = "none";
+         document.getElementById('unframed-XL').style.display = "none";
+       
+       document.getElementById('framed-M').style.display = "block";
+          document.getElementById('framed-S').style.display = "none";
+          document.getElementById('framed-XS').style.display = "none";
+         document.getElementById('framed-L').style.display = "none";
+         document.getElementById('framed-XL').style.display = "none";
+      
+      document.getElementById('glass-M').style.display = "block";
+          document.getElementById('glass-S').style.display = "none";
+          document.getElementById('glass-XS').style.display = "none";
+         document.getElementById('glass-L').style.display = "none";
+         document.getElementById('glass-XL').style.display = "none";
+          
+       }
+  }
+  function showS(){
+    size = "S";
+     if(size == 'S'){
+         document.getElementById('unframed-M').style.display = "none";
+          document.getElementById('unframed-S').style.display = "block";
+          document.getElementById('unframed-XS').style.display = "none";
+         document.getElementById('unframed-L').style.display = "none";
+         document.getElementById('unframed-XL').style.display = "none";
+       
+       document.getElementById('framed-M').style.display = "none";
+          document.getElementById('framed-S').style.display = "block";
+          document.getElementById('framed-XS').style.display = "none";
+         document.getElementById('framed-L').style.display = "none";
+         document.getElementById('framed-XL').style.display = "none";
+      
+      document.getElementById('glass-M').style.display = "none";
+          document.getElementById('glass-S').style.display = "block";
+          document.getElementById('glass-XS').style.display = "none";
+         document.getElementById('glass-L').style.display = "none";
+         document.getElementById('glass-XL').style.display = "none";
+          
+       }
+  }
+  function showXS(){
+    size = "XS";
+     if(size == 'XS'){
+         document.getElementById('unframed-M').style.display = "none";
+          document.getElementById('unframed-S').style.display = "none";
+          document.getElementById('unframed-XS').style.display = "block";
+         document.getElementById('unframed-L').style.display = "none";
+         document.getElementById('unframed-XL').style.display = "none";
+       
+       document.getElementById('framed-M').style.display = "none";
+          document.getElementById('framed-S').style.display = "none";
+          document.getElementById('framed-XS').style.display = "block";
+         document.getElementById('framed-L').style.display = "none";
+         document.getElementById('framed-XL').style.display = "none";
+      
+      document.getElementById('glass-M').style.display = "none";
+          document.getElementById('glass-S').style.display = "none";
+          document.getElementById('glass-XS').style.display = "block";
+         document.getElementById('glass-L').style.display = "none";
+         document.getElementById('glass-XL').style.display = "none";
+          
+       }
+  }
+  function showL(){
+    size = "L";
+     if(size == 'L'){
+         document.getElementById('unframed-M').style.display = "none";
+          document.getElementById('unframed-S').style.display = "none";
+          document.getElementById('unframed-XS').style.display = "none";
+         document.getElementById('unframed-L').style.display = "block";
+         document.getElementById('unframed-XL').style.display = "none";
+       
+       document.getElementById('framed-M').style.display = "none";
+          document.getElementById('framed-S').style.display = "none";
+          document.getElementById('framed-XS').style.display = "none";
+         document.getElementById('framed-L').style.display = "block";
+         document.getElementById('framed-XL').style.display = "none";
+      
+      document.getElementById('glass-M').style.display = "none";
+          document.getElementById('glass-S').style.display = "none";
+          document.getElementById('glass-XS').style.display = "none";
+         document.getElementById('glass-L').style.display = "block";
+         document.getElementById('glass-XL').style.display = "none";
+          
+       }
+  }
+  function showXL(){
+    size = "XL";
+     if(size == 'XL'){
+         document.getElementById('unframed-M').style.display = "none";
+          document.getElementById('unframed-S').style.display = "none";
+          document.getElementById('unframed-XS').style.display = "none";
+         document.getElementById('unframed-L').style.display = "none";
+         document.getElementById('unframed-XL').style.display = "block";
+       
+       document.getElementById('framed-M').style.display = "none";
+          document.getElementById('framed-S').style.display = "none";
+          document.getElementById('framed-XS').style.display = "none";
+         document.getElementById('framed-L').style.display = "none";
+         document.getElementById('framed-XL').style.display = "block";
+      
+      document.getElementById('glass-M').style.display = "none";
+          document.getElementById('glass-S').style.display = "none";
+          document.getElementById('glass-XS').style.display = "none";
+         document.getElementById('glass-L').style.display = "none";
+         document.getElementById('glass-XL').style.display = "block";
+          
+       }
+  }
+  document.querySelector('.framed-swatch').addEventListener('click', showColor);
+  document.querySelector('.unframed-swatch').addEventListener('click', SelectedNAColor);
+  document.querySelector('.glass-swatch').addEventListener('click', SelectedNAColor);
+  function showColor() {
+    const targetValue = "White";
+    const inputElement = $('.swatch__options input[type="radio"][value="' + targetValue + '"]');
+    $('.swatch__options.custom-colour .swatch__option').css('pointer-events', 'unset');
+    if (inputElement.length > 0) {
+        inputElement.prop('checked', true).trigger('change');
+    }else{
+        console.error("Input element with value 'White' not found.");
+    }
+  	document.getElementById('color').style.display = "flex";
+  }
+  function SelectedNAColor() {
+    const targetValue = "N/A";
+    const inputElement = $('.swatch__options input[type="radio"][value="' + targetValue + '"]');
+    $('.swatch__options.custom-colour .swatch__option').css('pointer-events', 'none');
+    if (inputElement.length > 0) {
+        inputElement.prop('checked', true).trigger('change');
+    }else{
+        console.error("Input element with value 'White' not found.");
+    }
+  	document.getElementById('color').style.display = "flex";
+  }
+  SelectedNAColor();
+</script>
+<div class="tab-content" style="display: none;">
+
+          <div id="s-unframed">
+            <a id="unframed-XS" href="https://cdn.shopify.com/s/files/1/1304/3623/files/001XS_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" class="lightbox" title="Unframed-XS">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/001XS_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" alt="Thumbnail 1" loading="lazy">
+
+            </a>
+            <a id="unframed-S" href="https://cdn.shopify.com/s/files/1/1304/3623/files/002S_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" class="lightbox" title="Unframed-S">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/002S_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" alt="Thumbnail 2" loading="lazy">
+            </a>
+            <a id="unframed-M" href="https://cdn.shopify.com/s/files/1/1304/3623/files/003M_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" class="lightbox" title="Unframed-M">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/003M_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" alt="Thumbnail 3" loading="lazy">
+            </a>
+            <a id="unframed-L" href="https://cdn.shopify.com/s/files/1/1304/3623/files/004L_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" class="lightbox" title="Unframed-L">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/004L_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" alt="Thumbnail 3" loading="lazy">
+            </a>
+            <a id="unframed-XL" href="https://cdn.shopify.com/s/files/1/1304/3623/files/005XL_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" class="lightbox" title="Unframed-XL">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/005XL_final-size-diagram_unframed_V2-_1.jpg?v=1613088834" alt="Thumbnail 3" loading="lazy">
+            </a>
+
+
+          </div>
+
+          <div id="s-framed">
+            <a id="framed-XS" href="https://cdn.shopify.com/s/files/1/1304/3623/files/01XS_final-size-diagram_framed_V3-_1.jpg?v=1613090653" class="lightbox" title="Framed-XS">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/01XS_final-size-diagram_framed_V3-_1.jpg?v=1613090653" alt="Thumbnail 1" loading="lazy">
+            </a>
+            <a id="framed-S" href="https://cdn.shopify.com/s/files/1/1304/3623/files/02S_final-size-diagram_framed_V3-_1.jpg?v=1613090592" class="lightbox" title="Framed-S">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/02S_final-size-diagram_framed_V3-_1.jpg?v=1613090592" alt="Thumbnail 2" loading="lazy">
+            </a>
+            <a id="framed-M" href="https://cdn.shopify.com/s/files/1/1304/3623/files/03M_final-size-diagram_framed_V3-_1.jpg?v=1613090592" class="lightbox" title="Framed-M">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/03M_final-size-diagram_framed_V3-_1.jpg?v=1613090592" alt="Thumbnail 3" loading="lazy">
+            </a>
+            <a id="framed-L" href="https://cdn.shopify.com/s/files/1/1304/3623/files/04L_final-size-diagram_framed_V3-_1.jpg?v=1613090592" class="lightbox" title="Framed-L">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/04L_final-size-diagram_framed_V3-_1.jpg?v=1613090592" alt="Thumbnail 3" loading="lazy">
+            </a>
+            <a id="framed-XL" href="https://cdn.shopify.com/s/files/1/1304/3623/files/05XL_final-size-diagram_framed_V3-_1.jpg?v=1613090592" class="lightbox" title="Framed-XL">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/05XL_final-size-diagram_framed_V3-_1.jpg?v=1613090592" alt="Thumbnail 3" loading="lazy">
+            </a>
+          </div>
+
+          <div id="s-glass">
+            <a id="glass-XS" href="https://cdn.shopify.com/s/files/1/1304/3623/files/0001XS_final-size-diagram_glass-_1.jpg?v=1613091169" class="lightbox" title="Glass-XS">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/0001XS_final-size-diagram_glass-_1.jpg?v=1613091169" alt="Thumbnail 1" loading="lazy">
+            </a>
+            <a id="glass-S" href="https://cdn.shopify.com/s/files/1/1304/3623/files/0002S_final-size-diagram_glass-_1.jpg?v=1613091169" class="lightbox" title="Glass-S">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/0002S_final-size-diagram_glass-_1.jpg?v=1613091169" alt="Thumbnail 2" loading="lazy">
+            </a>
+            <a id="glass-M" href="https://cdn.shopify.com/s/files/1/1304/3623/files/0003M_final-size-diagram_glass-_1.jpg?v=1613091169" class="lightbox" title="Glass-M">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/0003M_final-size-diagram_glass-_1.jpg?v=1613091169" alt="Thumbnail 3" loading="lazy">
+            </a>
+            <a id="glass-XL" href="https://cdn.shopify.com/s/files/1/1304/3623/files/0005XL_final-size-diagram_glass-_1.jpg?v=1613091169" class="lightbox" title="Glass-XL">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/0005XL_final-size-diagram_glass-_1.jpg?v=1613091169" alt="Thumbnail 3" loading="lazy">
+            </a>
+            <a id="glass-L" href="https://cdn.shopify.com/s/files/1/1304/3623/files/0004L_final-size-diagram_glass-_1.jpg?v=1613091169" class="lightbox" title="Glass-L">
+              <img src="https://cdn.shopify.com/s/files/1/1304/3623/files/0004L_final-size-diagram_glass-_1.jpg?v=1613091169" alt="Thumbnail 3" loading="lazy">
+            </a>
+          </div>
+</div>

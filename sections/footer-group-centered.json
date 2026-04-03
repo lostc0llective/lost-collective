@@ -1,0 +1,89 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "footer_icon_bar": {
+      "type": "footer__icon-bar",
+      "blocks": {
+        "text_1": {
+          "type": "text",
+          "settings": {
+            "icon": "leaf",
+            "text": "100% Organic"
+          }
+        },
+        "text_2": {
+          "type": "text",
+          "settings": {
+            "icon": "bunny",
+            "text": "Cruelty free"
+          }
+        },
+        "text_3": {
+          "type": "text",
+          "settings": {
+            "icon": "chat",
+            "text": "24/7 support"
+          }
+        },
+        "text_4": {
+          "type": "text",
+          "settings": {
+            "icon": "truck",
+            "text": "Free shipping"
+          }
+        }
+      },
+      "block_order": [
+        "text_1",
+        "text_2",
+        "text_3",
+        "text_4"
+      ],
+      "settings": {}
+    },
+    "footer": {
+      "type": "footer-centered",
+      "blocks": {
+        "logo": {
+          "type": "logo",
+          "settings": {}
+        },
+        "link_list": {
+          "type": "link_list",
+          "settings": {
+            "menu": "main-menu"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {}
+        },
+        "social": {
+          "type": "social",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "logo",
+        "link_list",
+        "text",
+        "social"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "footer_icon_bar",
+    "footer"
+  ]
+}
