@@ -1,20 +1,21 @@
 /* ================================
    Custom CSS — Lost Collective
+   THE ARCHIVE — Visual Overhaul
    Shopify Flex Theme v5.2.1
-   Last restructured: 2026-04-02
+   Restructured: 2026-04-03
 
    Structure:
     1.  CSS Custom Properties
     2.  Accessibility
-    3.  Base / Reset
-    4.  Typography
-    5.  Navigation
+    3.  Base — Dark Canvas
+    4.  Typography — The Archive
+    5.  Navigation (CSS arrow fix — do not remove)
     6.  Header
     7.  Buttons
-    8.  Links & Animated Underlines
+    8.  Links
     9.  Video Hero
    10.  Swatches
-   11.  Homepage — Collection Grid & Featured Collection
+   11.  Homepage — Collection Grid
    12.  Homepage — Art Story Section
    13.  Homepage — About Brett Section
    14.  Homepage — Featured Slideshow
@@ -25,15 +26,16 @@
    19.  All Collections Page
    20.  Product Page
    21.  Blog & Article Pages
-   22.  Homepage — Parallax
-   23.  Homepage — Collection Card Hover Reveal
+   22.  Parallax
+   23.  Collection Card Hover Reveal
    24.  Cookie Banner
    25.  Search Popup
    26.  Cart Drawer — Free Shipping Bar
    27.  Cart Drawer — Trust Bar
    28.  Product Page — Art Details Block
    29.  Product Page — Mobile Sticky Add-to-Cart
-   30.  Mobile UX — Touch Targets, Scroll & Zoom
+   30.  Mobile UX
+   31.  Page Load & Scroll Reveal
 ================================ */
 
 
@@ -42,33 +44,53 @@
 ================================ */
 
 :root {
-  /* Brand colours */
+  /* Dark canvas — THE ARCHIVE */
+  --bg:              #0a0a0a;
+  --surface:         #111111;
+  --surface-raised:  #1a1a1a;
+  --surface-high:    #252525;
+  --border:          #2c2a27;
+  --border-subtle:   rgba(232, 226, 217, 0.06);
+
+  /* Text — warm, aged-paper tones */
+  --text-primary:    #e8e2d9;
+  --text-secondary:  #78716a;
+  --text-faint:      #4a4540;
+
+  /* Brand accent — original gold, used sparingly */
+  --accent:          #ebac20;
+  --accent-dim:      rgba(235, 172, 32, 0.10);
+
+  /* Compatibility aliases */
   --color-brand-yellow: #ebac20;
-  --color-dark:         #1a1a1a;
-  --color-mid:          #4d4d4d;
-  --color-light:        #f5f5f5;
-  --color-sale:         #d32f2f;
+  --color-dark:      #0a0a0a;
+  --color-mid:       #3a3632;
+  --color-light:     #e8e2d9;
+  --color-sale:      #c94b2d;
 
-  /* Fonts — set in settings_data.json; vars here for use in overrides */
-  --font-body:    'Lato', sans-serif;
-  --font-heading: 'Montserrat', sans-serif;
+  /* Typography */
+  --font-display:  'Cormorant', 'Garamond', Georgia, serif;
+  --font-body:     'Syne', Trebuchet MS, sans-serif;
+  --font-heading:  'Cormorant', 'Garamond', Georgia, serif;
+  --font-mono:     'DM Mono', 'Courier New', monospace;
 
-  /* Border radius */
-  --radius-sm:   5px;
-  --radius-md:  10px;
-  --radius-lg:  20px;
-  --radius-xl:  40px;
-  --radius-pill: 35px;
+  /* Border radius — sharp, serious */
+  --radius-sm:   2px;
+  --radius-md:   2px;
+  --radius-lg:   4px;
+  --radius-xl:   4px;
+  --radius-pill: 2px;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 6px 15px rgba(0, 0, 0, 0.2);
+  /* Shadows — only work on dark surfaces */
+  --shadow-sm: 0 1px 6px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 2px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 4px 32px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 8px 48px rgba(0, 0, 0, 0.8);
 
   /* Transitions */
-  --transition-fast: 0.2s ease-in-out;
-  --transition-base: 0.3s ease;
+  --transition-fast:   0.2s ease;
+  --transition-base:   0.35s ease;
+  --transition-reveal: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 
@@ -76,26 +98,25 @@
    2. Accessibility
 ================================ */
 
-/* Skip to main content — visually hidden until focused */
 .skip-to-content-link {
   position: absolute;
   top: -9999px;
   left: 16px;
-  background: var(--color-brand-yellow);
-  color: var(--color-dark);
+  background: var(--accent);
+  color: var(--bg);
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 14px;
   z-index: 9999;
   text-decoration: none;
+  font-family: var(--font-body);
 }
 
 .skip-to-content-link:focus {
   top: 16px;
 }
 
-/* Remove default grey tap highlight on iOS for interactive elements */
 a,
 button,
 [role="button"],
@@ -107,7 +128,6 @@ label,
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Suppress all motion for users who opt out */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -121,107 +141,213 @@ label,
 
 
 /* ================================
-   3. Base / Reset
+   3. Base — Dark Canvas
 ================================ */
 
-/* Smooth scrolling — skipped when user prefers reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
 }
 
-/* Prevent horizontal overflow on narrow viewports */
+html,
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+}
+
+/* Main layout containers */
+.page-container,
+.transition-body,
+main[role="main"],
+#MainContent {
+  background-color: var(--bg);
+}
+
+/* Kill horizontal overflow on mobile */
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
   }
 }
 
-/* Hidden scrollbar — scroll still functions; no visible bar */
+/* Hidden scrollbar */
 html {
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
 ::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  display: none;
+}
+
+/* Sections that rely on white background — remap to dark */
+.section,
+.shopify-section {
+  background-color: var(--bg);
 }
 
 
 /* ================================
-   4. Typography
-   Theme font settings (Lato body / Montserrat headings) are managed
-   in settings_data.json. Rules here add targeted overrides only.
+   4. Typography — The Archive
 ================================ */
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+/* Cormorant for all display and heading elements */
+h1, h2, h3, h4, h5, h6,
+.title,
+.section-header__title,
+.featured-collection__title,
+.image-with-text-overlay__heading,
+.banner__heading,
+.slideshow-classic__heading,
+.article__title,
+.blog__title {
+  font-family: var(--font-display) !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  color: var(--text-primary) !important;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
 }
 
-/* Content section headings: no CSS uppercase, consistent spacing */
+/* Syne for body, navigation, UI */
+body,
+p,
+li,
+span,
+a,
+input,
+textarea,
+select,
+button,
+.navbar-item,
+.navbar-link,
+.mobile-menu-link,
+.breadcrumb,
+label {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+/* DM Mono for metadata — dimensions, edition numbers, labels */
+.product__art-detail dt,
+.product-block--price .money,
+.product-block--sku,
+.breadcrumb li,
+.breadcrumb a {
+  font-family: var(--font-mono);
+}
+
+/* Body text — warm, readable */
+body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+/* Hero / display headings — large, light italic Cormorant */
+.banner__heading,
+.video__title,
+.slideshow-classic__heading {
+  font-size: clamp(2.8rem, 7vw, 7.5rem) !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+}
+
+/* Section headings — Cormorant medium */
+.section-header__title,
+.featured-collection__title,
+.article__title {
+  font-size: clamp(1.8rem, 3vw, 3rem) !important;
+  font-weight: 400 !important;
+}
+
+/* Content section headings — no uppercase */
 .rich-text h2,
 .rich-text__title,
-.featured-collection__title,
 .image-with-text-overlay h2,
 .banner__heading,
 .video__title,
 .slideshow-classic__preheading h2,
 .product-app--container h2 {
-  text-transform: none;
-  letter-spacing: 0.08em;
+  text-transform: none !important;
+  letter-spacing: 0.01em;
 }
 
 /* Product price */
 .product-block--price .money {
-  font-size: 26px;
-  font-weight: 700;
-}
-
-/* Size chart link */
-.product-block--size-chart a.product__size-chart {
-  font-family: var(--font-heading);
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
 }
 
 /* Footer column headings */
 .footer__container p.footer__heading {
-  font-family: var(--font-heading);
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
 }
 
-/* Rich text max-width — prevents body copy spanning full viewport on wide screens */
+/* Rich text max-width for reading comfort */
 .rich-text__content {
-  max-width: 760px;
+  max-width: 720px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .rich-text__text {
-  max-width: 680px;
+  max-width: 640px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .rich-text__heading.title {
-  max-width: 760px;
+  max-width: 720px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* h2 → paragraph gap inside rich text sections */
 .rich-text__content .rich-text__heading + .rich-text__text {
-  margin-top: 16px;
+  margin-top: 20px;
+}
+
+/* Link defaults */
+a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* General text that should be warm secondary */
+p,
+.rich-text__text p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* Size chart link */
+.product-block.product-block--size-chart a.product__size-chart {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 
 /* ================================
    5. Navigation
-   The flex-icon .woff, .ttf and .svg files were corrupted during
-   upload (binary data garbled through UTF-8 encoding). The @font-face
-   declaration has been removed from styles.css.liquid. These rules
-   replace every glyph the font served with a pure CSS border-triangle
-   that has zero font dependency. The !important overrides are required
-   to defeat the font-family and content rules in styles.css.liquid
-   that would otherwise render nothing (or a box) with the corrupt font.
+   CSS arrow replacement for corrupted flex-icon font.
+   These !important overrides are load-bearing — do not remove.
 ================================ */
 
 .navbar-link:not(.is-arrowless)::after,
@@ -250,66 +376,82 @@ h1, h2, h3, h4, h5, h6 {
    6. Header
 ================================ */
 
-/* Slightly transparent dark header — lets the hero image bleed through subtly.
-   backdrop-filter adds a frosted-glass blur so text remains legible. */
 .header,
 .mobile-header,
 .is-drawer {
-  background-color: rgba(42, 42, 42, 0.92) !important;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background-color: rgba(10, 10, 10, 0.92) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Sticky header — near-opaque when scrolled (content behind it changes).
-   The section-scoped inline <style> from settings_data.json sets
-   #shopify-section-...header .header-sticky-wrapper.is-sticky .header { background:#f5f5f5 }
-   That ID-prefixed rule wins on specificity without !important. */
 .header-sticky-wrapper.is-sticky .header,
 #mobile-header-sticky-wrapper.is-sticky .mobile-header,
 .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
-  background-color: rgba(42, 42, 42, 0.97) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(10, 10, 10, 0.98) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-/* Announcement bar sticky-wrapper collapse guard.
-   The theme uses a jQuery sticky plugin that wraps the bar in
-   .announcement-sticky-wrapper. If that wrapper collapses to zero
-   height (timing or plugin issue), the fixed announcement bar overlaps
-   the header logo below it. Ensuring the wrapper retains its natural
-   height prevents this. */
 .announcement-sticky-wrapper {
   min-height: inherit;
 }
 
-/* Nav link text — white on dark background */
+/* Nav text — warm white */
 .header .navbar-link,
 .header .navbar-item,
 .header a:not([class*="logo"]),
 .mobile-header a:not([class*="logo"]) {
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+  letter-spacing: 0.06em !important;
+  font-weight: 500 !important;
 }
 
 .header .navbar-link:hover,
 .header .navbar-item:hover {
-  color: var(--color-brand-yellow) !important;
+  color: var(--accent) !important;
   background-color: transparent !important;
 }
 
 /* Dropdown menu */
 .navbar-dropdown {
-  background-color: #1a1a1a !important;
-  border-top: 2px solid var(--color-brand-yellow);
+  background-color: var(--surface-raised) !important;
+  border-top: 1px solid var(--accent) !important;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 .navbar-dropdown .navbar-item,
 .navbar-dropdown .navbar-link {
-  color: #ffffff !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+  letter-spacing: 0.04em !important;
+  padding: 0.6rem 1rem !important;
 }
 
 .navbar-dropdown .navbar-item:hover {
-  background-color: #2a2a2a !important;
-  color: #ebac20 !important;
+  background-color: var(--surface-high) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Mobile menu background */
+.mobile-menu,
+.mobile-menu__inner {
+  background-color: var(--surface) !important;
+}
+
+.mobile-menu-link,
+.mobile-menu__item {
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  border-bottom-color: var(--border-subtle) !important;
+}
+
+.mobile-menu-link:hover {
+  color: var(--accent) !important;
 }
 
 
@@ -319,110 +461,115 @@ h1, h2, h3, h4, h5, h6 {
 
 .button,
 a.button {
-  /* Override Bulma's fixed height (2.25em) which clips text at bottom when
-     combined with padding. height:auto lets padding drive the box height.
-     align-items:center ensures text is vertically centred in the flex row. */
   height: auto;
   align-items: center;
   justify-content: center;
   line-height: 1.2;
-  padding-top: 0.65em;
-  padding-bottom: 0.65em;
+  padding-top: 0.7em;
+  padding-bottom: 0.7em;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
   transition:
-    background-color var(--transition-base),
-    transform var(--transition-base);
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .button:hover,
-  a.button:hover {
-    transform: translateY(-2px);
-  }
+/* No lift on buttons — serious, not playful */
+.button:hover,
+a.button:hover {
+  transform: none !important;
 }
 
 /* Add to cart */
 .purchase-details__buttons .ajax-submit.button--add-to-cart {
   text-transform: uppercase;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.1em;
 }
 
 .purchase-details__buttons .action_button.action_button--secondary:hover {
-  background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  background-color: var(--surface-raised);
+  color: var(--accent);
 }
 
-/* Dynamic checkout (Shopify Payments — Shop Pay, Apple Pay, etc.) */
+/* Dynamic checkout buttons */
 gravity-button.accelerated-checkout-button {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-sm) !important;
 }
 
-/* Primary action — dark background, gold text (main CTAs) */
+/* Primary action — dark bg, gold text */
 .button--primary-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: auto;
-  background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
-  border-radius: var(--radius-pill);
-  font-weight: 700;
-  font-size: 16px;
+  background-color: var(--surface-raised);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   padding: 14px 32px;
   line-height: 1.2;
-  border: none;
+  border: 1px solid var(--border);
   text-decoration: none;
   cursor: pointer;
   transition:
     background-color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.button--primary-action:hover {
-  background-color: var(--color-mid);
-  color: var(--color-brand-yellow);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .button--primary-action:hover {
-    transform: translateY(-1px);
-  }
-}
-
-/* Secondary button — matching size to primary-action */
-.button--secondary {
-  padding-top: 14px;
-  padding-bottom: 14px;
-  font-size: 16px;
-  border-radius: var(--radius-pill);
-}
-
-/* "Read more" collapsible toggle (collection descriptions) */
-.toggle-text {
-  display: inline-block;
-  background: var(--color-brand-yellow);
-  color: var(--color-dark);
-  font-size: 16px;
-  font-weight: 600;
-  padding: 10px 16px;
-  margin-top: 15px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  border: none;
-  outline: none;
-  transition:
-    background-color var(--transition-fast),
+    border-color var(--transition-fast),
     color var(--transition-fast);
 }
 
-.toggle-text:hover {
-  background: var(--color-dark);
-  color: var(--color-brand-yellow);
+.button--primary-action:hover {
+  background-color: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
 }
 
-/* Button containers — gap between body copy and CTA
-   .buttons is the Bulma wrapper rendered by the button snippet. */
+/* Secondary button */
+.button--secondary {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.08em;
+}
+
+/* Collapsible toggle */
+.toggle-text {
+  display: inline-block;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 0;
+  margin-top: 12px;
+  border-radius: 0;
+  cursor: pointer;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.toggle-text:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+/* CTA button gap */
 .rich-text__content .buttons {
-  margin-top: 28px;
+  margin-top: 32px;
 }
 
 
@@ -430,14 +577,9 @@ gravity-button.accelerated-checkout-button {
    8. Links & Animated Underlines
 ================================ */
 
-a {
-  text-decoration: none;
-  transition: color var(--transition-base);
-}
-
-/* Animated underline — prose body links only */
 p a:not(.button):not([class*="logo"]) {
   position: relative;
+  color: var(--text-primary);
 }
 
 p a:not(.button):not([class*="logo"])::after {
@@ -446,17 +588,20 @@ p a:not(.button):not([class*="logo"])::after {
   left: 0;
   bottom: -2px;
   width: 0;
-  height: 2px;
-  background-color: var(--color-mid);
+  height: 1px;
+  background-color: var(--accent);
   transition: width var(--transition-base);
   pointer-events: none;
+}
+
+p a:not(.button):not([class*="logo"]):hover {
+  color: var(--accent);
 }
 
 p a:not(.button):not([class*="logo"]):hover::after {
   width: 100%;
 }
 
-/* Reusable animated underline modifier class */
 .link--animated {
   position: relative;
 }
@@ -467,24 +612,24 @@ p a:not(.button):not([class*="logo"]):hover::after {
   left: 0;
   bottom: -2px;
   width: 0;
-  height: 2px;
-  background-color: var(--color-mid);
+  height: 1px;
+  background-color: var(--text-secondary);
   transition: width var(--transition-base);
   pointer-events: none;
 }
 
 .link--animated:hover::after {
   width: 100%;
-  background-color: var(--color-dark);
+  background-color: var(--text-primary);
 }
 
 
 /* ================================
    9. Video Hero
+   .video__text-container display is overridden by player.js at runtime.
+   The !important here defeats that inline style — do not remove.
 ================================ */
 
-/* player.js injects style="display:none;" onto .video__text-container
-   on every page load. The !important here defeats that inline style. */
 .video__text-container {
   display: flex !important;
 }
@@ -502,23 +647,38 @@ p a:not(.button):not([class*="logo"]):hover::after {
   display: block;
 }
 
-/* Horizontal padding so text doesn't sit at the viewport edge.
-   The theme default is 30px on all sides — too close on wide screens. */
 .video__text-wrapper {
-  padding-left: 72px;
-  padding-right: 72px;
+  padding-left: 80px;
+  padding-right: 80px;
 }
 
 @media (max-width: 768px) {
   .video__text-wrapper {
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 28px;
+    padding-right: 28px;
   }
 }
 
-/* Push CTA button down from the subtitle text */
 .video__text-wrapper .button {
-  margin-top: 28px;
+  margin-top: 36px;
+}
+
+/* Video overlay text — left-aligned editorial */
+.video__text-container .video__text-wrapper {
+  text-align: left;
+}
+
+.video__subtitle,
+.video__text-wrapper .subtitle {
+  font-family: var(--font-body) !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  color: rgba(232, 226, 217, 0.75) !important;
+  letter-spacing: 0.02em !important;
+  max-width: 480px;
+  line-height: 1.7;
+  text-transform: none !important;
+  margin-top: 16px;
 }
 
 
@@ -527,12 +687,13 @@ p a:not(.button):not([class*="logo"]):hover::after {
 ================================ */
 
 .swatch input:checked + .swatch-element {
-  background: var(--color-dark);
-  color: var(--color-brand-yellow);
+  background: var(--surface-raised);
+  color: var(--accent);
+  border-color: var(--accent) !important;
 }
 
 .swatch label {
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   min-width: 100%;
 }
 
@@ -541,27 +702,27 @@ p a:not(.button):not([class*="logo"]):hover::after {
 }
 
 .swatch-element {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--border) !important;
+  background-color: transparent;
+  color: var(--text-secondary);
   transition:
-    background-color var(--transition-base),
-    color var(--transition-base),
-    transform var(--transition-base);
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .swatch-element:hover {
-  background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .swatch-element:hover {
-    transform: translateY(-2px);
-  }
-}
-
-.purchase-details .purchase-details__spb--true {
-  margin-top: 1.2rem;
+  background-color: var(--surface-raised);
+  color: var(--text-primary);
+  border-color: var(--text-secondary) !important;
+  box-shadow: none;
+  transform: none;
 }
 
 @media (max-width: 768px) {
@@ -571,22 +732,21 @@ p a:not(.button):not([class*="logo"]):hover::after {
   }
 }
 
-
-/* ================================
-   11. Homepage — Collection Grid & Featured Collection
-   .jsCollectionList is added by theme JS when the collection list
-   section initialises. Mobile layout is handled by Flickity
-   (.flickity-enabled present) — these rules apply to both states.
-================================ */
-
-/* Rounded corners + shadow on every card */
-.jsCollectionList .collection-list__thumbnail {
-  border-radius: var(--radius-lg) !important;
-  overflow: hidden !important;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+.purchase-details .purchase-details__spb--true {
+  margin-top: 1.2rem;
 }
 
-/* Image fills card */
+
+/* ================================
+   11. Homepage — Collection Grid
+================================ */
+
+.jsCollectionList .collection-list__thumbnail {
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  box-shadow: none;
+}
+
 .jsCollectionList .collection-list__thumbnail .image-element__wrap,
 .jsCollectionList .collection-list__thumbnail img {
   width: 100%;
@@ -595,84 +755,79 @@ p a:not(.button):not([class*="logo"]):hover::after {
   display: block;
 }
 
-/* Card title — uppercase is intentional here (category label) */
+/* Collection card title */
 .jsCollectionList .collection-info__caption .title {
-  font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 800;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0;
-  line-height: 1.4;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-primary);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
 }
 
-/* Featured collection sliders (Best Sellers, New Arrivals):
-   heading row needs breathing room before the product slider. */
+/* Featured collection section */
 .featured-collection-section .featured-collection__heading-row {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .featured-collection-section .featured-collection__title {
   margin-bottom: 0;
 }
 
-/* "View All" link — pull it back from the raw right viewport edge
-   and style it as a legible pill link rather than a small text anchor.
-   The theme positions it absolute right:0 which reaches the edge on
-   wide sections with no container padding. */
+/* "View All" link */
 .featured-collection__view-all {
   right: 1.5rem !important;
 }
 
 .featured-collection__view-all-link {
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.06em !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
-  color: var(--color-mid) !important;
-  border: 1.5px solid var(--color-mid) !important;
-  border-radius: var(--radius-pill) !important;
-  padding: 6px 16px !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 7px 16px !important;
   text-decoration: none !important;
-  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast) !important;
+  transition: color var(--transition-fast), border-color var(--transition-fast) !important;
 }
 
 .featured-collection__view-all-link:hover {
-  background-color: var(--color-dark) !important;
-  color: var(--color-brand-yellow) !important;
-  border-color: var(--color-dark) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+  background-color: transparent !important;
 }
 
 
 /* ================================
    12. Homepage — Art Story Section
-   Image-with-text-overlay (first instance — "Shop Best Sellers").
-   Scoped via css_class: section--art-story set in index.json.
 ================================ */
 
-/* Global image-with-text-overlay overlay card defaults.
-   The section--art-story / section--about-brett rules below override
-   this for those specific homepage sections. */
+/* Default overlay card — minimal, dark */
 .image-with-text-overlay .caption-content {
-  background-color: rgba(255, 255, 255, 0.45) !important;
-  backdrop-filter: blur(2px);
+  background-color: rgba(10, 10, 10, 0.55) !important;
+  backdrop-filter: blur(4px);
+  border: none !important;
 }
 
 .image-with-text-overlay__heading {
-  font-size: 2rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.02em;
+  font-size: clamp(1.6rem, 3vw, 2.8rem) !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+  letter-spacing: 0 !important;
 }
 
 .image-with-text-overlay__preheading.banner__subheading.pretext.subtitle {
   margin-bottom: 0;
 }
 
-/* Buttons inside overlay cards — gap above from subheading */
 .caption-content .buttons,
 .caption-content .button-group,
 .image-with-text-overlay__buttons {
-  margin-top: 24px;
+  margin-top: 28px;
   gap: 12px;
   display: flex;
   flex-wrap: wrap;
@@ -680,112 +835,107 @@ p a:not(.button):not([class*="logo"]):hover::after {
   justify-content: center;
 }
 
-/* Rounded image card with margin inset */
+/* Art story — no rounded image, no inset */
 .section--art-story .image-element__wrap {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  margin: 40px;
-  width: calc(100% - 80px);
+  margin: 0;
+  width: 100%;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: var(--bg);
 }
 
-/* Dark overlay card — overrides the global light rule and section inline <style> */
 .section--art-story .caption-content {
-  background-color: rgba(0, 0, 0, 0.55) !important;
+  background-color: rgba(10, 10, 10, 0.6) !important;
   border-color: transparent !important;
 }
 
 .section--art-story .caption-content .image-with-text-overlay__heading,
 .section--art-story .caption-content h2 {
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
 }
 
 .section--art-story .caption-content .image-with-text-overlay__preheading {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(232, 226, 217, 0.8) !important;
 }
 
 .section--art-story .caption-content .image-with-text-overlay__subheading {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: rgba(232, 226, 217, 0.65) !important;
 }
 
 @media (min-width: 769px) {
   .section--art-story .caption-content.text-align-center {
-    border-radius: var(--radius-lg);
-    margin: 80px;
-    box-shadow: var(--shadow-sm);
+    border-radius: 0;
+    margin: 60px;
+    box-shadow: none;
   }
 }
 
 @media (max-width: 768px) {
   .section--art-story .image-element__wrap {
-    margin: 20px;
-    width: auto;
+    margin: 0;
+    width: 100%;
   }
 }
 
 
 /* ================================
    13. Homepage — About Brett Section
-   Image-with-text-overlay (second instance).
-   Scoped via css_class: section--about-brett set in index.json.
 ================================ */
 
 .section--about-brett .image-element__wrap {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  margin: 40px;
-  width: calc(100% - 80px);
+  margin: 0;
+  width: 100%;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: var(--bg);
 }
 
-/* Dark overlay card */
 .section--about-brett .caption-content {
-  background-color: rgba(0, 0, 0, 0.55) !important;
+  background-color: rgba(10, 10, 10, 0.6) !important;
   border-color: transparent !important;
 }
 
 .section--about-brett .caption-content .image-with-text-overlay__heading,
 .section--about-brett .caption-content h2 {
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
 }
 
 .section--about-brett .caption-content .image-with-text-overlay__preheading {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: rgba(232, 226, 217, 0.8) !important;
 }
 
 .section--about-brett .caption-content .image-with-text-overlay__subheading {
-  color: rgba(255, 255, 255, 0.75) !important;
+  color: rgba(232, 226, 217, 0.65) !important;
 }
 
 .section--about-brett .caption-content.text-align-center {
-  border-radius: var(--radius-lg);
-  margin: 80px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 0;
+  margin: 60px;
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
   .section--about-brett .image-element__wrap {
-    margin: 20px;
-    width: auto;
+    margin: 0;
+    width: 100%;
   }
 
   .section--about-brett .caption-content.text-align-center {
-    border-radius: var(--radius-md);
-    padding: 15px;
+    border-radius: 0;
+    padding: 20px;
     margin: 0;
     width: 100%;
-    background-color: #fff;
+    background-color: rgba(10, 10, 10, 0.85);
   }
 }
 
 
 /* ================================
    14. Homepage — Featured Slideshow
-   Scoped via css_class: section--featured-slideshow set in index.json.
 ================================ */
 
 .section--featured-slideshow .slideshow-classic-container,
@@ -794,29 +944,27 @@ p a:not(.button):not([class*="logo"]):hover::after {
   overflow: visible;
 }
 
-/* Desktop slide image */
 .section--featured-slideshow .image-element__wrap.is-hidden-mobile-only {
-  margin: 0 40px;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  width: calc(100% - 80px);
+  width: 100%;
   box-sizing: border-box;
 }
 
-/* Mobile slide image */
 .section--featured-slideshow .image-element__wrap.is-hidden-desktop-only {
-  margin: 0 20px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  width: calc(100% - 40px);
+  width: 100%;
   box-sizing: border-box;
 }
 
 .section--featured-slideshow .caption-content.text-align-center {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -829,12 +977,8 @@ p a:not(.button):not([class*="logo"]):hover::after {
 
 /* ================================
    15. Instagram Feed
-   The Instafeed app injects inline opacity styles at runtime.
-   The !important overrides here are necessary — they cannot be
-   avoided without modifying third-party app code.
 ================================ */
 
-/* Prevent hover overlay from staying visible after JS interaction */
 .instafeed-new-layout-item .instafeed-hover-layer {
   opacity: 0 !important;
   transition: opacity 0.25s ease;
@@ -844,12 +988,11 @@ p a:not(.button):not([class*="logo"]):hover::after {
   opacity: 1 !important;
 }
 
-/* Prevent app from rendering section title in uppercase */
 .instafeed-title,
 [class*="instafeed"] h2,
 [class*="instafeed"] .title {
   text-transform: none !important;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
 }
 
 
@@ -858,52 +1001,49 @@ p a:not(.button):not([class*="logo"]):hover::after {
 ================================ */
 
 [id*="trust_icon_bar"] {
-  background-color: #2a2a2a !important;
+  background-color: var(--surface) !important;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 [id*="trust_icon_bar"] .icon-bar__block,
 [id*="trust_icon_bar"] a.icon-bar__block {
-  color: #ffffff !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.06em !important;
 }
 
 [id*="trust_icon_bar"] a.icon-bar__block:hover {
-  color: var(--color-brand-yellow) !important;
+  color: var(--text-primary) !important;
 }
 
 [id*="trust_icon_bar"] .icon-bar__wrapper {
-  padding-top: 28px;
-  padding-bottom: 28px;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 
 
 /* ================================
    17. Footer
-   Targets .footer which is the top-level class on the footer section
-   render. Avoids the hardcoded shopify-section ID for portability.
 ================================ */
 
-/* Background — overrides the rgb(77,77,77) default from styles.css */
 .footer__content {
-  background-color: #2a2a2a !important;
+  background-color: var(--surface) !important;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .footer__bottom,
 [class*="footer-bottom"] {
-  background-color: #1a1a1a !important;
+  background-color: var(--bg) !important;
 }
 
-/* Copyright bar */
-/* Bottom bar: the .section class (Bulma) adds 1.5rem horizontal padding
-   which can create uneven-looking inner edges. Remove that padding from the
-   section itself and push it onto the inner .sub-footer container so the dark
-   background runs fully edge-to-edge. A hairline top border replaces the
-   abrupt colour-step from the main footer. */
 .footer__extra-content {
-  background-color: #1a1a1a !important;
-  color: #888 !important;
+  background-color: var(--bg) !important;
+  color: var(--text-faint) !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .footer__extra-content .sub-footer {
@@ -914,17 +1054,22 @@ p a:not(.button):not([class*="logo"]):hover::after {
 }
 
 .footer__extra-content a {
-  color: #bbb !important;
+  color: var(--text-faint) !important;
+  font-family: var(--font-body);
+  font-size: 12px;
 }
 
 .footer__extra-content a:hover {
-  color: var(--color-brand-yellow) !important;
+  color: var(--accent) !important;
 }
 
-/* Animated underline on footer links */
+/* Footer links */
 .footer a {
   text-decoration: none;
   position: relative;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
   transition: color var(--transition-base);
 }
 
@@ -932,98 +1077,100 @@ p a:not(.button):not([class*="logo"]):hover::after {
   content: '';
   position: absolute;
   left: 0;
-  bottom: -3px;
+  bottom: -2px;
   width: 0;
-  height: 2px;
-  background-color: var(--color-light);
+  height: 1px;
+  background-color: var(--accent);
   transition: width var(--transition-base);
 }
 
 .footer a:hover {
-  color: var(--color-brand-yellow);
+  color: var(--text-primary);
 }
 
 .footer a:hover::after {
   width: 100%;
 }
 
-/* No underline pseudo-element on images, buttons, logos */
 .footer a img::after,
 .footer a.button::after,
 .footer a[class*="logo"]::after {
   content: none;
 }
 
-/* Footer columns — all start at the same top edge regardless of content height */
 .footer__content .container.has-limit {
   align-items: flex-start !important;
 }
 
-/* Each column: consistent top padding and comfortable internal spacing */
 .footer__block {
-  padding-top: 24px !important;
+  padding-top: 28px !important;
 }
 
 .footer__block .footer__heading {
   margin-bottom: 16px;
 }
 
-/* Suppress the double padding the Liquid wraps around social icons */
 .footer__heading + .has-padding-bottom.has-padding-top {
   padding-top: 0;
   padding-bottom: 0;
 }
 
-/* Social icons — stacked vertically, left-aligned, with proper vertical gap.
-   The theme's base CSS gives li { padding: 0 5px } which is horizontal only —
-   override here to provide vertical breathing room between each icon row. */
+/* Social icons — vertical stack */
 ul.social-icons.is-flex.is-flex-wrap {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
   margin-top: 8px;
 }
 
 ul.social-icons.is-flex.is-flex-wrap li {
   display: flex;
   align-items: center;
-  padding: 0 !important; /* override theme's horizontal padding */
+  padding: 0 !important;
 }
 
 ul.social-icons.is-flex.is-flex-wrap li a {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+ul.social-icons.is-flex.is-flex-wrap li a:hover {
+  color: var(--text-primary);
 }
 
 
 /* ================================
    18. Collection Page
-   #template-collection is generated by theme.liquid:
-   id="template-{{ template | replace: '.', '-' | handle }}"
 ================================ */
 
-/* Banner content pill */
+/* Banner content — no pill, minimal treatment */
 #template-collection .banner__content {
   display: inline-block;
-  padding: 8px 16px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  padding: 0;
+  text-align: left;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   max-width: fit-content;
+}
+
+#template-collection .banner__heading {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 768px) {
   #template-collection .banner__content {
-    padding: 4px 8px;
-    max-width: 80%;
+    padding: 0;
+    max-width: 90%;
   }
 
   #template-collection .banner__heading {
-    font-size: 1rem;
-    line-height: 1.2;
+    font-size: 2rem !important;
+    line-height: 1.1;
   }
 
   .one-whole.column {
@@ -1035,16 +1182,16 @@ ul.social-icons.is-flex.is-flex-wrap li a {
   }
 }
 
-/* Collection description box.
-   !important required to defeat section-scoped inline <style> blocks. */
+/* Collection description */
 .collection__description {
-  background-color: #2a2a2a !important;
-  color: #cccccc !important;
+  background-color: var(--surface) !important;
+  color: var(--text-secondary) !important;
   padding: 40px;
-  margin: 40px;
+  margin: 0 40px 40px;
   line-height: 1.8;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: 0;
+  box-shadow: none;
+  border-left: 2px solid var(--accent);
 }
 
 section.gallery-intro {
@@ -1053,19 +1200,21 @@ section.gallery-intro {
 
 section.gallery-intro p {
   margin-bottom: 20px;
+  color: var(--text-secondary);
 }
 
 /* Collapsible description */
 .collapsible-text-container {
-  background-color: #2a2a2a !important;
-  color: #cccccc !important;
+  background-color: var(--surface) !important;
+  color: var(--text-secondary) !important;
   margin: 0 auto;
   width: 100%;
-  max-width: 600px;
+  max-width: 640px;
   line-height: 1.8;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-radius: 0;
+  box-shadow: none;
   text-align: left;
+  border-left: 2px solid var(--accent);
 }
 
 .collapsible-text {
@@ -1089,7 +1238,7 @@ section.gallery-intro p {
   left: 0;
   width: 100%;
   height: 40px;
-  background: linear-gradient(to bottom, rgba(42, 42, 42, 0), rgba(42, 42, 42, 1)) !important;
+  background: linear-gradient(to bottom, rgba(17, 17, 17, 0), rgba(17, 17, 17, 1)) !important;
   pointer-events: none;
   transition: opacity var(--transition-base);
 }
@@ -1109,29 +1258,58 @@ section.gallery-intro p {
   }
 }
 
-/* Product grid */
+/* Product grid — no radius on photography */
 .collection-matrix {
   padding: 40px;
   box-sizing: border-box;
 }
 
 .container.collection-matrix .image-element__wrap {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-xl);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  background-color: #fff;
+  background-color: var(--surface);
+}
+
+/* Product thumbnail title and price on dark bg */
+.thumbnail__caption {
+  background-color: transparent;
+  padding-top: 12px;
+}
+
+.thumbnail__caption .product__title,
+.thumbnail__caption .title {
+  font-family: var(--font-display) !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  font-style: italic !important;
+  color: var(--text-primary) !important;
+  text-transform: none !important;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.thumbnail__caption .product__price,
+.thumbnail__caption .price {
+  font-family: var(--font-mono) !important;
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+}
+
+.product__grid-item,
+.product__thumbnail {
+  background-color: transparent;
 }
 
 @media (max-width: 768px) {
   .collection-matrix {
-    padding: 1rem 1.5rem;
+    padding: 1rem 1rem;
   }
 }
 
 
 /* ================================
    19. All Collections Page
-   #template-list-collections matches when template == 'list-collections'
 ================================ */
 
 #template-list-collections {
@@ -1144,8 +1322,8 @@ section.gallery-intro p {
 }
 
 #template-list-collections .image-element__wrap {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -1153,15 +1331,27 @@ section.gallery-intro p {
   overflow: visible;
 }
 
+#template-list-collections .title {
+  font-family: var(--font-display) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+}
+
 
 /* ================================
    20. Product Page
-   #template-product matches when template == 'product'
 ================================ */
 
 #template-product .product_section {
   padding-left: 40px;
   padding-right: 40px;
+  background-color: var(--bg);
+}
+
+/* Background for the entire product area */
+.product__section,
+.product__section-wrapper {
+  background-color: var(--bg);
 }
 
 .product-block.product-block--size-chart {
@@ -1183,11 +1373,41 @@ section.gallery-intro p {
   padding-top: 0;
 }
 
-/* Size chart link — animated underline + gold hover */
+/* Product title on product page */
+.product__title.title,
+.product-block--title .product__title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.8rem, 2.5vw, 2.8rem) !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+  color: var(--text-primary) !important;
+  text-transform: none !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Product images — no radius */
+.product-image__container,
+.product__image-container,
+.product-images-container {
+  background-color: var(--surface);
+}
+
+.product-images img,
+.product__image,
+.product-image__wrapper img {
+  border-radius: 0 !important;
+}
+
+/* Size chart link */
 .product-block.product-block--size-chart .product__size-chart {
   position: relative;
-  color: inherit;
+  color: var(--text-secondary);
   border-bottom: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   transition: color var(--transition-base);
 }
 
@@ -1197,14 +1417,14 @@ section.gallery-intro p {
   left: 0;
   bottom: 0;
   width: 0;
-  height: 2px;
-  background-color: var(--color-mid);
+  height: 1px;
+  background-color: var(--accent);
   transition: width var(--transition-base);
   pointer-events: none;
 }
 
 .product-block.product-block--size-chart .product__size-chart:hover {
-  color: var(--color-brand-yellow);
+  color: var(--text-primary);
 }
 
 .product-block.product-block--size-chart .product__size-chart:hover::after,
@@ -1223,7 +1443,7 @@ section.gallery-intro p {
 .social-share-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -1238,35 +1458,31 @@ section.gallery-intro p {
   flex-grow: 1;
   max-width: 100px;
   padding: 8px 12px;
-  font-size: 14px;
-  border-radius: var(--radius-md);
-  background-color: #fff;
-  border: 2px solid #ccc;
-  color: inherit;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   transition:
-    background-color var(--transition-base),
-    color var(--transition-base),
-    border-color var(--transition-base);
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .social-share-buttons .share-btn a.button:hover {
   border-color: transparent;
 }
 
-.social-share-buttons .share-btn--x         a.button { color: #1da1f2; }
+.social-share-buttons .share-btn--x         a.button { color: #e8e2d9; }
 .social-share-buttons .share-btn--x         a.button:hover { background-color: #1da1f2; color: #fff; }
-
-.social-share-buttons .share-btn--facebook  a.button { color: #3b5998; }
+.social-share-buttons .share-btn--facebook  a.button { color: #e8e2d9; }
 .social-share-buttons .share-btn--facebook  a.button:hover { background-color: #3b5998; color: #fff; }
-
-.social-share-buttons .share-btn--pinterest a.button { color: #bd081c; }
+.social-share-buttons .share-btn--pinterest a.button { color: #e8e2d9; }
 .social-share-buttons .share-btn--pinterest a.button:hover { background-color: #bd081c; color: #fff; }
+.social-share-buttons .share-btn--mail      a.button { color: #e8e2d9; }
+.social-share-buttons .share-btn--mail      a.button:hover { background-color: var(--surface-high); color: #fff; }
 
-.social-share-buttons .share-btn--mail      a.button { color: #333; }
-.social-share-buttons .share-btn--mail      a.button:hover { background-color: #333; color: #fff; }
-
-/* Accordion (FAQ / product info tabs).
-   !important required to defeat section-scoped inline <style> blocks. */
+/* Accordion — FAQ / product info */
 .accordion {
   width: 100%;
   max-width: 800px;
@@ -1274,13 +1490,23 @@ section.gallery-intro p {
 }
 
 .accordion dt {
-  padding: 16px;
-  font-weight: bold;
-  background: #2a2a2a !important;
-  color: #fff;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--surface-raised) !important;
+  color: var(--text-primary);
   cursor: pointer;
-  border-radius: var(--radius-md);
-  margin-bottom: 10px;
+  border-radius: 0;
+  margin-bottom: 2px;
+  border-left: 2px solid transparent;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.accordion dt:hover {
+  border-left-color: var(--accent);
 }
 
 .accordion dt a {
@@ -1289,61 +1515,67 @@ section.gallery-intro p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .accordion dt small {
-  font-size: 18px;
+  font-size: 16px;
+  color: var(--text-secondary);
 }
 
 .accordion dd {
   display: none;
-  padding: 16px;
-  background: #fff;
+  padding: 20px 16px;
+  background: var(--surface);
+  font-family: var(--font-body);
   font-size: 14px;
-  color: #333;
-  line-height: 1.5;
-  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  border-radius: 0;
+  border-left: 2px solid var(--border);
+  margin-bottom: 2px;
 }
 
 .accordion dd.active {
   display: block;
 }
 
-/* Featured collection — rounded product images */
+/* Recommendations section */
+.product-recommendations-section {
+  background-color: var(--bg);
+}
+
+/* Product image — no radius on featured collection cards */
 .featured-collection .product-image__wrapper {
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   overflow: hidden;
 }
 
 .featured-collection .product-image__wrapper img {
-  border-radius: inherit;
+  border-radius: 0;
   object-fit: cover;
 }
 
 @media (max-width: 768px) {
   #template-product .product_section {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
 
 /* ================================
    21. Blog & Article Pages
-   #template-blog  → template == 'blog'
-   #template-article → template == 'article'
 ================================ */
 
-/* Banner content pill */
 #template-blog .banner__content,
 #template-article .banner__content {
   display: inline-block;
-  padding: 8px 16px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  padding: 0;
+  text-align: left;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   max-width: fit-content;
 }
 
@@ -1354,27 +1586,41 @@ section.gallery-intro p {
 
   #template-blog .banner__content,
   #template-article .banner__content {
-    padding: 4px 8px;
-    max-width: 80%;
+    padding: 0;
+    max-width: 90%;
   }
 
   #template-blog .banner__heading,
   #template-article .banner__heading {
-    font-size: 1rem;
-    line-height: 1.2;
+    font-size: 2rem !important;
+    line-height: 1.1;
   }
 }
 
-/* Blog article list — card images */
 #template-blog .image-element__wrap {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  background-color: #fff;
+  background-color: var(--surface);
 }
 
 .blog-card__read-more.buttons {
   justify-content: center;
+}
+
+/* Article body */
+.article__content,
+.article__body {
+  background-color: var(--bg);
+  color: var(--text-secondary);
+}
+
+.article__content h1,
+.article__content h2,
+.article__content h3 {
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 400 !important;
 }
 
 /* Article inline photo gallery */
@@ -1398,17 +1644,20 @@ section.gallery-intro p {
   height: 100%;
   max-height: 500px;
   object-fit: cover;
-  border-radius: var(--radius-lg);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
-  margin-bottom: 24px;
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 12px;
 }
 
 .image-item p {
   max-width: 100%;
   text-align: center;
-  margin-top: 15px;
-  margin-bottom: 40px;
-  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 32px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
   padding: 0 10px;
 }
 
@@ -1426,8 +1675,8 @@ section.gallery-intro p {
 }
 
 @media (max-width: 1024px) {
-  .image-container { gap: 15px; }
-  .image-item { width: calc(50% - 15px); }
+  .image-container { gap: 12px; }
+  .image-item { width: calc(50% - 12px); }
 }
 
 @media (max-width: 768px) {
@@ -1437,16 +1686,14 @@ section.gallery-intro p {
   }
 
   .image-item { width: 100%; }
-  .image-item img { max-height: 450px; }
+  .image-item img { max-height: 420px; }
 }
 
 
 /* ================================
-   22. Homepage — Parallax (Art Story & About Brett)
-   Uses scroll-driven animation where supported.
-   Falls back to static (no effect) on older browsers.
-   The image is oversized (115% tall) so the overflow:hidden wrapper
-   clips the translateY movement, creating the parallax window.
+   22. Parallax (Art Story & About Brett)
+   CSS scroll-driven animation — supported browsers only.
+   Falls back to static on unsupported browsers.
 ================================ */
 
 @supports (animation-timeline: view()) {
@@ -1468,29 +1715,23 @@ section.gallery-intro p {
 
 
 /* ================================
-   23. Homepage — Collection Card Hover Reveal
-   Title and button slide up from the bottom on hover.
-   The actual hover parent in the Flex theme HTML is .product-wrap
-   (confirmed via DOM inspection — .collection-thumbnail-item does
-   not exist in this theme version).
+   23. Collection Card Hover Reveal
 ================================ */
 
-/* Gradient overlay — invisible by default, fades in on hover */
 .collection-thumbnail-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 55%) !important;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 50%) !important;
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.4s ease;
 }
 
 .product-wrap:hover .collection-thumbnail-overlay {
   opacity: 1;
 }
 
-/* Caption wrapper — starts translated down, slides up on hover */
 .collection-info__caption-wrapper {
-  transform: translateY(22px);
+  transform: translateY(16px);
   opacity: 0;
-  transition: transform 0.38s ease, opacity 0.38s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 .product-wrap:hover .collection-info__caption-wrapper {
@@ -1498,67 +1739,89 @@ section.gallery-intro p {
   opacity: 1;
 }
 
-/* Text and button colour on the dark gradient */
 .collection-info__caption .title,
 .collection-info__caption-wrapper .title {
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
 }
 
 .collection-info__caption .button {
-  color: #ffffff;
-  border-color: rgba(255,255,255,0.7);
+  color: var(--text-primary);
+  border-color: rgba(232, 226, 217, 0.5);
   background-color: transparent;
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  border-radius: var(--radius-sm);
 }
 
 .collection-info__caption .button:hover {
-  background-color: #ffffff;
-  color: #2a2a2a;
-  border-color: #ffffff;
+  background-color: var(--text-primary);
+  color: var(--bg);
+  border-color: var(--text-primary);
+}
+
+/* Product thumbnail hover overlay */
+.quick-shop__info.animated.fadeInDown {
+  background-color: rgba(10, 10, 10, 0.85) !important;
+  backdrop-filter: blur(4px);
+}
+
+.product-thumbnail__title {
+  font-family: var(--font-display) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+}
+
+.product-thumbnail__price {
+  font-family: var(--font-mono) !important;
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
 }
 
 
 /* ================================
    24. Cookie Banner
-   .fixed-message-section (schema class) wraps the whole thing.
-   .fixed-message__container is the inner panel that gets background/color
-   from the section's inline <style> block. !important overrides that.
 ================================ */
 
 .fixed-message__container {
-  background-color: rgba(26, 26, 26, 0.96) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #ffffff !important;
-  border-top: 2px solid var(--color-brand-yellow);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  background-color: rgba(10, 10, 10, 0.97) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-primary) !important;
+  border-top: 1px solid var(--accent);
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.7);
 }
 
 .fixed-message__text p,
 .fixed-message__text {
-  color: rgba(255, 255, 255, 0.88) !important;
+  color: rgba(232, 226, 217, 0.8) !important;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
-/* Privacy-policy / inline links in the banner text */
 .fixed-message__text a {
-  color: var(--color-brand-yellow) !important;
+  color: var(--accent) !important;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-/* Override the theme's generic button rules — gold pill, dark text */
 .fixed-message__button .button,
 .fixed-message__button .age-gate__confirm_btn {
-  background-color: var(--color-brand-yellow) !important;
-  color: var(--color-dark) !important;
-  border-color: var(--color-brand-yellow) !important;
-  border-radius: var(--radius-pill) !important;
-  font-family: var(--font-heading) !important;
+  background-color: var(--accent) !important;
+  color: var(--bg) !important;
+  border-color: var(--accent) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-body) !important;
   font-weight: 700 !important;
-  font-size: 13px !important;
-  letter-spacing: 0.06em !important;
+  font-size: 12px !important;
+  letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
   padding: 10px 28px !important;
   min-height: unset !important;
@@ -1571,10 +1834,10 @@ section.gallery-intro p {
 
 .fixed-message__button .button:hover,
 .fixed-message__button .age-gate__confirm_btn:hover {
-  background-color: var(--color-dark) !important;
-  color: var(--color-brand-yellow) !important;
-  border-color: var(--color-dark) !important;
-  transform: none; /* suppress global hover lift inside a fixed bar */
+  background-color: var(--surface-raised) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  transform: none;
 }
 
 @media (max-width: 798px) {
@@ -1587,73 +1850,64 @@ section.gallery-intro p {
 
 /* ================================
    25. Search Popup
-   Opened by Fancybox with baseClass: 'search__lightbox'.
-   The container gets class="fancybox-container search__lightbox".
-   Theme CSS sets .search-popup { background: {{ settings.search_popup_bg }} }
-   which renders as #FFF — overridden below.
 ================================ */
 
-/* Fancybox overlay — slightly deeper than default for the search context */
 .search__lightbox .fancybox-bg {
   background: #000;
-  opacity: 0.72;
+  opacity: 0.8;
 }
 
-/* Strip default fancybox-content white background and padding */
 .search__lightbox .fancybox-slide--html .fancybox-content {
   background: transparent;
   padding: 0;
   overflow: visible;
   box-shadow: none;
-  max-width: 660px;
+  max-width: 640px;
   width: calc(100vw - 48px);
 }
 
-/* Main popup panel — dark frosted glass to match the header */
 .search-popup {
-  background-color: rgba(22, 22, 22, 0.97) !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  color: #ffffff !important;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
-  max-width: 660px !important;
+  background-color: rgba(17, 17, 17, 0.98) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text-primary) !important;
+  border-radius: 0;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  max-width: 640px !important;
   padding: 40px 40px 32px !important;
 }
 
-/* Collapse the inner wrapper's extra padding since .search-popup now owns it */
 .search-popup .search-overlay__wrapper {
   padding: 0 !important;
 }
 
-/* Title */
 .search-popup__title {
-  color: #ffffff !important;
-  font-family: var(--font-heading) !important;
-  font-size: 1.4rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.05em;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-size: 1.8rem !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+  letter-spacing: 0;
   text-transform: none;
   margin-bottom: 0;
 }
 
-/* Input — standard site style (white bg, bordered, dark text, no radius) */
 .search-popup .input {
-  background-color: hsl(0, 0%, 100%) !important;
-  border-color: #dbdbdb !important;
-  border-radius: 0 !important;
-  color: hsl(0, 0%, 21%) !important;
+  background-color: var(--surface-raised) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
   box-shadow: none !important;
+  font-family: var(--font-body) !important;
 }
 
 .search-popup .input:focus {
-  border-color: #4d4d4d !important;
-  box-shadow: 0 0 0 0.125em rgba(77, 77, 77, 0.25) !important;
+  border-color: var(--accent) !important;
+  box-shadow: none !important;
   outline: none !important;
 }
 
-/* Search icon — gold tint matching the brand */
 .search-popup button[name="search"] {
   background: transparent !important;
   border: none !important;
@@ -1664,30 +1918,29 @@ section.gallery-intro p {
 .search-popup .icon.is-left,
 .search-popup .icon.is-left svg,
 .search-popup button[name="search"] svg {
-  color: var(--color-brand-yellow) !important;
+  color: var(--accent) !important;
   fill: currentColor;
   transition: color var(--transition-fast);
 }
 
 .search-popup button[name="search"]:hover .icon.is-left,
 .search-popup button[name="search"]:hover svg {
-  color: #fff !important;
+  color: var(--text-primary) !important;
 }
 
-/* "Common searches" label */
 .search-popup .search-menu__heading {
-  color: rgba(255, 255, 255, 0.45) !important;
-  font-family: var(--font-heading) !important;
+  color: var(--text-faint) !important;
+  font-family: var(--font-body) !important;
   font-size: 10px !important;
   font-weight: 700 !important;
   letter-spacing: 0.12em !important;
   text-transform: uppercase !important;
 }
 
-/* Quick-link items */
 .search-popup .search-menu__item a {
-  color: rgba(255, 255, 255, 0.75) !important;
-  font-size: 14px;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body);
+  font-size: 13px;
   padding: 5px 0;
   display: block;
   transition: color var(--transition-fast);
@@ -1695,23 +1948,22 @@ section.gallery-intro p {
 }
 
 .search-popup .search-menu__item a:hover {
-  color: var(--color-brand-yellow) !important;
+  color: var(--text-primary) !important;
 }
 
-/* Predictive results pane — stay dark when it appears */
 .search-popup .search__results-wrapper,
 .search-popup .search__results {
-  background-color: rgba(22, 22, 22, 0.97) !important;
-  border-radius: var(--radius-md);
+  background-color: var(--surface) !important;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
   margin-top: 4px;
 }
 
 .search-popup .search__results__item .description__title,
 .search-popup .search__results__item .item-pricing {
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
 }
 
-/* Mobile */
 @media (max-width: 798px) {
   .search__lightbox .fancybox-slide--html .fancybox-content {
     width: calc(100vw - 32px);
@@ -1719,11 +1971,10 @@ section.gallery-intro p {
 
   .search-popup {
     padding: 28px 20px 24px !important;
-    border-radius: var(--radius-md);
   }
 
   .search-popup__title {
-    font-size: 1.15rem !important;
+    font-size: 1.4rem !important;
   }
 }
 
@@ -1734,41 +1985,42 @@ section.gallery-intro p {
 
 .ajax-cart__shipping-progress {
   padding: 12px 16px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 4px;
 }
 
 .ajax-cart__shipping-bar-track {
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
+  height: 2px;
+  background-color: var(--surface-high);
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 8px;
 }
 
 .ajax-cart__shipping-bar-fill {
   height: 100%;
-  background-color: var(--color-brand-yellow, #ebac20);
-  border-radius: 2px;
+  background-color: var(--accent);
+  border-radius: 0;
   transition: width 0.4s ease;
   min-width: 4px;
 }
 
 .ajax-cart__shipping-message {
+  font-family: var(--font-body);
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--text-secondary);
   text-align: center;
   margin: 0;
   line-height: 1.4;
 }
 
 .ajax-cart__shipping-message .money {
-  color: var(--color-brand-yellow, #ebac20);
+  color: var(--accent);
   font-weight: 600;
 }
 
 .ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved {
-  color: var(--color-brand-yellow, #ebac20);
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1791,7 +2043,7 @@ section.gallery-intro p {
   justify-content: space-around;
   align-items: center;
   padding: 14px 8px 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-subtle);
   margin-top: 8px;
   gap: 4px;
 }
@@ -1806,16 +2058,17 @@ section.gallery-intro p {
 }
 
 .ajax-cart__trust-item .icon svg {
-  width: 18px;
-  height: 18px;
-  fill: var(--color-brand-yellow, #ebac20);
+  width: 16px;
+  height: 16px;
+  fill: var(--accent);
   opacity: 0.85;
 }
 
 .ajax-cart__trust-item span {
+  font-family: var(--font-body);
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.55);
-  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
   line-height: 1.3;
   text-transform: uppercase;
 }
@@ -1826,16 +2079,16 @@ section.gallery-intro p {
 ================================ */
 
 .product__art-details {
-  margin-top: 12px;
+  margin-top: 16px;
   margin-bottom: 4px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .product__art-details-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px 24px;
+  gap: 14px 24px;
   margin: 0;
   padding: 0;
 }
@@ -1843,28 +2096,31 @@ section.gallery-intro p {
 .product__art-detail {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .product__art-detail dt {
+  font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(26, 26, 26, 0.45);
+  color: var(--text-faint);
   line-height: 1;
 }
 
 .product__art-detail dd {
+  font-family: var(--font-body);
   font-size: 13px;
-  color: #1a1a1a;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.4;
 }
 
 .product__art-detail--cert dd {
-  color: var(--color-brand-yellow, #ebac20);
+  color: var(--accent);
   font-weight: 600;
+  font-family: var(--font-mono);
 }
 
 
@@ -1884,12 +2140,12 @@ section.gallery-intro p {
     left: 0;
     right: 0;
     z-index: 200;
-    background-color: #1a1a1a;
-    border-top: 2px solid var(--color-brand-yellow, #ebac20);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    background-color: var(--surface-raised);
+    border-top: 1px solid var(--accent);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.6);
     padding: 10px 16px max(12px, env(safe-area-inset-bottom));
     transform: translateY(100%);
-    transition: transform 0.25s ease-in-out;
+    transition: transform 0.25s ease;
     pointer-events: none;
   }
 
@@ -1917,8 +2173,9 @@ section.gallery-intro p {
   }
 
   .product__sticky-atc-title {
+    font-family: var(--font-body);
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1926,22 +2183,24 @@ section.gallery-intro p {
   }
 
   .product__sticky-atc-price {
+    font-family: var(--font-mono);
     font-size: 15px;
-    font-weight: 600;
-    color: #ffffff;
+    font-weight: 500;
+    color: var(--text-primary);
     line-height: 1.2;
   }
 
   .product__sticky-atc-btn {
-    background-color: var(--color-brand-yellow, #ebac20) !important;
-    color: #1a1a1a !important;
-    border-color: var(--color-brand-yellow, #ebac20) !important;
-    border-radius: 35px !important;
-    font-size: 13px !important;
+    background-color: var(--accent) !important;
+    color: var(--bg) !important;
+    border-color: var(--accent) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: var(--font-body) !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.1em !important;
     text-transform: uppercase !important;
-    padding: 10px 22px !important;
+    padding: 10px 20px !important;
     white-space: nowrap;
     flex-shrink: 0;
     min-height: unset !important;
@@ -1949,9 +2208,9 @@ section.gallery-intro p {
   }
 
   .product__sticky-atc-btn:hover {
-    background-color: #ffffff !important;
-    color: #1a1a1a !important;
-    border-color: #ffffff !important;
+    background-color: var(--surface-raised) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
   }
 }
 
@@ -1960,57 +2219,153 @@ section.gallery-intro p {
    30. Mobile UX — Touch Targets, Scroll & Zoom
 ================================ */
 
-/* --- Cart drawer: enable scrolling --- */
-/* The theme CSS sets height:100% on the drawer but no overflow rule,
-   which clips content on carts with many items. */
-#theme-ajax-cart.is-drawer {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* --- Mobile menu: increase link touch targets to 44px minimum --- */
-/* Theme sets 0.5rem (8px) vertical padding = ~24px touch target. WCAG minimum is 44px. */
 @media (max-width: 798px) {
-  .mobile-menu .mobile-menu-link,
-  .mobile-menu .mobile-menu__item,
-  .mobile-menu .submenu__label,
-  .mobile-menu .mobile-menu a {
-    padding-top: 14px !important;
-    padding-bottom: 14px !important;
-    display: flex;
-    align-items: center;
+  .header__action-icons a,
+  .mobile-menu-link,
+  .mobile-header .navbar-item,
+  .footer a,
+  .swatch label,
+  .quantity-button,
+  .product__sticky-atc-btn,
+  .ajax-cart__close-icon,
+  .ajax-cart__delete,
+  .pagination a,
+  .pagination span,
+  nav.breadcrumb a {
     min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* Close-dropdown chevron areas — currently undersize */
-  .mobile-menu .close-dropdown,
-  .mobile-menu .close-sub-dropdown {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-}
-
-/* --- Enforce minimum 16px font-size on all inputs on mobile ---
-   iOS Safari auto-zooms the viewport when an input with font-size
-   below 16px receives focus. This override prevents that on all
-   native and theme input variants. */
-@media (max-width: 798px) {
-  input,
-  textarea,
+  /* Prevent iOS auto-zoom on focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="password"],
+  input[type="tel"],
   select,
-  .input,
-  .textarea {
-    font-size: max(16px, 1em) !important;
+  textarea {
+    font-size: 16px !important;
   }
 }
 
-/* --- Page body padding when sticky product bar is visible ---
-   Prevents the fixed sticky ATC from permanently obscuring
-   page content at the bottom of the product page. */
-@media (max-width: 798px) {
-  body.product {
-    padding-bottom: 72px;
+
+/* ================================
+   31. Page Load & Scroll Reveal
+================================ */
+
+/* Page load fade-in */
+@keyframes lc-page-load {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.lc-loaded body {
+    animation: lc-page-load 0.5s ease-out both;
   }
+}
+
+/* Scroll reveal — sections enter from below */
+@media (prefers-reduced-motion: no-preference) {
+  .lc-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--transition-reveal),
+      transform var(--transition-reveal);
+  }
+
+  .lc-reveal.lc-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger children within revealed sections */
+@media (prefers-reduced-motion: no-preference) {
+  .lc-revealed .product__grid-item:nth-child(1) { transition-delay: 0ms; }
+  .lc-revealed .product__grid-item:nth-child(2) { transition-delay: 80ms; }
+  .lc-revealed .product__grid-item:nth-child(3) { transition-delay: 160ms; }
+  .lc-revealed .product__grid-item:nth-child(4) { transition-delay: 240ms; }
+  .lc-revealed .product__grid-item:nth-child(5) { transition-delay: 320ms; }
+  .lc-revealed .product__grid-item:nth-child(6) { transition-delay: 400ms; }
+}
+
+/* Pagination links */
+.pagination a,
+.pagination span {
+  font-family: var(--font-body);
+  font-size: 13px;
+  border-color: var(--border) !important;
+  color: var(--text-secondary);
+  background-color: transparent;
+  border-radius: var(--radius-sm) !important;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.pagination a:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary) !important;
+  background-color: transparent;
+}
+
+.pagination .current {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  border-color: var(--accent) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Cart page background */
+.cart-page,
+#template-cart .page-container {
+  background-color: var(--bg);
+}
+
+/* Form elements on dark bg */
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select {
+  background-color: var(--surface-raised) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-body) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-faint) !important;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.breadcrumb a {
+  color: var(--text-faint);
+}
+
+.breadcrumb a:hover {
+  color: var(--text-secondary);
 }
