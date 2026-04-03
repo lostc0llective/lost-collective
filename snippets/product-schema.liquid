@@ -49,13 +49,14 @@
     {%- endif -%}
   ],
   {%- endif -%}
-  {%- if product.metafields.reviews.rating.value != blank and product.metafields.reviews.rating_count != blank %}
+  {%- assign _review_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count | plus: 0 -%}
+  {%- if product.metafields.reviews.rating.value != blank and _review_count > 0 %}
   "aggregateRating": {
     "@type": "AggregateRating",
-    "ratingValue": "{{ product.metafields.reviews.rating.value.rating }}",
-    "reviewCount": "{{ product.metafields.reviews.rating_count }}",
-    "bestRating": "5",
-    "worstRating": "1"
+    "ratingValue": {{ product.metafields.reviews.rating.value.rating | times: 1.0 }},
+    "reviewCount": {{ _review_count }},
+    "bestRating": 5,
+    "worstRating": 1
   },
   {%- endif %}
   {%- if product.price_min != product.price_max -%}
@@ -64,7 +65,7 @@
     "priceCurrency": "{{ shop.currency }}",
     "lowPrice": "{{ product.price_min | money_without_currency | remove: ',' }}",
     "highPrice": "{{ product.price_max | money_without_currency | remove: ',' }}",
-    "offerCount": "{{ product.variants.size }}",
+    "offerCount": {{ product.variants.size }},
     "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
     "url": {{ canonical_url | json }},
     "priceValidUntil": "{{ price_valid_until }}",

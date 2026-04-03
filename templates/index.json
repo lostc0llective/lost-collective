@@ -15,9 +15,14 @@
         "homepage_only": false,
         "enable_sticky": true,
         "show_close_icon": false,
+        "icon_label": "tag",
         "text": "<p>Free shipping on orders over $150 · Museum-quality fine art prints · Personally signed by the artist</p>",
+        "mobile_text": "",
         "alignment": "center",
         "size": "regular",
+        "button_label": "",
+        "link": "",
+        "button_style": "button--primary",
         "background": "#2a2a2a",
         "text_color": "#ebac20",
         "width": "wide",
@@ -28,11 +33,11 @@
     "index_video_e3PxRq": {
       "type": "index__video",
       "settings": {
-        "iframe_video": "https://vimeo.com/1045887806?share=copy#t=0",
-        "html5_video": "",
+        "iframe_video": "",
+        "html5_video": "https://cdn.shopify.com/videos/c/o/v/078da6fbfbf4406a9827965cf4bba5c4.mp4",
         "autoplay": true,
         "autoloop": true,
-        "mute_video": false,
+        "mute_video": true,
         "controls": false,
         "aspect_ratio": "16:9",
         "image": "shopify://shop_images/Exploring_Abandoned_Places_Shop_Lost_Collective_Prints.jpg",
@@ -217,8 +222,8 @@
       "type": "index__featured-collection",
       "settings": {
         "title": "Best Sellers",
-        "show_view_all": true,
         "collection": "best-sellers",
+        "show_view_all": true,
         "products_per": 4,
         "products_limit": 50,
         "align_height": false,
@@ -389,10 +394,9 @@
         "logo_list-2",
         "logo_list-3"
       ],
-      "disabled": true,
       "settings": {
-        "logos_per_row": 8,
         "logo_size": "small",
+        "scroll_speed": 30,
         "background": "rgba(0,0,0,0)",
         "gradient": "rgba(0,0,0,0)",
         "gradient_rotation": 0,
@@ -401,9 +405,9 @@
         "padding_bottom": 0,
         "padding_left": 0,
         "padding_right": 0,
-        "animation": "none",
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0,
+        "animation": "none",
         "css_class": "",
         "custom_css": ""
       }
@@ -500,7 +504,7 @@
             "title": "JAPAN",
             "button_label": "View Products"
           }
-        },
+        }
       },
       "block_order": [
         "collection_KDpq4X",
@@ -620,8 +624,8 @@
       "type": "index__featured-collection",
       "settings": {
         "title": "New Arrivals",
-        "show_view_all": true,
         "collection": "new",
+        "show_view_all": true,
         "products_per": 4,
         "products_limit": 50,
         "align_height": false,
@@ -904,11 +908,17 @@
           "settings": {
             "title": "See the Story Unfold on Instagram",
             "title_color": "",
+            "title_size_v2": 0,
             "alignment": "center",
-            "margin_sides": 40,
+            "instafeed_margin_top": 0,
+            "instafeed_margin_bottom": 0,
+            "instafeed_margin_sides": 0,
+            "show_instagram_link": false,
+            "link_alignment": "left",
+            "link_color": "#000000",
             "background_color": "",
             "feed_id": "",
-            "html_area": "<div style=\"text-align:center;margin-top:28px;\"><a href=\"https://www.instagram.com/lostc0llective/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"font-family:inherit;font-size:0.95em;color:#4d4d4d;text-decoration:none;border-bottom:1px solid #4d4d4d;padding-bottom:2px;\">Follow @lostc0llective on Instagram &rarr;</a></div>"
+            "html_area": "<div style=\"text-align:center;margin-top:28px;\"><a href=\"https://www.instagram.com/lostc0llective/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"font-family:inherit;font-size:0.95em;color:#4d4d4d;text-decoration:none;border-bottom:1px solid #4d4d4d;padding-bottom:2px;\">Follow @lostc0llective on Instagram →</a></div>"
           }
         }
       },

@@ -24,7 +24,7 @@ window.PXUTheme.jsMegaMenu = {
       $parentMobileElement.find('a.mobile-menu__item').addClass('mobile-menu-link');
 
       // Insert close icon after menu item
-      $parentMobileElement.find('a').after('<span class="close-dropdown" aria-expanded="false"></span>');
+      $parentMobileElement.find('a').after('<span class="close-dropdown"></span>');
 
       // Insert placeholder ul for megamenu
       $parentMobileElement.find('.submenu__label').after('<ul class="mobile-submenu__list mobile-menu__submenu has-mega-menu" data-mobile-submenu-first-level-list></ul>')

@@ -198,7 +198,7 @@
             {% endif %}
 
             {% if link != blank %}
-              <a class="banner--full-link" href="{{ link }}"></a>
+              <a class="banner--full-link" href="{{ link }}" aria-label="{{ title | default: 'View more' | escape }}"></a>
             {% endif %}
 
             {% if pretext != blank or mobile_pretext != blank or title != blank or mobile_title != blank or subtitle != blank or mobile_subtitle != blank or button_1 != blank or button_2 != blank %}
