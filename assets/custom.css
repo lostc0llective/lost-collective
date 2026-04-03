@@ -49,9 +49,9 @@
   --color-light:        #f5f5f5;
   --color-sale:         #d32f2f;
 
-  /* Fonts — set in settings_data.json; vars here for use in overrides */
-  --font-body:    'Lato', sans-serif;
-  --font-heading: 'Montserrat', sans-serif;
+  /* Fonts — loaded via Google Fonts in theme.liquid */
+  --font-body:    'DM Sans', sans-serif;
+  --font-heading: 'Bebas Neue', sans-serif;
 
   /* Border radius */
   --radius-sm:   5px;
