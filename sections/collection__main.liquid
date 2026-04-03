@@ -199,6 +199,10 @@
 
     {% paginate collection.products by section.settings.pagination_limit %}
 
+    {% if paginate.current_page > paginate.pages %}
+      <meta name="robots" content="noindex, follow">
+    {% endif %}
+
     <div
       class="
         collection__main

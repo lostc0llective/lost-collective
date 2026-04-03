@@ -205,7 +205,7 @@
       {% endif %}
 
       {% if link != blank %}
-        <a href="{{ link }}" class="banner--full-link"></a>
+        <a href="{{ link }}" class="banner--full-link" aria-label="{{ title | default: 'View more' | escape }}"></a>
       {% endif %}
 
       {% if desktop_text or mobile_text or button_1 != blank or button_2 != blank %}

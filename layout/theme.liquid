@@ -19,9 +19,15 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.png' | asset_url }}">
   {%- endif -%}
 
-<link rel="canonical" href="{{ canonical_url }}">
+{%- if current_page == 1 and (template.name == 'collection' or template.name == 'blog') -%}
+  <link rel="canonical" href="{{ canonical_url | split: '?' | first }}">
+{%- else -%}
+  <link rel="canonical" href="{{ canonical_url }}">
+{%- endif -%}
 {%- if template.name == 'collection' and current_tags -%}
   <meta name="robots" content="noindex, follow">
+{%- elsif template.name == 'page' and page.handle == 'shipping-blurb-for-product-page' -%}
+  <meta name="robots" content="noindex, nofollow">
 {%- else -%}
   <meta name="robots" content="index, follow">
 {%- endif -%}
@@ -73,13 +79,11 @@
   <!-- DNS prefetches -->
   <link rel="dns-prefetch" href="https://cdn.shopify.com">
   <link rel="dns-prefetch" href="https://fonts.shopify.com">
-  <link rel="dns-prefetch" href="https://monorail-edge.shopifysvc.com">
   <link rel="dns-prefetch" href="https://ajax.googleapis.com">
 
-  <!-- Preconnects -->
+  <!-- Preconnects — limited to 4 most critical origins (monorail removed: flagged unused by PSI) -->
   <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
   <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
-  <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
   <link rel="preconnect" href="https://ajax.googleapis.com">
 
   <!-- Preloads -->
