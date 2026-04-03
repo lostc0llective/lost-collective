@@ -75,16 +75,12 @@
   <link rel="dns-prefetch" href="https://fonts.shopify.com">
   <link rel="dns-prefetch" href="https://monorail-edge.shopifysvc.com">
   <link rel="dns-prefetch" href="https://ajax.googleapis.com">
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
   <!-- Preconnects -->
   <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
   <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
   <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
   <link rel="preconnect" href="https://ajax.googleapis.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Preloads -->
   <!-- Preload CSS -->
@@ -101,7 +97,6 @@
   <!-- CSS for Flex -->
   <link rel="stylesheet" href="{{ 'fancybox.css' | asset_url }}">
   <link rel="stylesheet" href="{{ 'styles.css' | asset_url }}">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap">
   <link rel="stylesheet" href="{{ 'custom.css' | asset_url }}">
 
   {% comment %}Inject theme-object begin{% endcomment %}
@@ -240,15 +235,12 @@
     {% render 'quick-shop' %}
   {% endif %}
 
-  <!-- THE ARCHIVE: page load fade + scroll reveal -->
+
   <script>
     (function() {
-      // Page load fade-in
       document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.classList.add('lc-loaded');
       });
-
-      // Scroll reveal — respects prefers-reduced-motion
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         document.addEventListener('DOMContentLoaded', function() {
           var revealEls = document.querySelectorAll(
@@ -271,7 +263,6 @@
       }
     })();
   </script>
-
 </head>
 
 
