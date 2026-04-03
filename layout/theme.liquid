@@ -2,7 +2,7 @@
 <html lang="{{ shop.locale }}">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="cleartype" content="on">
+
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="{{ settings.shop_bg_color }}">
   {%- if settings.favicon != nil -%}
@@ -84,7 +84,9 @@
 
   <!-- Preloads -->
   <!-- Preload CSS -->
-  <link rel="preload" href="{{ 'fancybox.css' | asset_url }}" as="style">
+  {%- if template.name == 'product' or template.name == 'collection' or template.directory == 'page' -%}
+    <link rel="preload" href="{{ 'fancybox.css' | asset_url }}" as="style">
+  {%- endif -%}
   <link rel="preload" href="{{ 'styles.css' | asset_url }}" as="style">
 
   <!-- Preload JS -->
@@ -95,7 +97,9 @@
   <link rel="preload" href="{{ 'swatch-layout.js' | asset_url }}" as="script">
 
   <!-- CSS for Flex -->
-  <link rel="stylesheet" href="{{ 'fancybox.css' | asset_url }}">
+  {%- if template.name == 'product' or template.name == 'collection' or template.directory == 'page' -%}
+    <link rel="stylesheet" href="{{ 'fancybox.css' | asset_url }}">
+  {%- endif -%}
   <link rel="stylesheet" href="{{ 'styles.css' | asset_url }}">
   <link rel="stylesheet" href="{{ 'custom.css' | asset_url }}">
 
@@ -196,23 +200,7 @@
     - The .atom feed autodiscovery link (filtered out below — intentional, avoids duplicate feeds)
   Do not wrap content_for_header in conditionals — this will break app injection.
 {%- endcomment -%}
-{% capture cfh %}
-  {{ content_for_header }}
-{% endcapture %}
-
-{%- comment -%}
-  Match and remove only the .atom feed line (safely ignores other meta tags)
-{%- endcomment -%}
-{% assign cfh_lines = cfh | split: '\n' %}
-{% assign filtered_lines = '' %}
-
-{% for line in cfh_lines %}
-  {% unless line contains '.atom' %}
-    {% assign filtered_lines = filtered_lines | append: line %}
-  {% endunless %}
-{% endfor %}
-
-{{ filtered_lines }}
+{{ content_for_header }}
 
 
 
