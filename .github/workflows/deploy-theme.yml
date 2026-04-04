@@ -34,7 +34,7 @@ jobs:
       - name: Deploy to production (main branch)
         if: github.ref == 'refs/heads/main'
         env:
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_STORE_TOKEN }}
+          SHOPIFY_FLAG_STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_TOKEN }}
         run: |
           shopify theme push \
             --store lost-collective.myshopify.com \
@@ -44,7 +44,7 @@ jobs:
       - name: Deploy to staging (staging branch)
         if: github.ref == 'refs/heads/staging'
         env:
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_STORE_TOKEN }}
+          SHOPIFY_FLAG_STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_TOKEN }}
         run: |
           shopify theme push \
             --store lost-collective.myshopify.com \
