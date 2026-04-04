@@ -246,6 +246,10 @@
                       <a href="{{ item.url }}" title="{{ item.title | escape }}">{{ item.title }}</a>
                     </h3>
 
+                    {%- if item.object_type == 'product' and item.metafields.custom.collection_series != blank -%}
+                      <p class="search-result__series">{{ item.metafields.custom.collection_series.value }}</p>
+                    {%- endif -%}
+
                     {% if item.price %}
                       <div class="info has-padding-top">
                         <span class="price {% if item.compare_at_price > item.price %}sale{% endif %}">

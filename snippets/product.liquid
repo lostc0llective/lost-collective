@@ -398,9 +398,20 @@
             <div class="product__art-details">
               <dl class="product__art-details-list">
                 {% if product.metafields.custom.collection_series != blank %}
+                  {%- liquid
+                    assign _series_name = product.metafields.custom.collection_series.value
+                    assign _series_handle = _series_name | handleize
+                    assign _series_collection = collections[_series_handle]
+                  -%}
                   <div class="product__art-detail">
                     <dt>Series</dt>
-                    <dd>{{ product.metafields.custom.collection_series }}</dd>
+                    <dd>
+                      {%- if _series_collection != blank -%}
+                        <a href="{{ _series_collection.url }}">{{ _series_name }}</a>
+                      {%- else -%}
+                        {{ _series_name }}
+                      {%- endif -%}
+                    </dd>
                   </div>
                 {% endif %}
                 {% if product.metafields.custom.year_photographed != blank %}
@@ -415,7 +426,9 @@
                     <dd>{{ product.metafields.custom.location }}</dd>
                   </div>
                 {% endif %}
-                {% comment %} Edition size derived from selected variant's Size option — M=100, L=50, XL=25 {% endcomment %}
+                {% comment %} Edition size derived from selected variant's Size option — M=100, L=50, XL=25.
+                  edition_number metafield (custom.edition_number, integer) is optional — when present,
+                  the display reads "Edition [number] of [size]". When absent: "Edition of [size]". {% endcomment %}
                 {%- assign _initial_size = product.selected_or_first_available_variant.option1 -%}
                 {%- case _initial_size -%}
                   {%- when 'M' -%}{%- assign _initial_edition = 100 -%}
@@ -423,17 +436,29 @@
                   {%- when 'XL' -%}{%- assign _initial_edition = 25 -%}
                   {%- else -%}{%- assign _initial_edition = nil -%}
                 {%- endcase -%}
+                {%- assign _edition_num = "" -%}
+                {%- if product.metafields.custom.edition_number != blank -%}
+                  {%- assign _edition_num = product.metafields.custom.edition_number.value -%}
+                {%- endif -%}
                 <div class="product__art-detail{% unless _initial_edition %} is-hidden{% endunless %}"
                      id="edition-detail-{{ product.id }}"
-                     data-edition-detail>
+                     data-edition-detail
+                     data-edition-number="{{ _edition_num }}">
                   <dt>Edition</dt>
-                  <dd data-edition-value>{% if _initial_edition %}Edition of {{ _initial_edition }}{% endif %}</dd>
+                  <dd data-edition-value>
+                    {%- if _initial_edition -%}
+                      {%- if _edition_num != blank -%}Edition {{ _edition_num }} of {{ _initial_edition }}
+                      {%- else -%}Edition of {{ _initial_edition }}
+                      {%- endif -%}
+                    {%- endif -%}
+                  </dd>
                 </div>
                 <script>
                   (function() {
                     var el = document.getElementById('edition-detail-{{ product.id }}');
                     if (!el) return;
                     var val = el.querySelector('[data-edition-value]');
+                    var editionNum = el.getAttribute('data-edition-number') || '';
                     var map = { 'M': 100, 'L': 50, 'XL': 25 };
                     var inputs = document.querySelectorAll(
                       'input[data-variant-option-value][data-variant-option-value-index="0"][id$="-{{ product.id }}"]'
@@ -443,7 +468,9 @@
                         var edition = map[this.value];
                         if (edition) {
                           el.classList.remove('is-hidden');
-                          val.textContent = 'Edition of ' + edition;
+                          val.textContent = editionNum
+                            ? 'Edition ' + editionNum + ' of ' + edition
+                            : 'Edition of ' + edition;
                         } else {
                           el.classList.add('is-hidden');
                           val.textContent = '';
@@ -467,10 +494,13 @@
                 {% if product.metafields.custom.certificate_included == true %}
                   <div class="product__art-detail product__art-detail--cert">
                     <dt>Certificate</dt>
-                    <dd>Included</dd>
+                    <dd>&#10003; Certificate of Authenticity included</dd>
                   </div>
                 {% endif %}
               </dl>
+              {%- if product.metafields.custom.subject_description != blank -%}
+                <p class="product__art-description">{{ product.metafields.custom.subject_description.value | newline_to_br }}</p>
+              {%- endif -%}
             </div>
           {% endif %}
 

@@ -1,3 +1,25 @@
+{%- comment -%}
+  Parameters:
+    product:                {Object}  Required. The product object to render.
+    products_per_row:       {Number}  Required. Column count for the grid; passed to column-width snippet.
+    mobile_products_per_row:{String}  Required. '1' or '2' — controls small-screen column width.
+    align_height:           {Boolean} Optional. Crop images to a fixed height. Default: false.
+    height:                 {Number}  Optional. Max image height in px when align_height is true.
+    related_products:       {Boolean} Optional. When true, reads hover setting from `block` rather than
+                                      global settings. `block` is only populated when called from within
+                                      a {% for block in section.blocks %} loop — it will be nil in all
+                                      other contexts, causing hover_enabled to fall back to false (safe).
+                                      Default: false.
+    collection:             {Object}  Optional. Used in `product.url | within: collection` links.
+    collection_group_thumb: {String}  Optional. CSS class for thumbnail group scoping.
+    collection_group_mobile:{String}  Optional. CSS class for mobile group scoping.
+
+  Implicit globals used:
+    section.settings.pagination_type — controls data-load-more attribute on the grid item div.
+      `section` is always available in Shopify render contexts. Calling sections must have a
+      `pagination_type` setting or this attribute will be omitted (safe — treated as basic pagination).
+    settings.* — various global theme settings (quickshop, stickers, secondary image, etc.)
+{%- endcomment -%}
 {% if related_products == true %}
   {% assign hover_enabled = block.settings.show_related_products_title_on_hover %}
 {% else %}

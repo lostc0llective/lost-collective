@@ -139,9 +139,11 @@ body {
   overflow-x: hidden;
 }
 
-.announcement-sticky-wrapper,
+body.index {
+  display: block;
+}
+
 .announcement-bar__container {
-  max-width: 100% !important;
   overflow-x: hidden;
 }
 
@@ -509,10 +511,9 @@ p a:not(.button):not([class*="logo"]):hover::after {
    9. Video Hero
 ================================ */
 
-/* player.js injects style="display:none;" onto .video__text-container
-   on every page load. The !important here defeats that inline style. */
-.video__text-container {
-  display: flex !important;
+/* Show text overlay once video is present; JS manages the none→flex transition */
+.video-present--true .video__text-container {
+  display: flex;
 }
 
 .video-player {
@@ -1143,6 +1144,66 @@ section.gallery-intro p {
   }
 }
 
+/* Collection series info bar — rendered when collection metafields are populated */
+.collection__series-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 0 0 0 40px;
+  padding: 16px 40px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.collection__series-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collection__series-info-item dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.45);
+  line-height: 1;
+}
+
+.collection__series-info-item dd {
+  font-size: 13px;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.collection__series-description {
+  margin: 16px 40px 0;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(26, 26, 26, 0.8);
+}
+
+.collection__series-description p {
+  margin: 0 0 0.75em;
+}
+
+.collection__series-description p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .collection__series-info,
+  .collection__series-description {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
 /* Product grid */
 .collection-matrix {
   padding: 40px;
@@ -1215,6 +1276,14 @@ section.gallery-intro p {
 
 .product__social-share.has-padding-top {
   padding-top: 0;
+}
+
+/* LCP fix — single-image product gallery is immediately visible.
+   styles.css starts all galleries at opacity:0 waiting for Flickity init,
+   but a one-image product never needs Flickity so the class never gets added.
+   Override for that case so the image qualifies as the LCP candidate. */
+.product-gallery--media-amount-1 .product-gallery__main {
+  opacity: 1;
 }
 
 /* Size chart link — animated underline + gold hover */
@@ -1509,26 +1578,24 @@ section.gallery-intro p {
    not exist in this theme version).
 ================================ */
 
-/* Gradient overlay — invisible by default, fades in on hover */
+/* Gradient overlay — always visible so titles are always readable */
 .collection-thumbnail-overlay {
   background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 55%) !important;
-  opacity: 0;
-  transition: opacity 0.35s ease;
+  opacity: 1;
 }
 
+/* Caption wrapper — always visible */
+.collection-info__caption-wrapper {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Hover: lift the overlay slightly for interactivity feel */
 .product-wrap:hover .collection-thumbnail-overlay {
   opacity: 1;
 }
 
-/* Caption wrapper — starts translated down, slides up on hover */
-.collection-info__caption-wrapper {
-  transform: translateY(22px);
-  opacity: 0;
-  transition: transform 0.38s ease, opacity 0.38s ease;
-}
-
 .product-wrap:hover .collection-info__caption-wrapper {
-  transform: translateY(0);
   opacity: 1;
 }
 
@@ -1899,6 +1966,15 @@ section.gallery-intro p {
 .product__art-detail--cert dd {
   color: var(--color-brand-yellow, #ebac20);
   font-weight: 600;
+}
+
+.product__art-description {
+  margin-top: 14px;
+  font-size: 13px;
+  color: rgba(26, 26, 26, 0.75);
+  line-height: 1.6;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 

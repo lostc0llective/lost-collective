@@ -76,6 +76,16 @@
 
   {% render 'social-meta-info' %}
 
+  <!-- Font preloads — body and heading fonts only; skipped for system fonts -->
+  {%- unless settings.regular__font.system? -%}
+    <link rel="preload" href="{{ settings.regular__font | font_url: 'woff2' }}" as="font" type="font/woff2" crossorigin>
+  {%- endunless -%}
+  {%- unless settings.heading__font.system? -%}
+    {%- if settings.heading__font.family != settings.regular__font.family -%}
+      <link rel="preload" href="{{ settings.heading__font | font_url: 'woff2' }}" as="font" type="font/woff2" crossorigin>
+    {%- endif -%}
+  {%- endunless -%}
+
   <!-- DNS prefetches -->
   <link rel="dns-prefetch" href="https://cdn.shopify.com">
   <link rel="dns-prefetch" href="https://fonts.shopify.com">

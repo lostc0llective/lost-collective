@@ -103,6 +103,63 @@
     </div>
 {% endif %}
 
+  {% comment %} Series info bar — rendered only when any of the five collection metafields are populated.
+    Metafield definitions live in .shopify/metafields.json (collection array).
+    Create them in Admin → Settings → Custom data → Collections before populating values. {% endcomment %}
+  {%- liquid
+    assign _has_series_meta = false
+    if collection.metafields.custom.location_name != blank
+      assign _has_series_meta = true
+    elsif collection.metafields.custom.year_photographed != blank
+      assign _has_series_meta = true
+    elsif collection.metafields.custom.historical_period != blank
+      assign _has_series_meta = true
+    elsif collection.metafields.custom.current_status != blank
+      assign _has_series_meta = true
+    endif
+  -%}
+  {%- if _has_series_meta -%}
+    <div class="container">
+      <div class="one-whole column">
+        <dl class="collection__series-info">
+          {%- if collection.metafields.custom.location_name != blank -%}
+            <div class="collection__series-info-item">
+              <dt>Location</dt>
+              <dd>{{ collection.metafields.custom.location_name.value }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if collection.metafields.custom.year_photographed != blank -%}
+            <div class="collection__series-info-item">
+              <dt>Photographed</dt>
+              <dd>{{ collection.metafields.custom.year_photographed.value }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if collection.metafields.custom.historical_period != blank -%}
+            <div class="collection__series-info-item">
+              <dt>Operational period</dt>
+              <dd>{{ collection.metafields.custom.historical_period.value }}</dd>
+            </div>
+          {%- endif -%}
+          {%- if collection.metafields.custom.current_status != blank -%}
+            <div class="collection__series-info-item">
+              <dt>Current status</dt>
+              <dd>{{ collection.metafields.custom.current_status.value }}</dd>
+            </div>
+          {%- endif -%}
+        </dl>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- if collection.metafields.custom.series_description != blank -%}
+    <div class="container">
+      <div class="one-whole column">
+        <div class="collection__series-description">
+          {{ collection.metafields.custom.series_description.value }}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
   {% comment %} Collection sidebar and main content area {% endcomment %}
   <div class="container collection__content">
 
