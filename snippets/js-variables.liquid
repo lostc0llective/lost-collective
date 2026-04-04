@@ -1,3 +1,19 @@
+{%- comment -%}
+  Bridge snippet — intentionally accesses global Liquid objects to expose them to JavaScript.
+  Called ONLY from layout/theme.liquid inside an inline <script> block.
+
+  Undeclared global dependencies (intentional at layout level):
+    shop.currency, shop.money_format, shop.money_with_currency_format,
+    shop.enabled_currencies, shop.customer_accounts_enabled,
+    cart.currency.*,
+    customer, customer.default_address, customer.email,
+    routes.*, settings.*,
+    template.name (line 150) — branches on 'product' to push GTM view_item event;
+      also reads product.* globals which are only available on product templates.
+      This is a deliberate bridge: layout renders this snippet unconditionally,
+      but the product dataLayer push is gated on template.name so it only fires
+      on product pages where the product object is populated.
+{%- endcomment -%}
 {% comment %} Store all of the liquid variables that you want to reference in your js on global namespaced objects - allows you to run linters on your javascript! {% endcomment %}
 {% capture js_variables %}
 
@@ -45,6 +61,8 @@ window.PXUTheme.routes = window.PXUTheme.routes || {};
 
 {% comment %} Routes {% endcomment %}
 window.PXUTheme.routes.cart_url = "{{ routes.cart_url }}";
+window.PXUTheme.routes.cart_add_url = "{{ routes.cart_url }}/add";
+window.PXUTheme.routes.cart_change_url = "{{ routes.cart_url }}/change";
 window.PXUTheme.routes.root_url = "{{ routes.root_url }}";
 window.PXUTheme.routes.search_url = "{{ routes.search_url }}";
 window.PXUTheme.routes.collection_url = "{{ routes.collections_url }}";

@@ -32,7 +32,15 @@
       "Bash(export SHOPIFY_CLIENT_ID=\"297f31e097badf022ff863ae7ad7f871\")",
       "Bash(export SHOPIFY_SECRET=\"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\")",
       "Bash(echo \"PID: $!\")",
-      "Bash(kill 52008)"
+      "Bash(kill 52008)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git checkout:*)",
+      "Bash(sed -n '3813,3830p' /Users/brettpatman/shopify-themes/lost-collective/assets/styles.css.liquid)",
+      "Bash(sed -n '3952,3960p' /Users/brettpatman/shopify-themes/lost-collective/assets/styles.css.liquid)",
+      "Bash(head -20 grep -rn \"console\\\\.log\" /Users/brettpatman/shopify-themes/lost-collective/snippets/*.liquid)",
+      "Bash(pip3 install:*)",
+      "Bash(git init:*)"
     ]
   }
 }

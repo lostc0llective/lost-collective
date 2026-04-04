@@ -2,7 +2,58 @@
   "article": [],
   "blog": [],
   "brand": [],
-  "collection": [],
+  "collection": [
+    {
+      "key": "series_description",
+      "namespace": "custom",
+      "name": "Series Description",
+      "description": "Editorial narrative about the location or series — historical context, photographer's notes, why it matters. Rendered as rich text on the collection page below the standard description.",
+      "type": {
+        "name": "rich_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "location_name",
+      "namespace": "custom",
+      "name": "Location",
+      "description": "The specific location where the series was photographed, e.g. 'Homebush, New South Wales, Australia'. Displayed in the series info bar on the collection page.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "year_photographed",
+      "namespace": "custom",
+      "name": "Year Photographed",
+      "description": "The year or range the series was photographed, e.g. '2017' or '2017–2019'. Displayed in the series info bar on the collection page.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "historical_period",
+      "namespace": "custom",
+      "name": "Historical Period",
+      "description": "The operational period of the photographed subject, e.g. '1968–2007'. Displayed in the series info bar on the collection page.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "current_status",
+      "namespace": "custom",
+      "name": "Current Status",
+      "description": "The current state of the location, e.g. 'Demolished 2019', 'Heritage listed', or 'Active'. Displayed in the series info bar on the collection page.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    }
+  ],
   "company": [],
   "company_location": [],
   "location": [],
@@ -38,6 +89,86 @@
       "type": {
         "name": "boolean",
         "category": "TRUE_FALSE"
+      }
+    },
+    {
+      "key": "collection_series",
+      "namespace": "custom",
+      "name": "Collection Series",
+      "description": "The name of the photographic series this product belongs to (e.g. 'Northern Wanderings'). Displayed in the art details block and included in product structured data.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "location",
+      "namespace": "custom",
+      "name": "Photography Location",
+      "description": "The geographic location where the photograph was taken (e.g. 'Homebush, New South Wales'). Displayed in the art details block and included in product structured data.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "year_photographed",
+      "namespace": "custom",
+      "name": "Year Photographed",
+      "description": "The year the photograph was taken (e.g. '2019'). Displayed in the art details block and included in product structured data.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "print_technique",
+      "namespace": "custom",
+      "name": "Print Technique",
+      "description": "The printing process used to produce the print (e.g. 'Giclée on Canson Rag'). Displayed as 'Process' in the art details block and included in product structured data.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "paper_type",
+      "namespace": "custom",
+      "name": "Paper / Substrate",
+      "description": "The paper or substrate specification (e.g. 'Canson Infinity Rag Photographique 310 GSM'). Displayed as 'Substrate' in the art details block and included in product structured data.",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "certificate_included",
+      "namespace": "custom",
+      "name": "Certificate of Authenticity",
+      "description": "Whether a certificate of authenticity is included with this print. Displays a trust badge in the art details block when true.",
+      "type": {
+        "name": "boolean",
+        "category": "TRUE_FALSE"
+      }
+    },
+    {
+      "key": "edition_number",
+      "namespace": "custom",
+      "name": "Edition Number",
+      "description": "The specific number of this print within its edition run (e.g. 42 for print #42 of 100). When populated, displays alongside edition size as 'Edition 42 of 100'. Use for pre-numbered prints only — not required for standard made-to-order prints.",
+      "type": {
+        "name": "number_integer",
+        "category": "NUMBER"
+      }
+    },
+    {
+      "key": "subject_description",
+      "namespace": "custom",
+      "name": "Subject Description",
+      "description": "A brief editorial description of the photograph's subject — the building, location, or historical context. Displayed as a paragraph below the art details block when populated. 1–3 sentences recommended.",
+      "type": {
+        "name": "multi_line_text_field",
+        "category": "TEXT"
       }
     }
   ],
@@ -165,8 +296,8 @@
     {
       "key": "dropdown_accordian",
       "namespace": "custom",
-      "name": "dropdown accordian",
-      "description": "",
+      "name": "Dropdown Accordion",
+      "description": "Accordion-style dropdown content for variant detail panels.",
       "type": {
         "name": "multi_line_text_field",
         "category": "TEXT"

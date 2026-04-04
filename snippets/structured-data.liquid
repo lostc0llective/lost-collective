@@ -47,6 +47,37 @@
 {% endif %}
 
 {% comment %}
+  CollectionPage structured data
+  https://schema.org/CollectionPage
+  Outputs on all collection template pages. Enables Google to understand the collection as
+  a curated group of products. numberOfItems reflects the full catalogue size, not the current page.
+{% endcomment %}
+{% if template.name == 'collection' and collection != blank %}
+  {%- capture collection_description -%}
+    {%- if collection.description != blank -%}
+      {{ collection.description | strip_html | truncate: 5000 }}
+    {%- endif -%}
+  {%- endcapture -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": {{ collection.title | json }},
+      "url": {{ shop.url | append: collection.url | json }},
+      {% if collection_description != blank %}
+        "description": {{ collection_description | strip | json }},
+      {% endif %}
+      "numberOfItems": {{ collection.all_products_count }},
+      "publisher": {
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }}
+      }
+    }
+  </script>
+{% endif %}
+
+{% comment %}
   Breadcrumbs
   https://developers.google.com/search/docs/data-types/breadcrumbs
 {% endcomment %}

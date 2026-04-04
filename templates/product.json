@@ -160,6 +160,19 @@
         "css_class": "",
         "custom_css": ""
       }
+    },
+    "series": {
+      "type": "product__series",
+      "settings": {
+        "heading": "More from [series]",
+        "products_limit": 4,
+        "products_per_row": "4",
+        "show_view_all": true,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 24
+      }
     }
   },
   "order": [
@@ -168,6 +181,7 @@
     "main",
     "index_html_a7B9Fd",
     "17387432297024309f",
+    "series",
     "recommendations"
   ]
 }

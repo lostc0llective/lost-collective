@@ -98,6 +98,35 @@ enable_product_lightbox: <boolean>
               {% endif %}
 
               <div class="image__container" style="max-width: {{ media.width }}px">
+                {% if forloop.first %}
+                <img id="{{ media.id }}"
+                class="lazyload--fade-in"
+                alt="{{ media.alt | default: product.title | escape }}"
+                fetchpriority="high"
+                loading="eager"
+                data-zoom-src="{{ image_5000x }}"
+                data-image-id="{{ product.media[forloop.index0].id }}"
+                data-index="{{ forloop.index0 }}"
+                data-src="{{ image_1200x }}"
+                data-srcset=" {{ image_200x }} 200w,
+                              {{ image_400x }} 400w,
+                              {{ image_600x }} 600w,
+                              {{ image_800x }} 800w,
+                              {{ image_1200x }} 1200w,
+                              {{ image_2000x }} 2000w"
+                data-aspectratio="{{ media.width }}/{{ media.height }}"
+                height="{{ media.height }}"
+                width="{{ media.width }}"
+                src="{{ image_1200x }}"
+                srcset="{{ image_200x }} 200w,
+                        {{ image_400x }} 400w,
+                        {{ image_600x }} 600w,
+                        {{ image_800x }} 800w,
+                        {{ image_1200x }} 1200w,
+                        {{ image_2000x }} 2000w"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 800px"
+                >
+                {% else %}
                 <img id="{{ media.id }}"
                 class="lazyload lazyload--fade-in"
                 alt="{{ media.alt | default: product.title | escape }}"
@@ -117,6 +146,7 @@ enable_product_lightbox: <boolean>
                 width="{{ media.width }}"
                 srcset="data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='{{ media.width }}'%20height='{{ media.height }}'></svg>"
                 >
+                {% endif %}
               </div>
 
               <noscript>

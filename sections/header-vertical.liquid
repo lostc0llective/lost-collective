@@ -171,7 +171,7 @@
             {% if link.links == blank %}
               <div class="navbar-item vertical-header__first-level {% if link.active or link.child_active %}is-active{% endif %}" data-navlink-handle="{{ link.title | handleize }}">
                 <label for="mega-{{ link.title | handleize }}">
-                  <a href="{{ link.url }}" class="navbar-link vertical-header__first-level-link header__link {% if link.active %}is-active{% endif %} is-arrowless">
+                  <a href="{{ link.url }}" class="navbar-link vertical-header__first-level-link header__link {% if link.active %}is-active{% endif %} is-arrowless"{% if link.active %} aria-current="page"{% endif %}>
                     {{ link.title }}
                   </a>
                 </label>
