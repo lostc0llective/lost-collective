@@ -1,0 +1,19 @@
+query RunInput {
+  cart {
+    lines {
+      id
+      quantity
+      merchandise {
+        ... on ProductVariant {
+          product {
+            id
+            title
+            seriesMetafield: metafield(namespace: "custom", key: "collection_series") {
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+}

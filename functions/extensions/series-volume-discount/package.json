@@ -1,0 +1,14 @@
+{
+  "name": "series-volume-discount",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "javy build src/index.js -o dist/index.wasm",
+    "preview": "cargo-wasi build --release"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@shopify/shopify_function": "^1.1.0"
+  }
+}

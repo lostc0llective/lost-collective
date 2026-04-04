@@ -1,0 +1,12 @@
+{
+  "name": "lost-collective-functions",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "extensions/*"
+  ],
+  "scripts": {
+    "build": "shopify app build",
+    "deploy": "shopify app deploy"
+  }
+}
