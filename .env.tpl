@@ -15,3 +15,9 @@ SHOPIFY_WEBHOOK_SECRET=
 
 CLOUDFLARE_ACCOUNT_ID=op://Private/3asxpxb74yqfcrqzd7tddrspby/Account ID
 CLOUDFLARE_API_TOKEN=op://Private/3asxpxb74yqfcrqzd7tddrspby/API Token
+
+META_ACCESS_TOKEN=op://Private/42pqq2pubzcx36vufeenjekwai/System User Token
+GEMINI_API_KEY=op://Private/qpe5hsu3ankznepccuzn3lllxi/password
+META_BUSINESS_ID=1691557587748276
+META_PIXEL_ID=1564860757158131
+META_AD_ACCOUNT_ID=act_2044897662414265
