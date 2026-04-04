@@ -1,0 +1,11 @@
+api_version = "2025-01"
+
+[[extensions]]
+type = "function"
+name = "Series Volume Discount"
+handle = "series-volume-discount"
+description = "Buy 2+ prints from the same series and get a percentage discount."
+
+[[extensions.targeting]]
+module = "./src/index.js"
+target = "purchase.product-discount.run"

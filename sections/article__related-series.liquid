@@ -1,0 +1,160 @@
+{% comment %}
+  Article → Related Series
+  Renders a product grid for a blog article that has custom.related_series set.
+
+  Usage:
+    1. Set the article metafield: namespace=custom, key=related_series, type=collection_reference
+       → value = the GID of the related collection
+    2. This section is included in templates/article.json for all articles.
+       It renders nothing when the metafield is absent.
+
+  To set via API (requires write_content scope):
+    metafieldsSet({ ownerId: "gid://shopify/Article/xxx", namespace: "custom",
+                    key: "related_series", type: "collection_reference",
+                    value: "gid://shopify/Collection/xxx" })
+{% endcomment %}
+
+{%- liquid
+  assign related_collection = article.metafields.custom.related_series.value
+  if related_collection == blank
+    assign related_collection = nil
+  endif
+-%}
+
+{%- if related_collection != nil and related_collection.products_count > 0 -%}
+
+{% style %}
+  #shopify-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color }};
+    border-top: 1px solid #e8e8e8;
+  }
+  #shopify-section-{{ section.id }} .article-series__heading {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  #shopify-section-{{ section.id }} .article-series__heading h2 {
+    font-size: 1.4em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  #shopify-section-{{ section.id }} .article-series__heading p {
+    color: #666;
+    font-size: 0.95em;
+  }
+  #shopify-section-{{ section.id }} .article-series__cta {
+    text-align: center;
+    margin-top: 32px;
+  }
+{% endstyle %}
+
+<section id="shopify-section-{{ section.id }}" class="article-related-series">
+  <div class="container">
+
+    <div class="article-series__heading">
+      <h2>{{ section.settings.heading | default: 'Shop the Series' }}</h2>
+      {%- if section.settings.subheading != blank -%}
+        <p>{{ section.settings.subheading }}</p>
+      {%- else -%}
+        <p>Fine art prints from <em>{{ related_collection.title }}</em></p>
+      {%- endif -%}
+    </div>
+
+    {%
+      render 'product-loop',
+      products: related_collection.products,
+      limit: section.settings.products_limit,
+      products_per_row: section.settings.products_per_row,
+      mobile_products_per_row: '2',
+      align_height: true,
+    %}
+
+    {%- if section.settings.show_view_all -%}
+      <div class="article-series__cta">
+        <a href="{{ related_collection.url }}" class="button button--primary">
+          {{ section.settings.view_all_label | default: 'View Full Collection' }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Related Series",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the Series"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "info": "Leave blank to auto-generate from collection title"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "Products per row (desktop)",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View Full Collection' button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "Button label",
+      "default": "View Full Collection"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background colour",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    { "name": "Related Series" }
+  ]
+}
+{% endschema %}

@@ -1,4 +1,38 @@
+# macOS
 .DS_Store
+**/.DS_Store
 *.log
-node_modules/
+
+# Secrets — never commit real env files
+# .env.tpl is SAFE to commit — contains op:// references only, no real secrets
 .env
+.env.local
+.env.production
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+dist/
+build/
+*.wasm
+
+# Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Claude Code local config (machine-specific)
+.claude/
+
+# Shopify CLI session cache
+.shopify/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

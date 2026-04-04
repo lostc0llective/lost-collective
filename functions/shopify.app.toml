@@ -1,0 +1,23 @@
+# Lost Collective — Shopify Functions App
+# This file is managed by Shopify CLI.
+# Run `shopify app init --template=none` interactively in this directory
+# to authenticate and populate client_id from Partners.
+#
+# After init, run: shopify app deploy
+
+name = "Lost Collective Functions"
+client_id = "REPLACE_AFTER_SHOPIFY_APP_INIT"
+application_url = "https://lostcollective.com"
+embedded = false
+
+[access_scopes]
+scopes = "read_products,read_discounts,write_discounts"
+
+[auth]
+redirect_urls = ["https://lostcollective.com/auth/callback"]
+
+[webhooks]
+api_version = "2025-01"
+
+[pos]
+embedded = false
