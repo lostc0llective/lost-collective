@@ -61,8 +61,10 @@ window.PXUTheme.jsVideo = {
 
       if (shouldAutoplay) {
         player.autoplay = true;
-        $videoElement.hide();
-        $plyrWrapper.hide();
+        if ($imageElement.length && $imageElement.is(':visible')) {
+          $videoElement.hide();
+          $plyrWrapper.hide();
+        }
       }
 
       // If button exists, clicking button will play video
@@ -127,7 +129,9 @@ window.PXUTheme.jsVideo = {
     // poster image is set and autoplay is off. Autoplay bypasses the facade.
     if (shouldAutoplay) {
       activatePlayer();
-      $videoElement.hide();
+      if ($imageElement.length && $imageElement.is(':visible')) {
+        $videoElement.hide();
+      }
     } else if (hasPoster) {
       // Show poster; activate player only when user interacts
       $imageElement.show();

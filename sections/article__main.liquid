@@ -4,6 +4,9 @@
   assign animation = section.settings.animation | default: 'none'
 %}
 
+{% comment %}D13: Article structured data{% endcomment %}
+{% render 'article-schema' %}
+
 {% style %}
   #shopify-section-{{ id }} {
     padding-top: {{ section.settings.padding_top }}px;
@@ -252,6 +255,9 @@
             {% endif %}
 
             {{ article.content }}
+
+            {% comment %}D11: Blog-to-shop CTA{% endcomment %}
+            {% render 'blog-cta' %}
           </div>
         </div>
 

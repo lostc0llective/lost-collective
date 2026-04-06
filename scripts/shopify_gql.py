@@ -135,6 +135,7 @@ def iter_products(query_str: str = "", page_size: int = 50) -> Generator[dict, N
         edges {
           node {
             id title handle status vendor
+            featuredImage { url }
             variants(first: 100) {
               edges { node { id sku title price compareAtPrice inventoryQuantity } }
             }
@@ -208,24 +209,26 @@ def get_variants(product_gid: str) -> list[dict]:
     return [e["node"] for e in edges]
 
 
-def update_variant(variant_gid: str, input_fields: dict) -> dict:
+def update_variant(product_gid: str, variant_gid: str, input_fields: dict) -> dict:
     """
-    Update a variant. input_fields may include: price, compareAtPrice, sku, etc.
+    Update a single variant. input_fields may include: price, compareAtPrice, sku, etc.
+    Uses productVariantsBulkUpdate (productVariantUpdate removed in API 2025-01).
     Returns the updated variant node.
     """
     q = """
-    mutation UpdateVariant($input: ProductVariantInput!) {
-      productVariantUpdate(input: $input) {
-        productVariant { id sku price compareAtPrice }
+    mutation UpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+        productVariants { id sku price compareAtPrice }
         userErrors { field message }
       }
     }
     """
-    resp = gql(q, {"input": {"id": variant_gid, **input_fields}})
-    result = resp["data"]["productVariantUpdate"]
+    # Note: sku must be nested under inventoryItem in ProductVariantsBulkInput
+    resp = gql(q, {"productId": product_gid, "variants": [{"id": variant_gid, **input_fields}]})
+    result = resp["data"]["productVariantsBulkUpdate"]
     if result["userErrors"]:
         raise RuntimeError(f"Variant update errors: {result['userErrors']}")
-    return result["productVariant"]
+    return result["productVariants"][0]
 
 
 # ── Metafields ─────────────────────────────────────────────────────────────────
@@ -239,7 +242,7 @@ def metafields_set(entries: list[dict]) -> dict:
     q = """
     mutation MetafieldsSet($metafields: [MetafieldsSetInput!]!) {
       metafieldsSet(metafields: $metafields) {
-        metafields { ownerId namespace key }
+        metafields { id namespace key }
         userErrors  { field message elementIndex }
       }
     }

@@ -237,7 +237,11 @@
     {% render 'quick-shop' %}
   {% endif %}
 
-  
+  {%- if settings.klaviyo_public_key != blank -%}
+    {%- comment -%} Klaviyo onsite JS — loads the subscribe API and powers Klaviyo-hosted popup forms {%- endcomment -%}
+    <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id={{ settings.klaviyo_public_key }}"></script>
+  {%- endif -%}
+
 </head>
 
 
@@ -386,6 +390,8 @@
 
   {%- comment -%} App: Out of the Sandbox | Purpose: Theme vendor telemetry — fires once per design-mode session via sendBeacon, never in storefront | Removable: Yes — fires only in Shopify admin theme editor, no customer data sent {%- endcomment -%}
   <script>(function(n, v) {/* eslint-disable-next-line max-len */if (window.Shopify && window.Shopify.theme && navigator && navigator.sendBeacon && window.Shopify.designMode) {if (sessionStorage.getItem('oots_beacon')) return;navigator.sendBeacon('https://app.outofthesandbox.com/beacon', new URLSearchParams({shop_domain: window.Shopify.shop.toLowerCase(),shop_id: window.BOOMR.shopId,shop_email: '{{ shop.email }}',theme_name: n.toLowerCase(),theme_version: v.toLowerCase(),theme_store_id: window.Shopify.theme.theme_store_id,theme_id: window.Shopify.theme.id,theme_role: window.Shopify.theme.role,}));sessionStorage.setItem('oots_beacon', '');}}('Flex','5.2.1'))</script>
+  {%- render 'klaviyo-popup' -%}
+
   {%- comment -%} App: instant.page | Purpose: Prefetches pages on hover/touchstart to reduce perceived navigation latency | Removable: Yes — pure performance optimization, no analytics or tracking {%- endcomment -%}
   <script src="https://instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z"></script>
 </body>

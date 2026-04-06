@@ -51,28 +51,6 @@
   <form action="{{ routes.cart_url }}" method="post"
           class="ajax-cart__form {% if cart.item_count == 0 %}is-hidden{% endif %}">
 
-    {% comment %} Free shipping progress bar {% endcomment %}
-    {% if settings.free_shipping_threshold > 0 %}
-      {% assign threshold_cents = settings.free_shipping_threshold | times: 100 %}
-      <div class="ajax-cart__shipping-progress{% if cart.total_price >= threshold_cents %} ajax-cart__shipping-progress--achieved{% endif %}">
-        {% if cart.total_price >= threshold_cents %}
-          <p class="ajax-cart__shipping-message ajax-cart__shipping-message--achieved">
-            {%- render 'icon', name: 'checkmark' -%}
-            Complimentary shipping applied
-          </p>
-        {% else %}
-          {% assign remaining_cents = threshold_cents | minus: cart.total_price %}
-          {% assign progress_pct = cart.total_price | times: 100 | divided_by: threshold_cents %}
-          <div class="ajax-cart__shipping-bar-track">
-            <div class="ajax-cart__shipping-bar-fill" style="width: {{ progress_pct }}%"></div>
-          </div>
-          <p class="ajax-cart__shipping-message">
-            <span class="money">{{ remaining_cents | money }}</span> more for complimentary shipping
-          </p>
-        {% endif %}
-      </div>
-    {% endif %}
-
     <div class="ajax-cart__list">
       {% assign total_saving = 0 %}
 
@@ -323,6 +301,28 @@
       {% if settings.cart_message != blank %}
         <div class="ajax-cart__cart-message text-align-center">
           {{ settings.cart_message }}
+        </div>
+      {% endif %}
+
+      {% comment %} Free shipping progress bar {% endcomment %}
+      {% if settings.free_shipping_threshold > 0 %}
+        {% assign threshold_cents = settings.free_shipping_threshold | times: 100 %}
+        <div class="ajax-cart__shipping-progress{% if cart.total_price >= threshold_cents %} ajax-cart__shipping-progress--achieved{% endif %}">
+          {% if cart.total_price >= threshold_cents %}
+            <p class="ajax-cart__shipping-message ajax-cart__shipping-message--achieved">
+              {%- render 'icon', name: 'checkmark' -%}
+              Complimentary shipping applied
+            </p>
+          {% else %}
+            {% assign remaining_cents = threshold_cents | minus: cart.total_price %}
+            {% assign progress_pct = cart.total_price | times: 100 | divided_by: threshold_cents %}
+            <div class="ajax-cart__shipping-bar-track">
+              <div class="ajax-cart__shipping-bar-fill" style="width: {{ progress_pct }}%"></div>
+            </div>
+            <p class="ajax-cart__shipping-message">
+              <span class="money">{{ remaining_cents | money_without_trailing_zeros }}</span> away from complimentary shipping
+            </p>
+          {% endif %}
         </div>
       {% endif %}
 

@@ -1,0 +1,297 @@
+{%- comment -%}
+  Klaviyo email capture popup
+  - Triggered after settings.klaviyo_popup_delay seconds + 20% scroll
+  - Suppressed for 30 days after signup or dismissal (localStorage)
+  - Respects prefers-reduced-motion
+  - Requires settings.klaviyo_public_key and settings.klaviyo_list_id
+{%- endcomment -%}
+
+{%- if settings.klaviyo_public_key != blank and settings.klaviyo_popup_enabled -%}
+<div id="lc-popup-overlay" class="lc-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="lc-popup-heading" hidden>
+  <div class="lc-popup">
+    <button class="lc-popup__close" id="lc-popup-close" aria-label="Close">&#215;</button>
+    <div class="lc-popup__body">
+      <p class="lc-popup__eyebrow">Lost Collective</p>
+      <h2 class="lc-popup__heading" id="lc-popup-heading">{{ settings.klaviyo_popup_heading }}</h2>
+      <p class="lc-popup__text">{{ settings.klaviyo_popup_body }}</p>
+      <form class="lc-popup__form" id="lc-popup-form" novalidate>
+        <div class="lc-popup__field">
+          <label for="lc-popup-email" class="lc-popup__label">Email address</label>
+          <input
+            type="email"
+            id="lc-popup-email"
+            name="email"
+            class="lc-popup__input"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          >
+        </div>
+        <button type="submit" class="lc-popup__submit" id="lc-popup-submit">
+          {{ settings.klaviyo_popup_button }}
+        </button>
+        <p class="lc-popup__error" id="lc-popup-error" hidden></p>
+      </form>
+      <p class="lc-popup__success" id="lc-popup-success" hidden>
+        You're in. First email is on its way.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .lc-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 14, 0.65);
+    backdrop-filter: blur(3px);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .lc-popup-overlay[hidden] { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lc-popup-overlay {
+      animation: lc-overlay-in 220ms ease forwards;
+    }
+    @keyframes lc-overlay-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+  }
+
+  .lc-popup {
+    background: #fff;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lc-popup {
+      animation: lc-popup-in 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes lc-popup-in {
+      from { transform: translateY(20px) scale(0.97); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+  }
+
+  .lc-popup__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.85rem;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color 150ms ease;
+  }
+  .lc-popup__close:hover { color: #1a1a1a; }
+
+  .lc-popup__body {
+    padding: 2.25rem 2rem 2rem;
+  }
+
+  .lc-popup__eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ebac20;
+    margin-bottom: 0.6rem;
+  }
+
+  .lc-popup__heading {
+    font-family: 'Montserrat', -apple-system, system-ui, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+  }
+
+  .lc-popup__text {
+    font-size: 0.875rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .lc-popup__field {
+    margin-bottom: 0.65rem;
+  }
+
+  .lc-popup__label {
+    display: block;
+    font-size: 0.78rem;
+    color: #555;
+    margin-bottom: 0.35rem;
+  }
+
+  .lc-popup__input {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.9rem;
+    border: 1px solid #d5d3ce;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    color: #1a1a1a;
+    background: #fff;
+  }
+
+  .lc-popup__input:focus {
+    border-color: #ebac20;
+    box-shadow: 0 0 0 3px rgba(235,172,32,0.12);
+  }
+
+  .lc-popup__submit {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: #ebac20;
+    color: #1a1a1a;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 150ms ease, transform 100ms ease;
+    margin-top: 0.25rem;
+  }
+
+  .lc-popup__submit:hover { background: #d49a10; }
+  .lc-popup__submit:active { transform: scale(0.98); }
+  .lc-popup__submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .lc-popup__error {
+    font-size: 0.78rem;
+    color: #c62828;
+    margin-top: 0.5rem;
+  }
+
+  .lc-popup__error[hidden],
+  .lc-popup__success[hidden] { display: none; }
+
+  .lc-popup__success {
+    font-size: 0.88rem;
+    color: #2e7d32;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+</style>
+
+<script>
+(function() {
+  var SUPPRESS_KEY = 'lc_popup_suppress';
+  var SUPPRESS_DAYS = 30;
+
+  function isSuppressed() {
+    try {
+      var val = localStorage.getItem(SUPPRESS_KEY);
+      if (!val) return false;
+      return (Date.now() - parseInt(val, 10)) < SUPPRESS_DAYS * 24 * 60 * 60 * 1000;
+    } catch(e) { return false; }
+  }
+
+  function suppress() {
+    try { localStorage.setItem(SUPPRESS_KEY, Date.now().toString()); } catch(e) {}
+  }
+
+  function showPopup() {
+    var overlay = document.getElementById('lc-popup-overlay');
+    if (!overlay) return;
+    overlay.hidden = false;
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closePopup();
+    });
+    document.addEventListener('keydown', function handler(e) {
+      if (e.key === 'Escape') { closePopup(); document.removeEventListener('keydown', handler); }
+    });
+  }
+
+  function closePopup() {
+    var overlay = document.getElementById('lc-popup-overlay');
+    if (overlay) overlay.hidden = true;
+    suppress();
+  }
+
+  document.getElementById('lc-popup-close').addEventListener('click', closePopup);
+
+  document.getElementById('lc-popup-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var email = document.getElementById('lc-popup-email').value.trim();
+    var submit = document.getElementById('lc-popup-submit');
+    var errorEl = document.getElementById('lc-popup-error');
+    var successEl = document.getElementById('lc-popup-success');
+
+    errorEl.hidden = true;
+    submit.disabled = true;
+    submit.textContent = 'Subscribing...';
+
+    fetch('https://a.klaviyo.com/client/subscriptions/?company_id={{ settings.klaviyo_public_key }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'revision': '2024-10-15' },
+      body: JSON.stringify({
+        data: {
+          type: 'subscription',
+          attributes: {
+            profile: { data: { type: 'profile', attributes: { email: email } } },
+            list_id: '{{ settings.klaviyo_list_id }}'
+          }
+        }
+      })
+    })
+    .then(function(res) {
+      if (res.ok || res.status === 202) {
+        document.getElementById('lc-popup-form').hidden = true;
+        successEl.hidden = false;
+        suppress();
+        setTimeout(closePopup, 2500);
+      } else {
+        return res.json().then(function(data) {
+          throw new Error((data.errors && data.errors[0] && data.errors[0].detail) || 'Subscription failed.');
+        });
+      }
+    })
+    .catch(function(err) {
+      errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+      errorEl.hidden = false;
+      submit.disabled = false;
+      submit.textContent = '{{ settings.klaviyo_popup_button }}';
+    });
+  });
+
+  // Trigger: delay + scroll
+  if (!isSuppressed()) {
+    var triggered = false;
+    var delay = {{ settings.klaviyo_popup_delay | default: 8 }} * 1000;
+
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      setTimeout(showPopup, 400);
+    }
+
+    setTimeout(function() {
+      var scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) >= 0.2;
+      if (scrolled) { trigger(); }
+    }, delay);
+
+    window.addEventListener('scroll', function onScroll() {
+      var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      if (pct >= 0.2) { trigger(); window.removeEventListener('scroll', onScroll); }
+    }, { passive: true });
+  }
+})();
+</script>
+{%- endif -%}
