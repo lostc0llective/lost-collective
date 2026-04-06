@@ -47,8 +47,8 @@ Update status as work progresses:
 
 | # | Rec | Title | Status | Who | How |
 |---|-----|-------|--------|-----|-----|
-| S1 | #23 | Develop location-specific landing pages (story + prints) | [~] | Claude | Pilot page live: /pages/white-bay-power-station (ID 698556907686). Editorial intro, hero image, print info, collection CTA. SEO title/desc set. Brett to review — note: product grid embed needs a custom Liquid page template if we want inline products rather than a CTA button. Scale to other series once approved. |
-| S2 | #20 | Monthly blog publishing cadence — location-specific SEO | [ ] | Both | Brett provides locations/subjects. Claude drafts posts using `gemini.py` at scale + TOV rules. Target: one post/month minimum. |
+| S1 | #23 | Develop location-specific landing pages (story + prints) | [x] | Claude | 18 pages live (White Bay pilot + 17 new: Wangi, Kandos, Callan Park, Morwell, Eveleigh, Blayney, Geelong B, Newington Armory, Ashio, Kinugawa Kan, Bathurst, Peters' Ice Cream, Mungo Scott, Lewisham, Waterfall, Bradmill, Tin City). Each with hero image, editorial copy, collection CTA, SEO title/desc. Live 2026-04-06. |
+| S2 | #20 | Monthly blog publishing cadence — location-specific SEO | [~] | Both | 5 posts published 2026-04-06: Wangi Power Station, Kandos Cement Works, Callan Park, Bradmill Denim, Tin City. Each with full editorial copy + collection CTA. Target: continue monthly. |
 | S3 | #35 | Theme evaluation — OS 2.0 upgrade vs custom build | [ ] | Brett | Requires a decision conversation. Claude to prepare a brief comparing Flex v5.2.1 current state vs OS 2.0 theme options vs custom build. Brett decides. |
 | S4 | —   | Interior design / trade buyer page for B2B | [x] | Both | Page live: /pages/trade (ID 698557366438). Covers: trade pricing intro, collection overview, contact CTA (brett@lostcollective.com.au), lead times, series suggestions for commercial use. Brett to add to footer nav if desired. SEO title/desc set. Live 2026-04-06. |
 | S5 | —   | Aesthetic/mood curated collections | [x] | Claude | 4 smart collections created: Dark & Moody (225), After Dark (109), Graffiti & Urban Decay (75), Wide Open Spaces (219). Disjunctive tag rules. SEO titles/descriptions set. Live 2026-04-05. Light & Minimal deferred — needs image-vision tagging via catalog_audit.py. |
@@ -73,10 +73,10 @@ These are secondary items from the audit not yet in the priority roadmap above.
 | D7 | #10 | Add contextual "back to collection" links on product pages | [x] | Claude | "← [Collection Title]" link added above h1 in product.liquid. Uses Shopify `collection` object (present when arriving from a collection). Live 2026-04-05. |
 | D8 | #11 | De-duplicate Japan collection entries in mega menu | [ ] | Brett | Navigation change — requires Brett approval per working style rules. |
 | D9 | #12 | Verify cart count updates dynamically via JavaScript | [x] | Claude | Already working — z__jsAjaxCart.js lines 390-397 update `[data-bind="itemCount"]` on every cart change. No fix needed. Live 2026-04-05. |
-| D10| #14 | Audit product descriptions — ensure every product has a story paragraph | [ ] | Claude | Pull all products via `shopify_gql.py`. Check body_html length/content. Use `overnight_content.py` to fill gaps at scale. |
-| D11| #17 | Add reusable blog-to-shop CTA component | [~] | Claude | `snippets/blog-cta.liquid` created. Injected after article.content in article__main.liquid. Resolves collection from custom.related_series metafield → matching tag → /collections/all fallback. On staging 2026-04-05. Brett to verify then push live. |
+| D10| #14 | Audit product descriptions — ensure every product has a story paragraph | [x] | Claude | overnight_content.py confirmed all 1,809 products have subject_description filled (previous Gemini batch complete). 2 empty collection descriptions (Leichhardt House, Newington Armory) fixed 2026-04-06. |
+| D11| #17 | Add reusable blog-to-shop CTA component | [x] | Claude | `snippets/blog-cta.liquid` created. Injected after article.content in article__main.liquid. Resolves collection from custom.related_series metafield → matching tag → /collections/all fallback. Live 2026-04-06. |
 | D12| #19 | Internal linking — products link back to related blog content | [x] | Claude | "Read the story behind this series →" link added below subject_description in art-details block. Links to /blogs/blog/tagged/[series-handle]. Live 2026-04-05. |
-| D13| #21 | Add Article structured data to blog posts | [~] | Claude | `snippets/article-schema.liquid` created (Article JSON-LD with headline, datePublished, dateModified, author, image, publisher). Rendered at top of article__main.liquid. On staging 2026-04-05. |
+| D13| #21 | Add Article structured data to blog posts | [x] | Claude | `snippets/article-schema.liquid` created (Article JSON-LD with headline, datePublished, dateModified, author, image, publisher). Rendered at top of article__main.liquid. Live 2026-04-06. |
 | D14| #30 | Add bundle/set pricing for curated pairs or triptychs | [ ] | Both | Requires a Shopify bundle app (e.g. Bundler, Rebundle) or custom metafield approach. Brett to decide strategy. |
 | D15| #31 | Add express checkout (Buy Now) to product pages | [x] | Claude | Already live — `show_payment_button: true` in product.json, `{{ form \| payment_button }}` in product__form.liquid. No action needed. |
 | D16| #32 | Reinforce free shipping threshold in cart drawer | [x] | Both | HTML + CSS already in theme. `free_shipping_threshold` set to 150 (AUD) in settings_data.json. Progress bar + "Complimentary shipping applied" state. Live 2026-04-05. |
@@ -95,6 +95,6 @@ These are secondary items from the audit not yet in the priority roadmap above.
 |------|-------|------|-------------|------|---------|
 | Quick Wins | 5 | 5 | 0 | 0 | 0 |
 | Medium Term | 9 | 5 | 1 | 3 | 0 |
-| Strategic | 8 | 2 | 2 | 3 | 0 |
-| Detailed | 22 | 9 | 2 | 8 | 3 |
-| **Total** | **44** | **21** | **5** | **14** | **3** |
+| Strategic | 8 | 5 | 1 | 1 | 0 |
+| Detailed | 22 | 12 | 0 | 7 | 3 |
+| **Total** | **44** | **27** | **2** | **11** | **3** |
