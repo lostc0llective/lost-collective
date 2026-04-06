@@ -46,8 +46,8 @@
         "newsletter_KfC3qz": {
           "type": "newsletter",
           "settings": {
-            "newsletter_title": "Stay in the Loop",
-            "newsletter_richtext": "<p>Discover the stories behind forgotten places as they happen.</p>",
+            "newsletter_title": "The places nobody photographs",
+            "newsletter_richtext": "<p>Occasional notes from the abandoned, forgotten, and overlooked. No spam.</p>",
             "display_first_name": false,
             "display_last_name": false
           }

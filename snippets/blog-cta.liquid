@@ -1,0 +1,41 @@
+{% comment %}
+  D11: Blog-to-shop CTA block.
+  Renders an "Explore prints from this series" CTA after article content.
+
+  Resolves collection in priority order:
+    1. article.metafields.custom.related_series (collection_reference)
+    2. First article tag that matches a collection handle
+    3. Falls back to /collections/all
+
+  Usage: {% render 'blog-cta' %}
+{% endcomment %}
+
+{%- assign cta_collection = article.metafields.custom.related_series.value -%}
+{%- assign cta_url   = '' -%}
+{%- assign cta_label = 'Explore the prints' -%}
+
+{%- if cta_collection != blank -%}
+  {%- assign cta_url   = cta_collection.url -%}
+  {%- assign cta_label = 'Explore prints from this series' -%}
+{%- else -%}
+  {%- for tag in article.tags -%}
+    {%- assign tag_handle = tag | handleize -%}
+    {%- assign test_collection = collections[tag_handle] -%}
+    {%- if test_collection != blank and cta_url == '' -%}
+      {%- assign cta_url   = test_collection.url -%}
+      {%- assign cta_label = 'Explore prints from this series' -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- if cta_url == '' -%}
+  {%- assign cta_url = '/collections/all' -%}
+  {%- assign cta_label = 'Browse all prints' -%}
+{%- endif -%}
+
+<div class="blog-cta">
+  <p class="blog-cta__eyebrow">Lost Collective prints</p>
+  <a href="{{ cta_url }}" class="blog-cta__link button button--primary">
+    {{ cta_label }} &rarr;
+  </a>
+</div>

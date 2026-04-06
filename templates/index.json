@@ -42,8 +42,8 @@
         "aspect_ratio": "16:9",
         "image": "shopify://shop_images/Exploring_Abandoned_Places_Shop_Lost_Collective_Prints.jpg",
         "pretext": "",
-        "title": "Art That Tells a Story",
-        "subtitle": "Fine art prints of forgotten places — for walls that deserve more than decoration.",
+        "title": "Still Here",
+        "subtitle": "Fine art prints from buildings that outlived their purpose.",
         "pretext_color": "rgba(0,0,0,0)",
         "heading_color": "#ffffff",
         "subheading_color": "#ffffff",
@@ -112,13 +112,22 @@
             "text": "Museum grade materials",
             "link": ""
           }
-        }
+        },
+        "trust_text_5": {
+          "type": "text",
+          "settings": {
+            "icon": "flag",
+            "text": "2016 National Trust Heritage Award",
+            "link": "/blogs/blog/national-trust-2016-heritage-awards"
+          }
+        },
       },
       "block_order": [
         "trust_text_1",
         "trust_text_2",
         "trust_text_3",
-        "trust_text_4"
+        "trust_text_4",
+        "trust_text_5"
       ],
       "settings": {
         "show_icon_bar": true,
@@ -139,11 +148,11 @@
       "type": "index__rich-text",
       "custom_css": [],
       "settings": {
-        "title": "Preserving History Through Art",
+        "title": "What Gets Left Behind",
         "heading_font": "montserrat_n8",
         "heading_alignment": "center",
         "heading_size": 24,
-        "text": "<p>Through evocative photography and captivating stories, we bring forgotten places back to life, preserving their memory as fine art prints for generations to treasure.</p>",
+        "text": "<p>Power stations that once ran cities. Hotels where the hallways are still set for guests who stopped coming. Lost Collective documents the places that remain after everyone else has moved on. 62 series. 1,809 prints.</p>",
         "text_font": "lato_n5",
         "text_alignment": "center",
         "text_size": 17,
@@ -178,9 +187,9 @@
         "image": "shopify://shop_images/landscape-pool-room-abandoned-building-prints.jpg",
         "mobile_image": "shopify://shop_images/portrait-pool-room-abandoned-building-prints.jpg",
         "link": "shopify://collections/best-sellers",
-        "pretext": "<h2>Art That Tells a Story</h2>",
+        "pretext": "<h2>The Quiet After</h2>",
         "title": "",
-        "subtitle": "<p>Transform your walls with fine art prints that spark conversation and preserve the beauty of forgotten places. Let each piece inspire your space and make it uniquely yours.</p>",
+        "subtitle": "<p>Every series starts with a locked door and a question. What happened here? Who was the last person to leave? The photographs are the answers that came back.</p>",
         "pretext_color": "#000000",
         "heading_color": "#000000",
         "subheading_color": "#6f6f6f",
@@ -225,7 +234,7 @@
         "collection": "best-sellers",
         "show_view_all": true,
         "products_per": 4,
-        "products_limit": 50,
+        "products_limit": 6,
         "align_height": false,
         "collection_height": 400,
         "button_label": "",
@@ -415,11 +424,11 @@
     "index_rich_text_gdKFKy": {
       "type": "index__rich-text",
       "settings": {
-        "title": "Explore a World Left Behind",
+        "title": "Six Categories. Two Countries. One Thread.",
         "heading_font": "montserrat_n8",
         "heading_alignment": "center",
         "heading_size": 24,
-        "text": "<p>Discover the remnants of industries, countryside scenes, abandoned hospitals, and Japan’s forgotten haikyo, available as striking wall art and prints.</p>",
+        "text": "<p>Factories, hospitals, hotels, farmsteads, and the abandoned towns between them. Documented across Australia and Japan over 15 years.</p>",
         "text_font": "lato_n5",
         "text_alignment": "center",
         "text_size": 19,
@@ -546,7 +555,7 @@
         "link": "shopify://pages/about",
         "pretext": "<h2>About Brett</h2>",
         "title": "",
-        "subtitle": "<p>Brett Patman is the photographer and storyteller behind Lost Collective, a project dedicated to uncovering the beauty and history of forgotten spaces. </p>",
+        "subtitle": "<p>Brett Patman spent 15 years as a tradesman working inside industrial buildings before he started photographing them. The shift was less a career change and more a failure to stop being curious about what was behind the next door. Lost Collective is the result of that curiosity applied to every boarded-up building, decommissioned reactor, and closed-down hotel he could talk his way into.</p>",
         "pretext_color": "#000000",
         "heading_color": "#000000",
         "subheading_color": "#6f6f6f",
@@ -587,11 +596,11 @@
     "index_rich_text_aJTEX9": {
       "type": "index__rich-text",
       "settings": {
-        "title": "Bring Your Walls to Life with New Prints",
+        "title": "Recently Added",
         "heading_font": "montserrat_n8",
         "heading_alignment": "center",
         "heading_size": 24,
-        "text": "<p>Transform your wall space with our newest collection of prints, featuring captivating scenes and timeless designs. Each piece is crafted to inspire, evoke emotion, and bring a unique touch to your home or office.</p>",
+        "text": "<p>New series added as Brett continues to document. Limited editions from 25 to 100. First to see new work: <a href=\"/pages/contact\">subscribe to updates</a>.</p>",
         "text_font": "lato_n5",
         "text_alignment": "center",
         "text_size": 17,
@@ -627,7 +636,7 @@
         "collection": "new",
         "show_view_all": true,
         "products_per": 4,
-        "products_limit": 50,
+        "products_limit": 6,
         "align_height": false,
         "collection_height": 400,
         "button_label": "",

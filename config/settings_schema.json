@@ -4,8 +4,8 @@
     "theme_name": "Flex",
     "theme_author": "Out of the Sandbox",
     "theme_version": "5.2.1",
-    "theme_documentation_url": "https:\/\/help.outofthesandbox.com/",
-    "theme_support_url": "https:\/\/help.outofthesandbox.com\/hc\/en-us\/requests/new"
+    "theme_documentation_url": "https://help.outofthesandbox.com/",
+    "theme_support_url": "https://help.outofthesandbox.com/hc/en-us/requests/new"
   },
   {
     "name": "t:settings_schema.age_gate.name",
@@ -1827,7 +1827,7 @@
         "type": "checkbox",
         "id": "collection_swatches",
         "label": "Show color swatches",
-        "info": "[Learn more](https:\/\/help.outofthesandbox.com\/hc\/en-us\/articles\/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
+        "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
         "default": true
       },
       {
@@ -1943,7 +1943,7 @@
         "type": "checkbox",
         "id": "enable_swatches",
         "label": "Show color swatches",
-        "info": "[Learn more](https:\/\/help.outofthesandbox.com\/hc\/en-us\/articles\/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
+        "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
         "default": false
       },
       {
@@ -2008,7 +2008,7 @@
         "type": "page",
         "id": "size_chart",
         "label": "Size chart",
-        "info": "[Learn more](https:\/\/help.outofthesandbox.com\/hc\/en-us\/articles\/115006910707-Using-the-Size-Chart-Sections-themes-)"
+        "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/115006910707-Using-the-Size-Chart-Sections-themes-)"
       }
     ]
   },
@@ -2425,14 +2425,74 @@
       {
         "type": "checkbox",
         "id": "disqus_enabled",
-        "label": "Enable [DISQUS](http:\/\/disqus.com\/) comments",
+        "label": "Enable [DISQUS](http://disqus.com/) comments",
         "info": "Replaces Shopify's default comments.",
         "default": false
       },
       {
         "type": "text",
         "id": "disqus_shortname",
-        "label": "[DISQUS](http:\/\/help.disqus.com/en/articles/1717111-what-s-a-shortname\/) shortname"
+        "label": "[DISQUS](http://help.disqus.com/en/articles/1717111-what-s-a-shortname/) shortname"
+      }
+    ]
+  },
+  {
+    "name": "Klaviyo",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Add your Klaviyo Public API Key (Site ID) to enable the email signup form and popup. Find it in Klaviyo \u2192 Settings \u2192 Account \u2192 API Keys \u2192 Public API Key."
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_public_key",
+        "label": "Klaviyo Public API Key",
+        "placeholder": "XXXXXX"
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_list_id",
+        "label": "Klaviyo List ID",
+        "default": "VFqauD",
+        "info": "The list new subscribers are added to."
+      },
+      {
+        "type": "header",
+        "content": "Popup settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "klaviyo_popup_enabled",
+        "label": "Enable email capture popup",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "klaviyo_popup_delay",
+        "min": 3,
+        "max": 30,
+        "step": 1,
+        "unit": "s",
+        "label": "Popup delay",
+        "default": 8
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_popup_heading",
+        "label": "Popup heading",
+        "default": "The places nobody photographs"
+      },
+      {
+        "type": "textarea",
+        "id": "klaviyo_popup_body",
+        "label": "Popup body text",
+        "default": "Occasional notes from the abandoned, forgotten, and overlooked. No spam. Unsubscribe any time."
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_popup_button",
+        "label": "Popup button label",
+        "default": "Stay in the loop"
       }
     ]
   }

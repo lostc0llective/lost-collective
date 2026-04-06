@@ -314,10 +314,26 @@ h1, h2, h3, h4, h5, h6 {
   background-color: transparent !important;
 }
 
-/* Dropdown menu */
-.navbar-dropdown {
+/* Dropdown — always display:block so visibility/opacity can transition in AND out.
+   Theme's display:none default and is-hidden utility are overridden here.
+   visibility:hidden keeps it out of pointer flow while allowing the fade. */
+.navbar-item.has-dropdown .navbar-dropdown {
+  display: block !important;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, visibility 0s 0.18s;
   background-color: #1a1a1a !important;
-  border-top: 2px solid var(--color-brand-yellow);
+  box-shadow: inset 0 3px 0 var(--color-brand-yellow);
+}
+
+/* Show in both hover-mode and click-mode */
+.dropdown-click--false .navbar-item.has-dropdown:hover .navbar-dropdown,
+.navbar-item.has-dropdown.is-opened .navbar-dropdown {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.18s ease;
 }
 
 .navbar-dropdown .navbar-item,
@@ -327,7 +343,47 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar-dropdown .navbar-item:hover {
   background-color: #2a2a2a !important;
-  color: #ebac20 !important;
+  color: var(--color-brand-yellow) !important;
+}
+
+/* Mega menu — always display:block so we can transition in and out.
+   Background needs 3-class specificity to beat the section inline {% style %}
+   which uses .mega-menu__{{ id }} .mega-menu { background: ... !important } (2 classes). */
+.mega-menu {
+  display: block !important;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, visibility 0s 0.22s;
+  box-shadow: inset 0 3px 0 var(--color-brand-yellow);
+}
+
+/* 3-class rule beats section inline 2-class rule */
+.header .mega-menu__section .mega-menu,
+.header-sticky-wrapper .mega-menu__section .mega-menu {
+  background-color: #1a1a1a !important;
+}
+
+/* Show states */
+.mega-menu__section.is-active .mega-menu,
+.mega-menu.mega-menu--show,
+.mega-menu.mega-menu--force-show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.22s ease;
+}
+
+.mega-menu a,
+.mega-menu a:active,
+.mega-menu a:visited,
+.mega-menu .mega-menu__heading,
+.mega-menu .menu__heading {
+  color: #ffffff !important;
+}
+
+.mega-menu a:hover {
+  color: var(--color-brand-yellow) !important;
 }
 
 
@@ -360,7 +416,7 @@ a.button {
 
 /* Add to cart */
 .purchase-details__buttons .ajax-submit.button--add-to-cart {
-  text-transform: uppercase;
+  text-transform: none;
   border-radius: var(--radius-pill);
 }
 
@@ -511,9 +567,29 @@ p a:not(.button):not([class*="logo"]):hover::after {
    9. Video Hero
 ================================ */
 
+/* Cap hero height so a 16:9 video doesn't exceed 720px on wide desktops.
+   The inline {% style %} sets aspect-ratio:16/9 which at 1440px = 810px,
+   at 1920px = 1080px — both far too tall. max-height clamps it.
+   The absolute-positioned children (poster, video, text overlay) all
+   inherit the capped height via overflow:hidden on the wrapper. */
+#shopify-section-index_video_e3PxRq .video-wrapper {
+  max-height: min(85vh, 720px);
+}
+
 /* Show text overlay once video is present; JS manages the none→flex transition */
 .video-present--true .video__text-container {
   display: flex;
+}
+
+/* Hide the poster image when autoplay video is present —
+   poster exists as a click-to-play fallback only, not needed for autoplay.
+   Two rules needed: the Liquid sets a background-image inline on .video-wrapper
+   AND renders a .video-section-poster div — both must be suppressed. */
+.has-video-added .video-section-poster {
+  display: none !important;
+}
+.has-video-added .video-wrapper {
+  background-image: none !important;
 }
 
 .video-player {
@@ -910,6 +986,55 @@ p a:not(.button):not([class*="logo"]):hover::after {
   padding-bottom: 28px;
 }
 
+/* trust-bar-marquee.js handles cloning + animation. CSS clips overflow and
+   fades the edges using pseudo-element overlays that match the bg colour —
+   more reliable than mask-image across browsers and stacking contexts. */
+[id*="trust_icon_bar"] .section {
+  overflow: hidden;
+  position: relative;
+}
+
+[id*="trust_icon_bar"] .section::before,
+[id*="trust_icon_bar"] .section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+[id*="trust_icon_bar"] .section::before {
+  left: 0;
+  background: linear-gradient(to right, #2a2a2a 0%, transparent 100%);
+}
+
+[id*="trust_icon_bar"] .section::after {
+  right: 0;
+  background: linear-gradient(to left, #2a2a2a 0%, transparent 100%);
+}
+
+/* Hide container until JS has set up the marquee, preventing a layout flash. */
+[id*="trust_icon_bar"] .container {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[id*="trust_icon_bar"] .icon-bar__block {
+  flex-shrink: 0;
+}
+
+/* The theme strips padding-left/:first-child and padding-right/:last-child.
+   Inside a marquee set that removes the gap at the set boundary.
+   Restore full padding so every junction looks identical. */
+[id*="trust_icon_bar"] .trust-marquee__set .icon-bar__block:first-child {
+  padding-left: 0.75rem;
+}
+[id*="trust_icon_bar"] .trust-marquee__set .icon-bar__block:last-child {
+  padding-right: 0.75rem;
+}
+
 
 /* ================================
    17. Footer
@@ -1255,8 +1380,40 @@ section.gallery-intro p {
 ================================ */
 
 #template-product .product_section {
+  padding-top: 40px;
   padding-left: 40px;
   padding-right: 40px;
+}
+
+/* Image column wider, info column narrower — desktop only.
+   space-between on the parent handles the gap as a % of container width.
+   Scoped to min-width:769px so medium-down--one-whole still stacks on mobile. */
+@media (min-width: 769px) {
+  #template-product .product__images.one-half {
+    width: 57%;
+    flex: none;
+  }
+
+  #template-product .product__information.one-half {
+    width: 38%;
+    flex: none;
+  }
+}
+
+.lc-edition-scarcity {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1917;
+  background: #ebac2014;
+  border-left: 3px solid #ebac20;
+  padding: 8px 12px;
+  margin: 12px 0 16px;
+  border-radius: 0 4px 4px 0;
+  letter-spacing: 0.01em;
+}
+
+.lc-edition-scarcity:empty {
+  display: none;
 }
 
 .product-block.product-block--size-chart {
@@ -1276,6 +1433,57 @@ section.gallery-intro p {
 
 .product__social-share.has-padding-top {
   padding-top: 0;
+}
+
+/* Description block — consistent line-height and colour, inherit size from theme */
+.product-block--description .product__description,
+.product-block--description .content {
+  line-height: 1.75;
+  color: rgba(26, 26, 26, 0.85);
+}
+
+/* Colour option — CSS grid so display:none N/A item is excluded from layout */
+.swatch__options.custom-colour {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.swatch__options.custom-colour .swatch__option {
+  min-width: 0;
+}
+
+.swatch__options.custom-colour .swatch-element.color {
+  display: flex;
+  width: 100%;
+  border-radius: 3px !important;
+  padding: 0;
+}
+
+.swatch__options.custom-colour .swatch-element.color label {
+  width: 100% !important;
+  height: 40px !important;
+  border-radius: 3px !important;
+  background: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatch__options.custom-colour .swatch-label-text {
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Colour option row hidden when Glass or Unframed is selected */
+.lc-colour-row-hidden {
+  display: none !important;
+}
+
+/* Hide Flex theme's built-in inventory counter — edition scarcity handled by lc-edition-scarcity */
+#template-product .items_left {
+  display: none !important;
 }
 
 /* LCP fix — single-image product gallery is immediately visible.
@@ -1830,56 +2038,73 @@ section.gallery-intro p {
 
 
 /* ================================
-   26. Cart Drawer — Free Shipping Bar
+   26. Cart Drawer — Width + Free Shipping Bar
 ================================ */
 
+/* Drawer width — theme default of 40% is too wide on large screens */
+@media only screen and (min-width: 799px) {
+  #theme-ajax-cart.is-drawer {
+    width: 400px !important;
+    right: -400px !important;
+  }
+  #theme-ajax-cart.is-drawer.is-visible {
+    right: 0 !important;
+  }
+}
+
+/* Free shipping progress bar — sits above checkout button */
 .ajax-cart__shipping-progress {
-  padding: 12px 16px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 4px;
+  padding: 14px 20px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4px;
 }
 
 .ajax-cart__shipping-bar-track {
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .ajax-cart__shipping-bar-fill {
   height: 100%;
   background-color: var(--color-brand-yellow, #ebac20);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-  min-width: 4px;
+  border-radius: 3px;
+  transition: width 0.5s ease;
 }
 
 .ajax-cart__shipping-message {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.6);
   text-align: center;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
 }
 
 .ajax-cart__shipping-message .money {
-  color: var(--color-brand-yellow, #ebac20);
+  color: #fff;
   font-weight: 600;
 }
 
 .ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved {
   color: var(--color-brand-yellow, #ebac20);
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved .icon svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 
@@ -1957,7 +2182,7 @@ section.gallery-intro p {
 }
 
 .product__art-detail dd {
-  font-size: 13px;
+  font-size: 15px;
   color: #1a1a1a;
   margin: 0;
   line-height: 1.4;
@@ -1970,7 +2195,7 @@ section.gallery-intro p {
 
 .product__art-description {
   margin-top: 14px;
-  font-size: 13px;
+  font-size: 14px;
   color: rgba(26, 26, 26, 0.75);
   line-height: 1.6;
   padding-top: 12px;
@@ -2122,5 +2347,96 @@ section.gallery-intro p {
 @media (max-width: 798px) {
   body.product {
     padding-bottom: 72px;
+  }
+}
+
+/* ================================
+   31.  Product Page — Back Link, Price Range, Story Link
+================================ */
+
+/* ================================
+   32.  Product Gallery — Variant Thumbnail Strip (D18)
+================================ */
+
+/* Override theme's 0.3 dim on non-selected thumbnails */
+.product-gallery__thumbnails .product-gallery__thumbnail {
+  opacity: 1;
+}
+
+/* D7: Back to collection link */
+.product__back-link {
+  display: inline-block;
+  font-size: 0.8125rem;
+  color: var(--color-body-text, #6f6f6f);
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0;
+  font-family: var(--font-stack-body, Lato, sans-serif);
+}
+
+.product__back-link:hover {
+  color: var(--color-primary, #ebac20);
+}
+
+/* D6: Price range line */
+.product__price-range {
+  font-size: 0.8125rem;
+  color: var(--color-body-text, #6f6f6f);
+  margin: 0 0 0.25rem;
+  letter-spacing: 0;
+}
+
+/* D12: Story link */
+.product__story-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--color-body-text, #6f6f6f);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+.product__story-link:hover {
+  color: var(--color-primary, #ebac20);
+}
+
+
+/* ================================
+   33.  Blog — Shop CTA Block (D11)
+================================ */
+
+.blog-cta {
+  margin-top: 2.5rem;
+  padding: 1.5rem 2rem;
+  background-color: var(--color-light, #f5f5f5);
+  border-left: 3px solid var(--color-brand-yellow, #ebac20);
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.blog-cta__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-mid, #4d4d4d);
+  margin: 0;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+}
+
+.blog-cta__link.button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 640px) {
+  .blog-cta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

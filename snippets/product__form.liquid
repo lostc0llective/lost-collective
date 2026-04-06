@@ -225,6 +225,116 @@
         </p>
       {% endif %}
 
+      {% comment %}Lost Collective — edition scarcity (dynamic, JS-driven){% endcomment %}
+      <p class="lc-edition-scarcity" id="lc-scarcity-{{ product.id }}"></p>
+      <script>
+        (function() {
+          var variants = {
+            {%- for v in product.variants -%}
+              {{ v.id }}: { size: {{ v.option1 | json }}, type: {{ v.option2 | json }}, qty: {{ v.inventory_quantity }}, managed: {{ v.inventory_management | json }} }{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          };
+          var editionMap = { 'M': 100, 'L': 50, 'XL': 25 };
+          var scarcityEl = document.getElementById('lc-scarcity-{{ product.id }}');
+
+          function updateScarcity(variantId) {
+            if (!scarcityEl) return;
+            var v = variants[variantId];
+            if (!v) { scarcityEl.textContent = ''; return; }
+            var edition = editionMap[v.size];
+            if (!edition) { scarcityEl.textContent = 'Open edition'; return; }
+            var remaining = computeRemaining(v.size);
+            if (remaining !== null && remaining <= 0) {
+              scarcityEl.textContent = 'Edition of ' + edition + ' — sold out';
+            } else if (remaining !== null) {
+              scarcityEl.textContent = remaining + ' of ' + edition + ' remaining';
+            } else {
+              scarcityEl.textContent = 'Limited edition of ' + edition;
+            }
+          }
+
+          {% comment %}Hide colour row when Glass or Unframed is selected{% endcomment %}
+          function updateColourRow(type) {
+            var colourInput = document.querySelector(
+              'input[data-variant-option-value][data-variant-option-value-index="2"][id$="-{{ product.id }}"]'
+            );
+            if (!colourInput) return;
+            var optionsSel = colourInput.closest('options-selection');
+            if (!optionsSel) return;
+            var el = colourInput;
+            while (el && el.parentElement !== optionsSel) { el = el.parentElement; }
+            if (!el || el.parentElement !== optionsSel) return;
+            if (type === 'Glass' || type === 'Unframed') {
+              el.classList.add('lc-colour-row-hidden');
+            } else {
+              el.classList.remove('lc-colour-row-hidden');
+            }
+          }
+
+          {% comment %}Substrate — swap paper label for Glass variants{% endcomment %}
+          var substrateDd = document.getElementById('substrate-value-{{ product.id }}');
+          var substrateDefault = substrateDd ? substrateDd.getAttribute('data-substrate-default') : '';
+          function updateSubstrate(type) {
+            if (!substrateDd) return;
+            substrateDd.textContent = type === 'Glass' ? 'Ilford Galerie Metallic Gloss 260gsm' : substrateDefault;
+          }
+
+          {% comment %}Shared edition pool: sum all same-size variant inventories, subtract (n-1) * editionSize{% endcomment %}
+          function computeRemaining(size) {
+            var edition = editionMap[size];
+            if (!edition) return null;
+            var sameSize = Object.values(variants).filter(function(v) { return v.size === size; });
+            if (!sameSize.length) return null;
+            var sumInv = sameSize.reduce(function(acc, v) { return acc + v.qty; }, 0);
+            return sumInv - (sameSize.length - 1) * edition;
+          }
+
+          {% comment %}Update edition row in art details{% endcomment %}
+          var editionDetailEl = document.getElementById('edition-detail-{{ product.id }}');
+          function updateEdition(size) {
+            if (!editionDetailEl) return;
+            var ddEl = editionDetailEl.querySelector('[data-edition-value]');
+            if (!ddEl) return;
+            var edition = editionMap[size];
+            if (!edition) {
+              ddEl.textContent = 'Open edition';
+              return;
+            }
+            var remaining = computeRemaining(size);
+            var num = editionDetailEl.getAttribute('data-edition-number');
+            if (num && num !== '') {
+              ddEl.textContent = 'Edition ' + num + ' of ' + edition;
+            } else {
+              ddEl.textContent = 'Edition of ' + edition;
+            }
+          }
+
+          function onVariantChange(vid) {
+            updateScarcity(vid);
+            var v = variants[vid];
+            if (v) {
+              updateColourRow(v.type);
+              updateSubstrate(v.type);
+              updateEdition(v.size);
+            }
+          }
+
+          {% comment %}Use MutationObserver on variant-selection[variant] — fires on every variant change
+             regardless of whether options are selects or radio inputs.{% endcomment %}
+          var vsel = document.querySelector('variant-selection[product-url*="{{ product.handle }}"]');
+          if (vsel) {
+            {% comment %}Set initial state{% endcomment %}
+            var initialId = parseInt(vsel.getAttribute('variant'));
+            if (!isNaN(initialId)) onVariantChange(initialId);
+
+            new MutationObserver(function() {
+              var vid = parseInt(vsel.getAttribute('variant'));
+              if (!isNaN(vid)) onVariantChange(vid);
+            }).observe(vsel, { attributes: true, attributeFilter: ['variant'] });
+          }
+        })();
+      </script>
+
       <div class="purchase-details has-quantity-box-{{ settings.display_product_quantity }}">
         {% unless show_payment_button %}
           {% comment %}Inject @pixelunion/pxs-gift-card-recipient-form/recipient-form begin{% endcomment %}

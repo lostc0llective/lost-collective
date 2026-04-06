@@ -120,6 +120,12 @@
           </p>
 
         {%- elsif block.type == 'title' -%}
+          {% comment %} Back to collection link (D7) {% endcomment %}
+          {%- unless is_product_modal or section_onboarding -%}
+            {%- if collection -%}
+              <a href="{{ collection.url }}" class="product__back-link">← {{ collection.title }}</a>
+            {%- endif -%}
+          {%- endunless -%}
           {% comment %} Name {% endcomment %}
           <h1 class="product-title title">
             {% if is_product_modal %}
@@ -168,6 +174,10 @@
                 {{- 'products.product.sold_out' | t -}}
               </span>
             {% else %}
+              {% comment %} Price range (D6) {% endcomment %}
+              {%- if product.price_varies -%}
+                <p class="product__price-range">From {{ product.price_min | money }} – {{ product.price_max | money }}</p>
+              {%- endif -%}
               {% comment %}Inject @pixelunion/shopify-price-ui/price-ui begin{% endcomment %}
               <div class="price-ui price-ui--loading" data-price-ui>
                 <noscript>
@@ -440,7 +450,7 @@
                 {%- if product.metafields.custom.edition_number != blank -%}
                   {%- assign _edition_num = product.metafields.custom.edition_number.value -%}
                 {%- endif -%}
-                <div class="product__art-detail{% unless _initial_edition %} is-hidden{% endunless %}"
+                <div class="product__art-detail"
                      id="edition-detail-{{ product.id }}"
                      data-edition-detail
                      data-edition-number="{{ _edition_num }}">
@@ -450,35 +460,11 @@
                       {%- if _edition_num != blank -%}Edition {{ _edition_num }} of {{ _initial_edition }}
                       {%- else -%}Edition of {{ _initial_edition }}
                       {%- endif -%}
+                    {%- else -%}Open edition
                     {%- endif -%}
                   </dd>
                 </div>
-                <script>
-                  (function() {
-                    var el = document.getElementById('edition-detail-{{ product.id }}');
-                    if (!el) return;
-                    var val = el.querySelector('[data-edition-value]');
-                    var editionNum = el.getAttribute('data-edition-number') || '';
-                    var map = { 'M': 100, 'L': 50, 'XL': 25 };
-                    var inputs = document.querySelectorAll(
-                      'input[data-variant-option-value][data-variant-option-value-index="0"][id$="-{{ product.id }}"]'
-                    );
-                    inputs.forEach(function(input) {
-                      input.addEventListener('change', function() {
-                        var edition = map[this.value];
-                        if (edition) {
-                          el.classList.remove('is-hidden');
-                          val.textContent = editionNum
-                            ? 'Edition ' + editionNum + ' of ' + edition
-                            : 'Edition of ' + edition;
-                        } else {
-                          el.classList.add('is-hidden');
-                          val.textContent = '';
-                        }
-                      });
-                    });
-                  })();
-                </script>
+                {% comment %}Edition updates handled by product__form.liquid after DOM is ready{% endcomment %}
                 {% if product.metafields.custom.print_technique != blank %}
                   <div class="product__art-detail">
                     <dt>Process</dt>
@@ -488,7 +474,8 @@
                 {% if product.metafields.custom.paper_type != blank %}
                   <div class="product__art-detail">
                     <dt>Substrate</dt>
-                    <dd>{{ product.metafields.custom.paper_type }}</dd>
+                    <dd id="substrate-value-{{ product.id }}"
+                        data-substrate-default="{{ product.metafields.custom.paper_type }}">{{ product.metafields.custom.paper_type }}</dd>
                   </div>
                 {% endif %}
                 {% if product.metafields.custom.certificate_included == true %}
@@ -500,6 +487,11 @@
               </dl>
               {%- if product.metafields.custom.subject_description != blank -%}
                 <p class="product__art-description">{{ product.metafields.custom.subject_description.value | newline_to_br }}</p>
+              {%- endif -%}
+              {% comment %} Story link (D12) — links to blog/tagged/[series-handle] if series is set {% endcomment %}
+              {%- if product.metafields.custom.collection_series != blank -%}
+                {%- assign _story_tag = product.metafields.custom.collection_series.value | handleize -%}
+                <a href="/blogs/blog/tagged/{{ _story_tag }}" class="product__story-link">Read the story behind this series →</a>
               {%- endif -%}
             </div>
           {% endif %}

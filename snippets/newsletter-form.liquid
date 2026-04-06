@@ -1,123 +1,162 @@
 {% comment %}
-Optional values
-newsletter_class: <string>
+  newsletter-form.liquid
+  Klaviyo-powered email subscribe form.
+  Falls back to Shopify native form if no Klaviyo public key is configured.
+
+  Optional values:
+    newsletter_class: <string>
+    id: <string>  (used to scope form IDs)
 {% endcomment %}
 
-{% comment %} Assign object as block or section {% endcomment %}
 {%- liquid
-  if type == 'block'
-    assign object = block
-  else
-    assign object = section
-  endif
-
-  if settings.form_button_style contains 'primary'
-    assign field_input_size = settings.button_primary_padding
-    assign field_input_style = 'primary-btn-style'
-  elsif settings.form_button_style contains 'secondary'
-    assign field_input_size = settings.button_secondary_padding
-    assign field_input_style = 'secondary-btn-style'
-  else
-    assign field_input_size = settings.button_link_padding
-  endif
-
   if id == nil
-    assign form_id = 'contact_form'
+    assign form_id = 'newsletter'
   else
-    assign form_id = id | append: '_contact_form'
+    assign form_id = id | append: '-newsletter'
   endif
-  assign form_action = '/contact#' | append: form_id
 -%}
 
-{% style %}
+{%- if settings.klaviyo_public_key != blank -%}
 
-  #shopify-section-{{ object.id }} .newsletter-form__wrapper {
-    {% if width == 'half' %}
-      max-width: 100%;
-    {% endif %}
-  }
-
-  {% render 'css-loop',
-          css: custom_css,
-          id: object.id
-  %}
-{% endstyle %}
-
-{% comment %} HTML markup {% endcomment %}
-<div class="newsletter-form__wrapper {{ newsletter_class }}">
-  <div class="form__success-message text-align-{{ text_alignment }}"></div>
-
-  {%
-    form 'customer',
-    class: 'contact-form newsletter-form--newsletter-section',
-    action: form_action,
-    id: form_id
-  %}
-    {% if form.posted_successfully? %}
-      <p class="quote">{{ 'general.newsletter_form.success_text' | t }}</p>
-    {% elsif form.errors %}
-      <div class="one-whole column contact-form__form-errors">
-        {% for field in form.errors %}
-          <p class="form__error">{{ field | capitalize }} - {{ form.errors.messages[field] }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    {% comment %} Hidden fields {% endcomment %}
-    <input type="hidden" name="contact[tags]" value="prospect,newsletter"/>
-    <input type="hidden" name="challenge" value="false" />
-
-    <div class="newsletter-form form is-responsive">
-
-      {% if display_first_name %}
-        {% comment %} First name {% endcomment %}
-        <div class="field is-stretched-width {% if display_last_name != true %} is-full-width {% endif %}">
-          <label class="label newsletter__text {% if settings.use_placeholders %}is-sr-only{% endif %}">
-            {{ 'general.newsletter_form.subscriber_first_name' | t }}
-          </label>
-          <div class="control">
-            <input class="input is-{{ field_input_style }} is-{{ field_input_size }}" type="text" name="contact[first_name]" placeholder="{% if settings.use_placeholders %}{{ 'general.newsletter_form.subscriber_first_name' | t }}{% endif %}">
-          </div>
-        </div>
-      {% endif %}
-
-      {% if display_last_name %}
-        {% comment %} Last name {% endcomment %}
-        <div class="field is-stretched-width {% if display_first_name != true %} is-full-width {% endif %}">
-          <label class="label newsletter__text {% if settings.use_placeholders %}is-sr-only{% endif %}">
-            {{ 'general.newsletter_form.subscriber_last_name' | t }}
-          </label>
-          <div class="control">
-            <input class="input is-{{ field_input_style }} is-{{ field_input_size }}" type="text" name="contact[last_name]" placeholder="{% if settings.use_placeholders %}{{ 'general.newsletter_form.subscriber_last_name' | t }}{% endif%}">
-          </div>
-        </div>
-      {% endif %}
-
-      {% comment %} Email {% endcomment %}
+  <div class="newsletter-form__wrapper {{ newsletter_class }}" id="{{ form_id }}-wrapper">
+    <form class="newsletter-form form is-responsive" id="{{ form_id }}" novalidate>
+      {% comment %} Email field {% endcomment %}
       <div class="field is-stretched-width">
-        <label for="email-{{ form_id }}" class="label newsletter__text {% if settings.use_placeholders %}is-sr-only{% endif %}">
-          {{ 'general.newsletter_form.email' | t }}<span class="required">*</span>
+        <label for="{{ form_id }}-email" class="label newsletter__text {% if settings.use_placeholders %}is-sr-only{% endif %}">
+          Email address<span class="required">*</span>
         </label>
         <div class="control {% if settings.show_form_icons %} has-icons-left has-icons-left--responsive-form{% endif %}">
-          <input id="email-{{ form_id }}" class="input is-{{ field_input_style }} is-{{ field_input_size }}" type="email" name="contact[email]" placeholder="{% if settings.use_placeholders %}{{ 'general.newsletter_form.email' | t }}*{% endif %}" required>
+          <input
+            id="{{ form_id }}-email"
+            class="input"
+            type="email"
+            name="email"
+            placeholder="{% if settings.use_placeholders %}Email address*{% endif %}"
+            autocomplete="email"
+            required
+          >
           {% if settings.show_form_icons %}
             {% render 'icon', name: 'email' %}
           {% endif %}
         </div>
       </div>
-
-      {% comment %} Submit button {% endcomment %}
+      {% comment %} Submit {% endcomment %}
       <div class="field is-default-width is-align-self-end">
         <div class="control">
-          {%- assign button_label = 'general.newsletter_form.submit' | t -%}
-          {% render 'button',
-                  label: button_label,
-                  type: "submit",
-                  style: settings.form_button_style,
-                  class: 'is-within-form'
-          %}
+          <button type="submit" class="button {% if settings.form_button_style contains 'primary' %}primary-btn-style{% elsif settings.form_button_style contains 'secondary' %}secondary-btn-style{% endif %} is-within-form">
+            Subscribe
+          </button>
         </div>
       </div>
-    </div>
-  {% endform %}
-</div>
+    </form>
+    <p class="newsletter-form__success" id="{{ form_id }}-success" style="display:none; color:#2e7d32; font-size:0.9rem; margin-top:0.5rem;">
+      You're in. First email is on its way.
+    </p>
+    <p class="newsletter-form__error" id="{{ form_id }}-error" style="display:none; color:#c62828; font-size:0.85rem; margin-top:0.5rem;"></p>
+  </div>
+
+  <script>
+  (function() {
+    var form = document.getElementById('{{ form_id }}');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var email = form.querySelector('[type="email"]').value.trim();
+      var btn   = form.querySelector('[type="submit"]');
+      var success = document.getElementById('{{ form_id }}-success');
+      var error   = document.getElementById('{{ form_id }}-error');
+
+      error.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Subscribing...';
+
+      fetch('https://a.klaviyo.com/client/subscriptions/?company_id={{ settings.klaviyo_public_key }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'revision': '2024-10-15' },
+        body: JSON.stringify({
+          data: {
+            type: 'subscription',
+            attributes: {
+              profile: { data: { type: 'profile', attributes: { email: email } } },
+              list_id: '{{ settings.klaviyo_list_id | default: "VFqauD" }}'
+            }
+          }
+        })
+      })
+      .then(function(res) {
+        if (res.ok || res.status === 202) {
+          form.style.display = 'none';
+          success.style.display = 'block';
+        } else {
+          return res.json().then(function(d) {
+            throw new Error((d.errors && d.errors[0] && d.errors[0].detail) || 'Subscription failed.');
+          });
+        }
+      })
+      .catch(function(err) {
+        error.textContent = err.message || 'Something went wrong. Please try again.';
+        error.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Subscribe';
+      });
+    });
+  })();
+  </script>
+
+{%- else -%}
+
+  {% comment %} Fallback: native Shopify form when no Klaviyo key is configured {% endcomment %}
+  {%- liquid
+    if settings.form_button_style contains 'primary'
+      assign field_input_size = settings.button_primary_padding
+      assign field_input_style = 'primary-btn-style'
+    elsif settings.form_button_style contains 'secondary'
+      assign field_input_size = settings.button_secondary_padding
+      assign field_input_style = 'secondary-btn-style'
+    else
+      assign field_input_size = settings.button_link_padding
+    endif
+    assign form_action = '/contact#' | append: form_id | append: '_contact_form'
+  -%}
+
+  <div class="newsletter-form__wrapper {{ newsletter_class }}">
+    <div class="form__success-message text-align-{{ text_alignment }}"></div>
+    {%
+      form 'customer',
+      class: 'contact-form newsletter-form--newsletter-section',
+      action: form_action,
+      id: form_id | append: '_contact_form'
+    %}
+      {% if form.posted_successfully? %}
+        <p class="quote">{{ 'general.newsletter_form.success_text' | t }}</p>
+      {% elsif form.errors %}
+        <div class="one-whole column contact-form__form-errors">
+          {% for field in form.errors %}
+            <p class="form__error">{{ field | capitalize }} - {{ form.errors.messages[field] }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <input type="hidden" name="contact[tags]" value="prospect,newsletter"/>
+      <input type="hidden" name="challenge" value="false" />
+      <div class="newsletter-form form is-responsive">
+        <div class="field is-stretched-width">
+          <label for="email-{{ form_id }}_contact_form" class="label newsletter__text {% if settings.use_placeholders %}is-sr-only{% endif %}">
+            {{ 'general.newsletter_form.email' | t }}<span class="required">*</span>
+          </label>
+          <div class="control {% if settings.show_form_icons %} has-icons-left has-icons-left--responsive-form{% endif %}">
+            <input id="email-{{ form_id }}_contact_form" class="input is-{{ field_input_style }} is-{{ field_input_size }}" type="email" name="contact[email]" placeholder="{% if settings.use_placeholders %}{{ 'general.newsletter_form.email' | t }}*{% endif %}" required>
+            {% if settings.show_form_icons %}{% render 'icon', name: 'email' %}{% endif %}
+          </div>
+        </div>
+        <div class="field is-default-width is-align-self-end">
+          <div class="control">
+            {%- assign button_label = 'general.newsletter_form.submit' | t -%}
+            {% render 'button', label: button_label, type: "submit", style: settings.form_button_style, class: 'is-within-form' %}
+          </div>
+        </div>
+      </div>
+    {% endform %}
+  </div>
+
+{%- endif -%}

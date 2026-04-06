@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "free_shipping_threshold": 150,
     "regular_color": "#6f6f6f",
     "link_color": "#4d4d4d",
     "link_hover_color": "#ebac20",
@@ -68,7 +69,6 @@
     "banner_text_size": 17,
     "show_announcement_bar": false,
     "image_loading_style": "none",
-    "logo_mobile": "shopify://shop_images/lost-collective-logo.jpg",
     "mobile_logo_width": 80,
     "logo_menu_position": "left",
     "show_search_icon_mobile": true,
@@ -138,6 +138,13 @@
     "show_lock_icon": true,
     "cart_icon": "cart",
     "icon": "icon_solid",
+    "klaviyo_public_key": "UDmkb3",
+    "klaviyo_list_id": "VFqauD",
+    "klaviyo_popup_enabled": true,
+    "klaviyo_popup_delay": 8,
+    "klaviyo_popup_heading": "The places nobody photographs",
+    "klaviyo_popup_body": "Occasional notes from the abandoned, forgotten, and overlooked. No spam. Unsubscribe any time.",
+    "klaviyo_popup_button": "Stay in the loop",
     "content_for_index": [],
     "blocks": {
       "1232542678405107163": {

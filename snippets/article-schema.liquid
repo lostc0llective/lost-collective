@@ -1,0 +1,41 @@
+{% comment %}
+  D13: Article JSON-LD structured data.
+  Outputs an Article schema for blog posts, improving Google rich results.
+
+  Usage: {% render 'article-schema' %}
+  Rendered at the top of sections/article__main.liquid.
+{% endcomment %}
+
+{%- assign schema_description = article.excerpt_or_content | strip_html | truncate: 300 -%}
+{%- assign schema_image = article.image | image_url: width: 1200 | prepend: 'https:' -%}
+{%- assign schema_logo  = settings.logo | image_url: width: 600 | prepend: 'https:' -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": {{ canonical_url | json }}
+  },
+  "headline": {{ article.title | escape | json }},
+  "description": {{ schema_description | json }},
+  {% if article.image %}
+  "image": {{ schema_image | json }},
+  {% endif %}
+  "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "dateModified": {{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "author": {
+    "@type": "Person",
+    "name": {{ article.author | json }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }}{% if settings.logo %},
+    "logo": {
+      "@type": "ImageObject",
+      "url": {{ schema_logo | json }}
+    }{% endif %}
+  }
+}
+</script>
