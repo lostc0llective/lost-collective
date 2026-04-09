@@ -196,13 +196,13 @@
     Define a URL template. We use this to generate exact-size URLs in JS.
   {% endcomment %}
   {% assign rimg_url_template = img
-    | img_url: '1x1', crop: crop
+    | image_url: width: 1, height: 1, crop: crop
     | replace: '_1x1', '_{size}'
   %}
 
   {% unless rimg_format == '' %}
     {% assign rimg_url_template = img
-      | img_url: '1x1', crop: crop, format: rimg_format
+      | image_url: width: 1, height: 1, crop: crop, format: rimg_format
       | replace: '_1x1', '_{size}'
     %}
   {% endunless %}
@@ -259,10 +259,10 @@
     {% assign rimg_densities_h = rimg_h | times: rimg_densities_i | round %}
 
     {% assign rimg_densities_size = rimg_densities_w | append: 'x' | append: rimg_densities_h %}
-    {% assign rimg_density_src = img | img_url: rimg_densities_size, crop: crop %}
+    {% assign rimg_density_src = img | image_url: width: rimg_densities_w, height: rimg_densities_h, crop: crop %}
 
     {% unless rimg_format == '' %}
-      {% assign rimg_density_src = img | img_url: rimg_densities_size, crop: crop, format: rimg_format %}
+      {% assign rimg_density_src = img | image_url: width: rimg_densities_w, height: rimg_densities_h, crop: crop, format: rimg_format %}
     {% endunless %}
 
     {% assign rimg_density_srcset = rimg_density_srcset
@@ -294,9 +294,9 @@
     {% if class != blank %}class="{{ class }}"{% endif %}
     style="
       {% if rimg_format == '' %}
-        background-image: url('{{ img | img_url: rimg_size, crop: crop }}');
+        background-image: url('{{ img | image_url: width: rimg_w, height: rimg_h, crop: crop }}');
       {% else %}
-        background-image: url('{{ img | img_url: rimg_size, format: rimg_format }}');
+        background-image: url('{{ img | image_url: width: rimg_w, height: rimg_h, format: rimg_format }}');
       {% endif %}
 
       {% if style != blank %}{{ style }}{% endif %}
@@ -311,9 +311,9 @@
     <noscript data-rimg-noscript>
       <img
         {% if rimg_format == '' %}
-          src="{{ img | img_url: rimg_size, crop: crop }}"
+          src="{{ img | image_url: width: rimg_w, height: rimg_h, crop: crop }}"
         {% else %}
-          src="{{ img | img_url: rimg_size, crop: crop, format: rimg_format }}"
+          src="{{ img | image_url: width: rimg_w, height: rimg_h, crop: crop, format: rimg_format }}"
         {% endif %}
 
         alt="{{ rimg_alt }}"
@@ -328,9 +328,9 @@
 
   <img
     {% if rimg_format == '' %}
-      src="{{ img | img_url: rimg_size, crop: crop }}"
+      src="{{ img | image_url: width: rimg_w, height: rimg_h, crop: crop }}"
     {% else %}
-      src="{{ img | img_url: rimg_size, crop: crop, format: rimg_format }}"
+      src="{{ img | image_url: width: rimg_w, height: rimg_h, crop: crop, format: rimg_format }}"
     {% endif %}
     alt="{{ rimg_alt }}"
 

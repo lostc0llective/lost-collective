@@ -100,7 +100,7 @@ context: <string>
 {% endcomment %}
 
 
-<nav class="pagination">
+<nav class="pagination" aria-label="Pagination">
     
     {%- if paginate.previous -%}
       <a href="{% if paginate.current_page == 2 %}{{ collection.url }}{% else %}{{ collection.url }}?page={{ paginate.current_page | minus: 1 }}{% endif %}" class="prev" rel="prev">Prev</a>

@@ -1,5 +1,5 @@
 <div class="mobile-search is-hidden-large" data-autocomplete-{{ settings.enable_autocomplete }}>
-  <form class="search-form search-popup__form" action="{{ routes.search_url }}">
+  <form class="search-form search-popup__form" role="search" action="{{ routes.search_url }}">
     <div class="search__fields">
       <label for="q" class="visually-hidden">{{ settings.search_placeholder }}</label>
       <div class="field">

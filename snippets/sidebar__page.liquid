@@ -3,7 +3,7 @@
     <h3 class="sidebar-block__heading" {% if settings.toggle_sidebar %}data-sidebar-block__toggle="closed" aria-label="toggle"{% endif %}>
       {{ pages[page].title }}
       {% if settings.toggle_sidebar %}
-        <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}">
+        <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}" aria-label="Toggle section">
           {% if settings.toggle_icon_style == 'plus_and_minus' %}
             {% render 'icon',
                     name: 'plus',
@@ -27,7 +27,7 @@
   <div class="sidebar-block__toggle" data-has-toggle-option>
     <h3 class="sidebar-block__heading" {% if settings.toggle_sidebar %}data-sidebar-block__toggle="closed" aria-label="toggle"{% endif %}>
       {% if settings.toggle_sidebar %}
-        <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}">
+        <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}" aria-label="Toggle section">
           {% if settings.toggle_icon_style == 'plus_and_minus' %}
             {% render 'icon',
                     name: 'plus',

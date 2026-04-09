@@ -1,11 +1,13 @@
 {% if collection.handle != blank and collection.products_count > 0 %}
   <div class="field is-grouped is-flex-wrap">
 
+    <span class="collection__product-count">{{ collection.products_count }} {% if collection.products_count == 1 %}print{% else %}prints{% endif %}</span>
+
     {% if collection.tags.size > 0 %}
       <div class="collection__tag-filter select">
         {% for tag in collection.all_tags %}
           {% if forloop.first %}
-            <select name="tag_filter" id="tag_filter" class="tag_filter" data-default-collection="{% if collection.handle == 'all' %}{{ routes.all_products_collection_url }}{% else %}{{ collection.url }}{% endif %}">
+            <select name="tag_filter" id="tag_filter" class="tag_filter" aria-label="Filter by tag" data-default-collection="{% if collection.handle == 'all' %}{{ routes.all_products_collection_url }}{% else %}{{ collection.url }}{% endif %}">
               <option {% unless current_tags %}selected="selected"{% endunless %} value="{% if collection.handle == "all" %}{{ routes.all_products_collection_url }}{% else %}{{ collection.url }}{% endif %}">
                 {{ 'collections.general.all_collection_title' | t: title: collection.title }}
               </option>
@@ -24,7 +26,7 @@
     {% endif %}
 
     <div class="collection__sort-by-filter select">
-      <select class="sort_by" id="sort-by" data-default-sort="{{ collection.sort_by | default: collection.default_sort_by  }}">
+      <select class="sort_by" id="sort-by" aria-label="Sort by" data-default-sort="{{ collection.sort_by | default: collection.default_sort_by  }}">
         <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
         <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
         <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>

@@ -29,31 +29,34 @@
   {% assign related_items = false %}
 {% endif %}
 
-{% assign for_limit = limit %}
+{%- comment -%}
+  Single-pass loop: iterate products with inline skip logic.
+  Rendered count automatically stops at 'limit' when skip_product is nil.
+  When skip_product matches, we fetch one extra product to maintain limit count.
+{%- endcomment -%}
+{% assign rendered_count = 0 %}
+{% assign skip_id = skip_product.id %}
 
-{% comment %} loop through product list {% endcomment %}
-{% for product in products limit: limit %}
+{% for product in products %}
+  {%- if product.id == skip_id -%}
+    {%- continue -%}
+  {%- endif -%}
 
-  {% comment %} if product display is in the loop of products increase limit by one {% endcomment %}
-  {% if product.id == skip_product.id  %}
-    {% assign for_limit = limit | plus: 1 %}
-  {% endif %}
-{% endfor %}
+  {%- if rendered_count >= limit -%}
+    {%- break -%}
+  {%- endif -%}
 
-{% for product in products limit: for_limit %}
+  {% render 'product-thumbnail',
+          product: product,
+          limit: limit,
+          products_per_row: products_per_row,
+          mobile_products_per_row: mobile_products_per_row,
+          align_height: align_height,
+          height: height,
+          collection_group_thumb: collection_group_thumb,
+          collection_group_mobile: collection_group_mobile,
+          related_products: related_items
+  %}
 
-  {% comment %} Skip product if we're on its product page {% endcomment %}
-  {% if product.id != skip_product.id %}
-    {% render 'product-thumbnail',
-            product: product,
-            limit: limit,
-            products_per_row: products_per_row,
-            mobile_products_per_row: mobile_products_per_row,
-            align_height: align_height,
-            height: height,
-            collection_group_thumb: collection_group_thumb,
-            collection_group_mobile: collection_group_mobile,
-            related_products: related_items
-    %}
-  {% endif %}
+  {%- assign rendered_count = rendered_count | plus: 1 -%}
 {% endfor %}

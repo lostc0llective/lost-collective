@@ -7,13 +7,13 @@
       </div>
 
       <div class="one-whole column" data-autocomplete-{{ settings.enable_autocomplete }}>
-        <form class="search-form search-popup__form" action="{{ routes.search_url }}">
+        <form class="search-form search-popup__form" role="search" action="{{ routes.search_url }}">
           <div class="search__fields">
             <label for="q" class="visually-hidden">{{ settings.search_placeholder }}</label>
             <div class="field">
               <div class="control has-icons-left search-overlay__control">
                 <input class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
-                <button type="submit" name="search">
+                <button type="submit" name="search" aria-label="Search">
                   {%
                     render 'icon',
                     name: 'search',

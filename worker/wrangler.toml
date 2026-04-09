@@ -9,3 +9,4 @@ STORE = "lost-collective.myshopify.com"
 # Secrets (set via: wrangler secret put SECRET_NAME)
 # SHOPIFY_WEBHOOK_SECRET  — from Shopify Admin → Notifications → Webhooks
 # KLAVIYO_PRIVATE_KEY     — from 1Password → Lost Collective — Klaviyo
+# META_SYSTEM_USER_TOKEN  — op://Private/42pqq2pubzcx36vufeenjekwai/System User Token

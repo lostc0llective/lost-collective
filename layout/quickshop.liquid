@@ -121,15 +121,15 @@
   {%- endif -%}
 
   {%- if settings.favicon != nil -%}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | img_url: '180x180' }}">
-    <link rel="apple-touch-icon" href="{{ settings.favicon | img_url: '180x180' }}"/>
-    <link rel="apple-touch-icon" sizes="57x57" href="{{ settings.favicon | img_url: '57x57' }}"/>
-    <link rel="apple-touch-icon" sizes="60x60" href="{{ settings.favicon | img_url: '60x60' }}"/>
-    <link rel="apple-touch-icon" sizes="72x72" href="{{ settings.favicon | img_url: '72x72' }}"/>
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ settings.favicon | img_url: '76x76' }}"/>
-    <link rel="apple-touch-icon" sizes="114x114" href="{{ settings.favicon | img_url: '114x114' }}"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | img_url: '180x180' }}"/>
-    <link rel="apple-touch-icon" sizes="228x228" href="{{ settings.favicon | img_url: '228x228' }}"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}"/>
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ settings.favicon | image_url: width: 57, height: 57 }}"/>
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ settings.favicon | image_url: width: 60, height: 60 }}"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ settings.favicon | image_url: width: 72, height: 72 }}"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ settings.favicon | image_url: width: 76, height: 76 }}"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ settings.favicon | image_url: width: 114, height: 114 }}"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}"/>
+    <link rel="apple-touch-icon" sizes="228x228" href="{{ settings.favicon | image_url: width: 228, height: 228 }}"/>
   {%- else -%}
     <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.png' | asset_url }}">
   {%- endif -%}

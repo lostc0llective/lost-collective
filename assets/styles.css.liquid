@@ -2683,46 +2683,46 @@ table th {
 /* # Fonts
 ================================================== */
 {%- capture font_settings_list -%}
-    {{ settings.regular__font | font_face: font_display: 'swap' }}~
-    {{ settings.regular__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.regular__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.regular__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.logo__font | font_face: font_display: 'swap' }}~
-    {{ settings.logo__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.logo__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.logo__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.heading__font | font_face: font_display: 'swap' }}~
-    {{ settings.heading__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.heading__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.heading__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.preheading_font | font_face: font_display: 'swap' }}~
-    {{ settings.preheading_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.preheading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.preheading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.subheading_font | font_face: font_display: 'swap' }}~
-    {{ settings.subheading_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.subheading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.subheading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.nav__font | font_face: font_display: 'swap' }}~
-    {{ settings.nav__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.nav__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.nav__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.nav__font | font_modify: 'weight', 'lighter' | font_face: font_display: 'swap' }}~
-    {{ settings.nav__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'lighter' | font_face: font_display: 'swap' }}~
-    {{ settings.button__font | font_face: font_display: 'swap' }}~
-    {{ settings.button__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.button__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.button__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.button__font | font_modify: 'weight', 'lighter' | font_face: font_display: 'swap' }}~
-    {{ settings.button__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'lighter' | font_face: font_display: 'swap' }}~
-    {{ settings.banner_heading__font | font_face: font_display: 'swap' }}~
-    {{ settings.banner_heading__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.banner_heading__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.banner_heading__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.banner_text__font | font_face: font_display: 'swap' }}~
-    {{ settings.banner_text__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
-    {{ settings.banner_text__font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
-    {{ settings.banner_text__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+    {{ settings.regular__font | font_face: font_display: 'fallback' }}~
+    {{ settings.regular__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.regular__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.regular__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.logo__font | font_face: font_display: 'fallback' }}~
+    {{ settings.logo__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.logo__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.logo__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.heading__font | font_face: font_display: 'fallback' }}~
+    {{ settings.heading__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.heading__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.heading__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.preheading_font | font_face: font_display: 'fallback' }}~
+    {{ settings.preheading_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.preheading_font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.preheading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.subheading_font | font_face: font_display: 'fallback' }}~
+    {{ settings.subheading_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.subheading_font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.subheading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.nav__font | font_face: font_display: 'fallback' }}~
+    {{ settings.nav__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.nav__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.nav__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.nav__font | font_modify: 'weight', 'lighter' | font_face: font_display: 'fallback' }}~
+    {{ settings.nav__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'lighter' | font_face: font_display: 'fallback' }}~
+    {{ settings.button__font | font_face: font_display: 'fallback' }}~
+    {{ settings.button__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.button__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.button__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.button__font | font_modify: 'weight', 'lighter' | font_face: font_display: 'fallback' }}~
+    {{ settings.button__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'lighter' | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_heading__font | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_heading__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_heading__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_heading__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_text__font | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_text__font | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_text__font | font_modify: 'style', 'italic' | font_face: font_display: 'fallback' }}~
+    {{ settings.banner_text__font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'fallback' }}
 
   {%- endcapture -%}
   {%- assign font_array = font_settings_list | split: '~' -%}

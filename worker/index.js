@@ -10,13 +10,39 @@
  *   KLAVIYO_PRIVATE_KEY     — Full-access private key
  */
 
+const ALLOWED_ORIGINS = [
+  "https://lost-collective.myshopify.com",
+  "https://lostcollective.com",
+  "http://127.0.0.1:9292",
+];
+
+function corsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin":  allowed,
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Max-Age":       "86400",
+  };
+}
+
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
+    const url    = new URL(request.url);
+    const origin = request.headers.get("Origin") || "";
+
+    // CORS preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
 
     // Health check
     if (url.pathname === "/" || url.pathname === "/health") {
       return new Response("Lost Collective webhook worker — ok", { status: 200 });
+    }
+
+    // ── Instagram feed ─────────────────────────────────────────────────────────
+    if (url.pathname === "/instagram" && request.method === "GET") {
+      return handleInstagram(request, env, origin);
     }
 
     // Only handle /webhook
@@ -30,12 +56,15 @@ export default {
     const sig   = request.headers.get("X-Shopify-Hmac-Sha256") || "";
 
     // ── Verify HMAC signature ──────────────────────────────────────────────────
-    if (env.SHOPIFY_WEBHOOK_SECRET) {
-      const valid = await verifySignature(body, sig, env.SHOPIFY_WEBHOOK_SECRET);
-      if (!valid) {
-        console.error(`Invalid signature for ${topic}`);
-        return new Response("Unauthorized", { status: 401 });
-      }
+    if (!env.SHOPIFY_WEBHOOK_SECRET) {
+      console.error('[Worker] SHOPIFY_WEBHOOK_SECRET not configured — rejecting webhook');
+      return new Response('Webhook secret not configured', { status: 500 });
+    }
+
+    const valid = await verifySignature(body, sig, env.SHOPIFY_WEBHOOK_SECRET);
+    if (!valid) {
+      console.error(`Invalid signature for ${topic}`);
+      return new Response("Unauthorized", { status: 401 });
     }
 
     // ── Parse payload ──────────────────────────────────────────────────────────
@@ -59,6 +88,81 @@ export default {
     return new Response("ok", { status: 200 });
   }
 };
+
+
+// ── Instagram feed handler ─────────────────────────────────────────────────────
+
+async function handleInstagram(request, env, origin) {
+  if (!env.META_SYSTEM_USER_TOKEN) {
+    return new Response(JSON.stringify({ error: "Instagram token not configured" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+    });
+  }
+
+  // Check Cloudflare cache first
+  const cache    = caches.default;
+  const cacheKey = new Request("https://cache.internal/instagram-feed");
+  const cached   = await cache.match(cacheKey);
+  if (cached) {
+    const body = await cached.text();
+    return new Response(body, {
+      headers: { "Content-Type": "application/json", "X-Cache": "HIT", ...corsHeaders(origin) },
+    });
+  }
+
+  const IG_USER_ID = "17841402374242976";
+  const fields     = "id,media_type,media_url,thumbnail_url,permalink,timestamp,caption";
+  const apiUrl     = `https://graph.facebook.com/v21.0/${IG_USER_ID}/media?fields=${fields}&limit=14&access_token=${env.META_SYSTEM_USER_TOKEN}`;
+
+  let igResp;
+  try {
+    igResp = await fetch(apiUrl);
+  } catch (err) {
+    console.error("Instagram API fetch error:", err);
+    return new Response(JSON.stringify({ error: "Upstream error" }), {
+      status: 502,
+      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+    });
+  }
+
+  if (!igResp.ok) {
+    const err = await igResp.text();
+    console.error("Instagram API error:", err);
+    return new Response(JSON.stringify({ error: "Instagram API error" }), {
+      status: igResp.status,
+      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+    });
+  }
+
+  const data = await igResp.json();
+
+  // Normalise: use thumbnail_url for videos, skip CAROUSEL_ALBUM children
+  const posts = (data.data || [])
+    .filter(p => p.media_url || p.thumbnail_url)
+    .map(p => ({
+      id:        p.id,
+      url:       p.media_type === "VIDEO" ? p.thumbnail_url : p.media_url,
+      video_url: p.media_type === "VIDEO" ? p.media_url : null,
+      link:      p.permalink,
+      type:      p.media_type,
+      timestamp: p.timestamp,
+      caption:   p.caption ? p.caption.split("\n")[0].slice(0, 120) : "",
+    }))
+    .slice(0, 12);
+
+  const payload = JSON.stringify({ posts });
+
+  // Cache for 1 hour
+  const cacheResp = new Response(payload, {
+    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" },
+  });
+  await cache.put(cacheKey, cacheResp);
+
+  return new Response(payload, {
+    headers: { "Content-Type": "application/json", "X-Cache": "MISS", ...corsHeaders(origin) },
+  });
+}
 
 
 // ── Router ─────────────────────────────────────────────────────────────────────
@@ -125,9 +229,22 @@ async function route(topic, payload, env) {
 }
 
 
+// ── Payload validation ────────────────────────────────────────────────────────
+
+function validatePayload(payload, requiredFields) {
+  if (!payload || typeof payload !== 'object') {
+    return false;
+  }
+  return requiredFields.every(field => field in payload);
+}
+
 // ── Handlers ───────────────────────────────────────────────────────────────────
 
 async function onOrderCreate(p, env) {
+  if (!validatePayload(p, ['order_number', 'id'])) {
+    console.warn('onOrderCreate: Invalid payload — missing required fields');
+    return;
+  }
   const items = (p.line_items || []).map(li => li.title).join(", ");
   console.log(`NEW ORDER #${p.order_number} | ${p.email} | ${p.currency} ${p.total_price} | ${items}`);
 
@@ -149,6 +266,10 @@ async function onOrderCreate(p, env) {
 }
 
 async function onOrderPaid(p, env) {
+  if (!validatePayload(p, ['order_number', 'id'])) {
+    console.warn('onOrderPaid: Invalid payload — missing required fields');
+    return;
+  }
   console.log(`PAID #${p.order_number} | ${p.currency} ${p.total_price}`);
 
   if (p.email) {
@@ -162,6 +283,10 @@ async function onOrderPaid(p, env) {
 }
 
 async function onOrderFulfilled(p, env) {
+  if (!validatePayload(p, ['order_number', 'id'])) {
+    console.warn('onOrderFulfilled: Invalid payload — missing required fields');
+    return;
+  }
   console.log(`FULFILLED #${p.order_number} | ${p.email}`);
 
   if (p.email) {
@@ -175,19 +300,35 @@ async function onOrderFulfilled(p, env) {
 }
 
 async function onOrderCancelled(p, env) {
+  if (!validatePayload(p, ['order_number', 'id'])) {
+    console.warn('onOrderCancelled: Invalid payload — missing required fields');
+    return;
+  }
   console.log(`CANCELLED #${p.order_number} | reason: ${p.cancel_reason}`);
 }
 
 async function onOrderUpdated(p, env) {
+  if (!validatePayload(p, ['order_number', 'id'])) {
+    console.warn('onOrderUpdated: Invalid payload — missing required fields');
+    return;
+  }
   // Low-noise — only log, no downstream action by default
   console.log(`ORDER UPDATED #${p.order_number} | status: ${p.financial_status}`);
 }
 
 async function onRefund(p, env) {
+  if (!validatePayload(p, ['order_id'])) {
+    console.warn('onRefund: Invalid payload — missing required fields');
+    return;
+  }
   console.log(`REFUND | order: ${p.order_id} | amount: ${p.transactions?.[0]?.amount}`);
 }
 
 async function onCheckout(topic, p, env) {
+  if (!validatePayload(p, ['token'])) {
+    console.warn('onCheckout: Invalid payload — missing required fields');
+    return;
+  }
   const email = p.email;
   if (!email) return; // anonymous checkout — no email yet, skip
 
@@ -208,6 +349,10 @@ async function onCheckout(topic, p, env) {
 }
 
 async function onCustomerCreate(p, env) {
+  if (!validatePayload(p, ['id', 'email'])) {
+    console.warn('onCustomerCreate: Invalid payload — missing required fields');
+    return;
+  }
   console.log(`NEW CUSTOMER | ${p.email} | ${p.first_name} ${p.last_name}`);
 
   // Upsert profile in Klaviyo
@@ -228,6 +373,10 @@ async function onCustomerCreate(p, env) {
 }
 
 async function onCustomerUpdate(p, env) {
+  if (!validatePayload(p, ['id', 'email'])) {
+    console.warn('onCustomerUpdate: Invalid payload — missing required fields');
+    return;
+  }
   console.log(`CUSTOMER UPDATE | ${p.email}`);
 
   await klaviyoUpsertProfile({
@@ -244,6 +393,10 @@ async function onCustomerUpdate(p, env) {
 }
 
 async function onInventoryUpdate(p, env) {
+  if (!validatePayload(p, ['inventory_item_id'])) {
+    console.warn('onInventoryUpdate: Invalid payload — missing required fields');
+    return;
+  }
   const avail = p.available;
   console.log(`INVENTORY | item:${p.inventory_item_id} available:${avail}`);
 
@@ -254,11 +407,19 @@ async function onInventoryUpdate(p, env) {
 }
 
 async function onProductChange(topic, p, env) {
+  if (!validatePayload(p, ['id', 'handle', 'title'])) {
+    console.warn('onProductChange: Invalid payload — missing required fields');
+    return;
+  }
   const action = topic.split("/")[1];
   console.log(`PRODUCT ${action.toUpperCase()} | ${p.handle} | ${p.title}`);
 }
 
 async function onCollectionChange(topic, p, env) {
+  if (!validatePayload(p, ['id', 'handle', 'title'])) {
+    console.warn('onCollectionChange: Invalid payload — missing required fields');
+    return;
+  }
   const action = topic.split("/")[1];
   console.log(`COLLECTION ${action.toUpperCase()} | ${p.handle} | ${p.title}`);
 }
@@ -322,6 +483,15 @@ async function klaviyoUpsertProfile(attrs, env) {
 
 // ── HMAC verification ──────────────────────────────────────────────────────────
 
+function timingSafeEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 async function verifySignature(body, headerSig, secret) {
   const key = await crypto.subtle.importKey(
     "raw",
@@ -332,5 +502,5 @@ async function verifySignature(body, headerSig, secret) {
   );
   const sig     = await crypto.subtle.sign("HMAC", key, body);
   const computed = btoa(String.fromCharCode(...new Uint8Array(sig)));
-  return computed === headerSig;
+  return timingSafeEqual(computed, headerSig);
 }

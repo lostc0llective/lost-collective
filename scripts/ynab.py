@@ -39,7 +39,7 @@ def delete_transaction(transaction_id: str) -> bool:
         f"{BASE}/budgets/{BUDGET_ID}/transactions/{transaction_id}",
         headers=HEADERS,
     )
-    return r.status_code == 200
+    return r.status_code in (200, 204)
 
 
 def milliunits(n: int) -> float:
@@ -193,8 +193,8 @@ def cleanup_legacy_transactions(dry_run: bool = False):
     Target balances after cleanup: Bills $90.83, Spending ~$28, Saving ~$3.
     """
     ING_ACCOUNTS = {
-        "Bills":    "f8a2de35-c0e4-4825-b879-df716c1e3e4b",
-        "Spending": "aa9ca0d6-e86c-4ad3-8d36-48a8a55427ea",
+        "Bills":    "ac9c72fc-0c7b-47e0-9092-f67821b1f2bd",
+        "Spending": "e59be376-73a0-4115-85d0-162b6c5f0044",
         "Saving":   "6cbd6bc5-4752-4a53-b73b-8f1290cf32b7",
     }
 

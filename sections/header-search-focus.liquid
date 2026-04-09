@@ -97,7 +97,7 @@
               {%
                 render 'image-element',
                 image: section.settings.logo,
-                alt: section.settings.logo.alt | default: shop.name,
+                alt: section.settings.logo.alt | default: 'Lost Collective',
                 additional_classes: 'primary-logo',
                 focal_point: section.settings.logo.presentation.focal_point,
                 loading: 'eager',
@@ -123,7 +123,8 @@
           <form class="header__search-form search-form" action="{{ routes.search_url }}">
             <div class="field has-addons">
               <div class="control header__search-bar is-relative">
-                <input class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
+                <label for="header-search-q" class="visually-hidden">{{ settings.search_placeholder | default: 'Search' }}</label>
+                <input id="header-search-q" class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
               </div>
               <div class="control">
                 <button class="button header__search-button">

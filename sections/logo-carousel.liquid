@@ -24,14 +24,14 @@
 
     {% for logo in logos %}
       <div class="logo-slide">
-        <img src="{{ logo | strip }}" alt="Logo">
+        <img src="{{ logo | strip }}" alt="Logo" loading="lazy">
       </div>
     {% endfor %}
 
     <!-- Duplicate Logos for Infinite Scrolling -->
     {% for logo in logos %}
       <div class="logo-slide">
-        <img src="{{ logo | strip }}" alt="Logo">
+        <img src="{{ logo | strip }}" alt="Logo" loading="lazy">
       </div>
     {% endfor %}
   </div>

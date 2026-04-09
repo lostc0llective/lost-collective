@@ -10,7 +10,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | img_url: '32x32' }}">
+  <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
 
   <!-- Title and description ================================================== -->
   <title>{{ 'gift_cards.issued.title' | t: value: formatted_initial_value_stripped, shop: shop.name }}</title>

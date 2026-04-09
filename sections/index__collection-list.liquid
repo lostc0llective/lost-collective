@@ -175,10 +175,11 @@
               {{ 'collection-' | append: num | placeholder_svg_tag: 'placeholder-svg' }}
             {% endif %}
 
-            <a class="collection-info__caption" href="{{ collection.url }}">
+            {%- assign caption_title = title | default: collection.title -%}
+            <a class="collection-info__caption" href="{{ collection.url }}" aria-label="{{ caption_title | escape }}">
               {% if section.settings.collection_title_below_image == blank %}
                 <div class="collection-info__caption-wrapper">
-                  <span class="title">
+                  <span class="title" aria-hidden="true">
                     {% if title != blank %}
                       {{- title -}}
                     {% elsif collection != blank %}
@@ -192,7 +193,9 @@
                     render 'button',
                     label: button_label,
                     href: collection.url,
+                    type: "button",
                     style: section.settings.button_style,
+                    attribute: 'tabindex="-1" aria-hidden="true"',
                   %}
                 </div>
               {% endif %}
@@ -221,7 +224,9 @@
                 render 'button',
                 label: button_label,
                 href: collection.url,
+                type: "button",
                 style: section.settings.button_style,
+                attribute: 'tabindex="-1" aria-hidden="true"',
               %}
             </a>
           {% endif %}

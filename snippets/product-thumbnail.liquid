@@ -94,7 +94,7 @@
 
       <div class="product-image__wrapper">
         <div class="image__container product__imageContainer">
-          <a href="{{ product.url | within: collection }}">
+          <a href="{{ product.url | within: collection }}" aria-hidden="true" tabindex="-1">
             {% if settings.stickers_enabled %}
               {%
                 render 'product-thumbnail__sticker',
@@ -111,6 +111,7 @@
               alt: alt_text,
               object_fit: align_height,
               max_height: height,
+              mockup_orientation: product.metafields.custom.orientation.value,
             %}
 
             {% comment %} Secondary image {% endcomment %}

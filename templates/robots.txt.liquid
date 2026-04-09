@@ -30,6 +30,9 @@
 {{ 'Disallow: /web-pixels-manager' }}
 {{ 'Disallow: /wpm@' }}
 {{ 'Disallow: /cdn/wpm/' }}
+{{ 'Disallow: /*?country=*' }}
+{{ 'Disallow: /*?currency=*' }}
+{{ 'Disallow: /*?rb_tags=*' }}
   {%- endif -%}
 
   {%- if group.sitemap != blank -%}

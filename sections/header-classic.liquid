@@ -117,7 +117,7 @@
                   {%
                     render 'image-element',
                     image: section.settings.overlay_logo,
-                    alt: section.settings.overlay_logo.alt | default: shop.name,
+                    alt: section.settings.overlay_logo.alt | default: 'Lost Collective',
                     additional_classes: 'overlay-logo',
                     back_to_basics: true,
                     focal_point: section.settings.overlay_logo.presentation.focal_point,
@@ -131,7 +131,7 @@
                     {%
                       render 'image-element',
                       image: section.settings.logo,
-                      alt: section.settings.logo.alt | default: shop.name,
+                      alt: section.settings.logo.alt | default: 'Lost Collective',
                       additional_classes: 'primary-logo',
                       focal_point: section.settings.logo.presentation.focal_point,
                       loading: 'eager',
@@ -153,7 +153,7 @@
                 {%
                   render 'image-element',
                   image: section.settings.logo,
-                  alt: section.settings.logo.alt | default: shop.name,
+                  alt: section.settings.logo.alt | default: 'Lost Collective',
                   additional_classes: 'primary-logo',
                   focal_point: section.settings.logo.presentation.focal_point,
                   loading: 'eager',

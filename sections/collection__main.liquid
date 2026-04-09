@@ -95,9 +95,10 @@
     <div class="container">
         <div class="one-whole column">
             <div class="collection__description collapsible-text-container">
-                <div class="collection__description-text">
+                <div class="collection__description-text" data-collapsible>
                     {{ collection.description }}
                 </div>
+                <button class="collection__description-toggle" data-collapsible-toggle aria-expanded="false">Read more</button>
             </div>
         </div>
     </div>
@@ -361,6 +362,109 @@
 
 <script data-theme-editor-load-script src="{{ 'z__jsSidebar.js' | asset_url }}"></script>
 <script src="{{ 'z__jsCollection.js' | asset_url }}"></script>
+
+<script>
+(function () {
+  var text = document.querySelector('[data-collapsible]');
+  var btn = document.querySelector('[data-collapsible-toggle]');
+  if (!text || !btn) return;
+  btn.addEventListener('click', function () {
+    var expanded = text.classList.toggle('is-expanded');
+    btn.textContent = expanded ? 'Read less' : 'Read more';
+    btn.setAttribute('aria-expanded', expanded);
+  });
+})();
+
+/* Mockup orientation crop — strips white mat from product thumbnails.
+   All reference images are 2048×2048 squares. Landscape photos fill full
+   width with 16.7% white mat top/bottom; portrait fills full height with
+   16.6% mat left/right. A 20px probe image is sampled to detect which.
+   Matching aspect-ratio is then applied so overflow:hidden clips the mat. */
+(function () {
+  function applyOrientation(wrap, orientation) {
+    /* img has intrinsic width/height="2048" which fights aspect-ratio on the container.
+       Absolutely positioning the img breaks the circular dependency so aspect-ratio
+       on the wrap (not the img) drives the container height. */
+    var img = wrap.querySelector('img');
+    wrap.setAttribute('data-mockup-orientation', orientation);
+    wrap.style.position = 'relative';
+    wrap.style.aspectRatio = orientation === 'landscape' ? '3/2' : '2/3';
+    wrap.style.overflow = 'hidden';
+    if (img) {
+      img.style.position = 'absolute';
+      img.style.top = '0';
+      img.style.left = '0';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.objectPosition = 'center';
+    }
+  }
+
+  function classifyWrap(wrap) {
+    /* Server-side: Liquid already stamped data-mockup-orientation via custom.orientation
+       metafield. Apply the CSS and skip the fetch entirely. */
+    if (wrap.hasAttribute('data-mockup-orientation')) {
+      applyOrientation(wrap, wrap.getAttribute('data-mockup-orientation'));
+      return;
+    }
+
+    /* Fallback for newly-uploaded products that don't have the metafield yet. */
+    var img = wrap.querySelector('img');
+    if (!img) return;
+    /* data-src holds the real CDN URL on lazy-loaded images; src is an SVG placeholder.
+       Strip existing query string — we'll add ?width=20 for a cheap probe. */
+    var src = (img.getAttribute('data-src') || img.getAttribute('src') || '').split('?')[0];
+    if (!src || src.indexOf('cdn.shopify.com') === -1) return;
+
+    /* Protocol-relative URLs (//cdn.shopify.com) must be absolute for fetch(). */
+    var probeUrl = (src.startsWith('//') ? 'https:' + src : src) + '?width=20';
+
+    /* Use fetch() → blob URL instead of crossOrigin Image.
+       crossOrigin='anonymous' fails when the browser has cached the same URL without
+       CORS headers (e.g. from a non-CORS img tag elsewhere), tainting the canvas.
+       A blob URL is always same-origin so getImageData() is never blocked. */
+    fetch(probeUrl, { mode: 'cors', credentials: 'omit' })
+      .then(function (res) { return res.blob(); })
+      .then(function (blob) {
+        var blobUrl = URL.createObjectURL(blob);
+        var probe = new Image();
+        probe.onload = function () {
+          try {
+            var c = document.createElement('canvas');
+            c.width = probe.naturalWidth;
+            c.height = probe.naturalHeight;
+            c.getContext('2d').drawImage(probe, 0, 0);
+            /* Sample top-centre pixel. White = landscape (mat at top); photo = portrait. */
+            var px = c.getContext('2d').getImageData(Math.floor(probe.naturalWidth / 2), 1, 1, 1).data;
+            applyOrientation(wrap, (px[0] > 240 && px[1] > 240 && px[2] > 240) ? 'landscape' : 'portrait');
+          } catch (e) {
+            applyOrientation(wrap, 'landscape');
+          } finally {
+            URL.revokeObjectURL(blobUrl);
+          }
+        };
+        probe.onerror = function () {
+          URL.revokeObjectURL(blobUrl);
+          applyOrientation(wrap, 'landscape');
+        };
+        probe.src = blobUrl;
+      })
+      .catch(function () { applyOrientation(wrap, 'landscape'); });
+  }
+
+  function init() {
+    document.querySelectorAll('.collection-matrix .image-element__wrap').forEach(classifyWrap);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
 {% schema %}
 {
   "name": "Collection",
