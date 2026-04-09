@@ -97,7 +97,30 @@
   <meta property="og:title" content="{{ page_title | escape }}">
 {%- endif -%}
 {%- if template.name == 'index' -%}
-  {{ page_image }}
+  {%- if page_image != blank -%}
+    {{ page_image }}
+  {%- else -%}
+    {%- comment -%}
+      Homepage OG fallback image.
+      Uses a specific product image from the White Bay Power Station series as the
+      social sharing preview for the homepage. This is intentional — a compelling
+      photographic image performs far better for social sharing than a logo would.
+
+      The URL is a Shopify CDN product image path. These are stable (they don't
+      change when a product is updated — only the ?v= cache parameter changes,
+      which does not affect the URL's validity for social sharing).
+
+      TODO: For a fully managed solution, add a 'social_image' image_picker to
+      config/settings_schema.json and reference it as:
+        settings.social_image | image_url: width: 1200 | prepend: 'https:'
+      This would let the image be managed from the theme customiser without
+      editing Liquid code.
+    {%- endcomment -%}
+    <meta property="og:image" content="https://cdn.shopify.com/s/files/1/1304/3623/products/white-bay-power-station-control-room-reference-image.jpg">
+    <meta property="og:image:secure_url" content="https://cdn.shopify.com/s/files/1/1304/3623/products/white-bay-power-station-control-room-reference-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="800">
+  {%- endif -%}
 {%- endif -%}
 
 {%- if page_description -%}

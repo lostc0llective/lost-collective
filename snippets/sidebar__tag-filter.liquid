@@ -10,7 +10,7 @@
         <h3 class="sidebar-block__heading" {% if settings.toggle_sidebar %}data-sidebar-block__toggle="closed" aria-label="toggle"{% endif %}>
           {{ block.settings.title }}
           {% if settings.toggle_sidebar %}
-            <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}">
+            <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}" aria-label="Toggle section">
               {% if settings.toggle_icon_style == 'plus_and_minus' %}
                 {% render 'icon',
                         name: 'plus',
@@ -52,7 +52,7 @@
                   {% assign image_name = handle_tag | downcase | append: '.png' %}
                   {% assign swatch = images[image_name] %}
                   <span class="tag-filter__swatch" style="background-color: {{- handle_tag -}};">
-                    <input data-tag-filter-checkbox type="checkbox" value="{{ handle_tag }}" name="{{ handle_tag }}" class="tag-filter__checkbox--swatch {% if swatch == empty %}swatch__image--empty{% endif %}" style="background-image: url({{ swatch | img_url: '50x' }});"
+                    <input data-tag-filter-checkbox type="checkbox" value="{{ handle_tag }}" name="{{ handle_tag }}" class="tag-filter__checkbox--swatch {% if swatch == empty %}swatch__image--empty{% endif %}" style="background-image: url({{ swatch | image_url: width: 50 }});"
                     {% for url_tag in current_tags %}
                       {% capture formatted_url_tag %}{{ url_tag | downcase | handleize }}{% endcapture %}
                         {% if formatted_url_tag == handle_tag %}

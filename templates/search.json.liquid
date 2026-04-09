@@ -14,7 +14,7 @@
   {% for item in search.results %}
 
     {% if item.object_type == 'product' %}
-      {% assign imgSrc = item.featured_image.src | img_url: '200x'  | json %}
+      {% assign imgSrc = item.featured_image.src | image_url: width: 200 | json %}
       {% assign collections = item.collections | json %}
       {% assign price = item.price | money | json %}
       {% assign rawPrice = item.price | json %}
@@ -25,7 +25,7 @@
       {% assign priceMin = item.price_min | json %}
     {% elsif item.object_type == 'article' %}
       {% if item.image.src != blank %}
-        {% assign imgSrc = item.image.src | img_url: '200x' | json %}
+        {% assign imgSrc = item.image.src | image_url: width: 200 | json %}
       {% endif %}
       {% assign textContent = item.excerpt | strip_html | truncatewords: 5 | json %}
       {% assign available = true %}

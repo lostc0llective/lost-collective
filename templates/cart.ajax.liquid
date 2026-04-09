@@ -73,7 +73,7 @@
             {% else %}
               {% if item.image %}
                 <a href="{{ item.url }}">
-                  <img src="{{ item | img_url: '320x' }}" alt="{{ item.title | escape }}" />
+                  <img src="{{ item | image_url: width: 320 }}" alt="{{ item.title | escape }}" />
                 </a>
               {% endif %}
             {% endif %}

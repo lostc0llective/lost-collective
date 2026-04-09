@@ -91,18 +91,16 @@
               is-width-{{ width }}">
     <div class="container is-align-center">
       <div class="fixed-message__text seven-tenths column has-padding-top has-padding-bottom">
-        {{ section.settings.text }}
+        <p>This site uses cookies to personalise your experience and analyse traffic. By continuing, you agree to their use.</p>
       </div>
       <div class="fixed-message__button three-tenths column is-flex is-justify-center is-align-center">
-        {% if section.settings.button_label != blank %}
-          {% render 'button',
-                  label: section.settings.button_label,
-                  href: section.settings.link,
-                  type: "link",
-                  style: section.settings.button_style,
-                  class: "js-close-fixed-message"
-          %}
-        {% endif %}
+        {% render 'button',
+                label: 'Got it',
+                href: section.settings.link,
+                type: "link",
+                style: 'button--primary',
+                class: "js-close-fixed-message"
+        %}
       </div>
     </div>
   </div>

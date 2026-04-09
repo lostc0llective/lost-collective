@@ -1,12 +1,12 @@
 {% comment %}
-  @param img
+  @param image
     An Image Drop to display.
 
   @param alt
     Alt text for the image.
 
   @param progressive {Boolean} (optional)
-    If true, image is progressive.
+    If true, image is progressive (pjpg format).
 
   @param stretch_width {Boolean} (optional)
     If true, remove the max-width from the image tag.
@@ -37,10 +37,13 @@
     If true, crops the image to the max_height.
 
   @param focal_point {String} (optional)
-    Applies `background-size:cover;background-position:{{ focal_point }};` to the style property
-    of the container if the image is a background-image and `object-fit:cover;object-position:[focal point]`
-    otherwise on the image element.
+    Applies focal point styles to the image.
     Defaults to blank.
+
+  @param fetchpriority {String} (optional)
+    Set to 'high' for above-fold images (hero, first visible image).
+    Skips lazysizes; outputs standard eager-loaded img instead.
+    Defaults to blank (lazy loading).
 {% endcomment %}
 
 {% liquid
@@ -51,7 +54,6 @@
     assign loading_attr = 'eager'
     assign use_lazyload = false
   else
-    assign loading_attr = loading | default: 'lazy'
     assign use_lazyload = true
   endif
 %}
@@ -68,46 +70,23 @@
   {% endif %}
 {% endif %}
 
-{% comment %}Check if image is progressive (does not support transparent pngs){% endcomment %}
-{% if progressive %}
-  {%- capture srcset -%}
-    {{ image | img_url: '5000x', format: 'pjpg' }} 5000w,
-    {{ image | img_url: '4500x', format: 'pjpg' }} 4500w,
-    {{ image | img_url: '4000x', format: 'pjpg' }} 4000w,
-    {{ image | img_url: '3500x', format: 'pjpg' }} 3500w,
-    {{ image | img_url: '3000x', format: 'pjpg' }} 3000w,
-    {{ image | img_url: '2500x', format: 'pjpg' }} 2500w,
-    {{ image | img_url: '2000x', format: 'pjpg' }} 2000w,
-    {{ image | img_url: '1800x', format: 'pjpg' }} 1800w,
-    {{ image | img_url: '1600x', format: 'pjpg' }} 1600w,
-    {{ image | img_url: '1400x', format: 'pjpg' }} 1400w,
-    {{ image | img_url: '1200x', format: 'pjpg' }} 1200w,
-    {{ image | img_url: '1000x', format: 'pjpg' }} 1000w,
-    {{ image | img_url: '800x', format: 'pjpg' }} 800w,
-    {{ image | img_url: '600x', format: 'pjpg' }} 600w,
-    {{ image | img_url: '400x', format: 'pjpg' }} 400w,
-    {{ image | img_url: '200x', format: 'pjpg' }} 200w
-  {%- endcapture -%}
-{% else %}
-  {%- capture srcset -%}
-    {{ image | img_url: '5000x' }} 5000w,
-    {{ image | img_url: '4500x' }} 4500w,
-    {{ image | img_url: '4000x' }} 4000w,
-    {{ image | img_url: '3500x' }} 3500w,
-    {{ image | img_url: '3000x' }} 3000w,
-    {{ image | img_url: '2500x' }} 2500w,
-    {{ image | img_url: '2000x' }} 2000w,
-    {{ image | img_url: '1800x' }} 1800w,
-    {{ image | img_url: '1600x' }} 1600w,
-    {{ image | img_url: '1400x' }} 1400w,
-    {{ image | img_url: '1200x' }} 1200w,
-    {{ image | img_url: '1000x' }} 1000w,
-    {{ image | img_url: '800x' }} 800w,
-    {{ image | img_url: '600x' }} 600w,
-    {{ image | img_url: '400x' }} 400w,
-    {{ image | img_url: '200x' }} 200w,
-  {%- endcapture -%}
-{% endif %}
+{%- capture srcset -%}
+  {% if progressive %}
+    {{ image | image_url: width: 320, format: 'pjpg' }} 320w,
+    {{ image | image_url: width: 640, format: 'pjpg' }} 640w,
+    {{ image | image_url: width: 960, format: 'pjpg' }} 960w,
+    {{ image | image_url: width: 1280, format: 'pjpg' }} 1280w,
+    {{ image | image_url: width: 1600, format: 'pjpg' }} 1600w,
+    {{ image | image_url: width: 1920, format: 'pjpg' }} 1920w
+  {% else %}
+    {{ image | image_url: width: 320 }} 320w,
+    {{ image | image_url: width: 640 }} 640w,
+    {{ image | image_url: width: 960 }} 960w,
+    {{ image | image_url: width: 1280 }} 1280w,
+    {{ image | image_url: width: 1600 }} 1600w,
+    {{ image | image_url: width: 1920 }} 1920w
+  {% endif %}
+{%- endcapture -%}
 
 {% if image_crop == true %}
   {% capture height_style %}
@@ -117,70 +96,47 @@
 {% elsif object_fit == true %}
   {% capture height_style %}
     {% if height %}height: {{ height }}px;{% endif %}
-    max-height: {{ max_height }}px; max-width: calc({{ image.width }} /  {{ image.height }} * {{ max_height }}px);
+    max-height: {{ max_height }}px; max-width: calc({{ image.width }} / {{ image.height }} * {{ max_height }}px);
   {% endcapture %}
 {% else %}
-  {% comment %}Used to reset variable{% endcomment %}
   {% assign height_style = '' %}
 {% endif %}
 
 {% comment %}Loading style{% endcomment %}
 {% if settings.image_loading_style == 'blur-up' %}
-  {% comment %}Low quality image loads first{% endcomment %}
-  {% assign low_quality_image = image | img_url: '50x' %}
+  {% assign low_quality_image = image | image_url: width: 50 %}
 {% elsif settings.image_loading_style == 'color' %}
-  {% comment %}Dominant image color loads first{% endcomment %}
-  {% assign dominant_color_image = image | img_url: '1x' %}
-  {% capture image_background_color %}
-    background: url({{ dominant_color_image }});
-  {% endcapture %}
+  {% assign dominant_color_image = image | image_url: width: 1 %}
+  {% capture image_background_color %}background: url({{ dominant_color_image }});{% endcapture %}
 {% endif %}
 
 {% if back_to_basics %}
   <div
-    class="
-      image-element__wrap
-      {% if additional_wrapper_classes %}
-        {{ additional_wrapper_classes }}
-      {% endif %}
-    "
+    class="image-element__wrap{% if additional_wrapper_classes %} {{ additional_wrapper_classes }}{% endif %}"
     style="{{ image_background_color }}{{ height_style }}"
+    {% if mockup_orientation != blank %}data-mockup-orientation="{{ mockup_orientation }}"{% endif %}
   >
     <img
       alt="{{ alt | escape }}"
-      src="{{ image | img_url: '2000x' }}"
-      loading="{{ loading_attr }}"
+      src="{{ image | image_url: width: 2000 }}"
+      loading="{{ loading_attr | default: 'lazy' }}"
       {% if fetchpriority_attr != blank %}fetchpriority="{{ fetchpriority_attr }}"{% endif %}
       style="{{ inline_style }}"
-      {% if additional_classes %}
-        class="{{ additional_classes }}"
-      {% endif %}
+      {% if additional_classes %}class="{{ additional_classes }}"{% endif %}
     />
   </div>
 {% else %}
-  {% comment %}Build image element{% endcomment %}
   <div
-    class="
-      image-element__wrap
-      {% if additional_wrapper_classes %}
-        {{ additional_wrapper_classes }}
-      {% endif %}
-    "
-    style="{{ image_background_color }}{{ height_style }} {% unless stretch_width == true or object_fit %}max-width: {{ image.width }}px;{% endunless %}"
+    class="image-element__wrap{% if additional_wrapper_classes %} {{ additional_wrapper_classes }}{% endif %}"
+    style="{{ image_background_color }}{{ height_style }}{% unless stretch_width == true or object_fit %} max-width: {{ image.width }}px;{% endunless %}"
+    {% if mockup_orientation != blank %}data-mockup-orientation="{{ mockup_orientation }}"{% endif %}
   >
     {% if use_lazyload %}
       <img
         alt="{{ alt | escape }}"
-        class="
-          lazyload
-          transition--{{ settings.image_loading_style }}
-          {{ additional_classes }}
-        "
-        loading="{{ loading_attr }}"
-        {% if low_quality_image %}
-          src="{{ low_quality_image }}"
-        {% endif %}
-        data-src="{{ image | img_url: '1600x' }}"
+        class="lazyload transition--{{ settings.image_loading_style }}{% if additional_classes %} {{ additional_classes }}{% endif %}"
+        {% if low_quality_image %}src="{{ low_quality_image }}"{% endif %}
+        data-src="{{ image | image_url: width: 1600 }}"
         data-sizes="auto"
         data-srcset="{{ srcset }}"
         data-aspectratio="{{ image.width }}/{{ image.height }}"
@@ -192,13 +148,10 @@
     {% else %}
       <img
         alt="{{ alt | escape }}"
-        class="
-          transition--{{ settings.image_loading_style }}
-          {{ additional_classes }}
-        "
+        class="transition--{{ settings.image_loading_style }}{% if additional_classes %} {{ additional_classes }}{% endif %}"
         loading="{{ loading_attr }}"
         fetchpriority="{{ fetchpriority_attr }}"
-        src="{{ image | img_url: '1600x' }}"
+        src="{{ image | image_url: width: 1600 }}"
         srcset="{{ srcset }}"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1600px"
         height="{{ image.height }}"
@@ -211,5 +164,5 @@
 
 {% comment %}Fallback for no javascript{% endcomment %}
 <noscript class="noscript">
-  <img class="{{ additional_classes }}" src="{{ image | img_url: '2000x' }}" alt="{{ alt | escape }}" style="{{ inline_style }}">
+  <img class="{{ additional_classes }}" src="{{ image | image_url: width: 2000 }}" alt="{{ alt | escape }}" style="{{ inline_style }}">
 </noscript>

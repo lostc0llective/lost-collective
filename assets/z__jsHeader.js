@@ -44,7 +44,7 @@ window.PXUTheme.jsHeader = {
       window.PXUTheme.mobileMenu.init();
     }
 
-    $('.search-overlay__close').on('click', function(){
+    $('.search-overlay__close, .search-overlay__close-btn').on('click', function(){
       window.PXUTheme.jsHeader.hideSearch();
     });
 
@@ -222,7 +222,7 @@ window.PXUTheme.jsHeader = {
 
     if(window.PXUTheme.theme_settings.search_layout == 'overlay') {
       $('[data-search-type="overlay"]').addClass('is-opened');
-      $('.search-form .search__fields input[type="text"]')[0].focus();
+      $('.search-form .search__fields input[name="q"]')[0].focus();
       window.PXUTheme.predictiveSearch.lockBodyScroll();
     } else {
       $.fancybox.open($('.js-search-popup'), {
@@ -245,7 +245,7 @@ window.PXUTheme.jsHeader = {
           document.querySelector('.js-search-popup').setAttribute('aria-hidden', 'false');
           // Set the cursor at the end of the input field for better UX,
           // otherwise it may be at the beginning of the input field when the input gets focus.
-          const searchInputEl = $('.search-form .search__fields input[type="text"]')[0];
+          const searchInputEl = $('.search-form .search__fields input[name="q"]')[0];
           const searchTermLength = searchInputEl.value.length;
           searchInputEl.setSelectionRange(searchTermLength, searchTermLength);
         },

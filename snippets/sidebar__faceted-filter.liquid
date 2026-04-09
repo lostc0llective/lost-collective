@@ -67,7 +67,7 @@
             <span class="faceted-filter-group-summary__active-count">({{ filter.active_values.size }})</span>
           {%- endif -%}
           {% if settings.toggle_sidebar %}
-            <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}">
+            <button class="sidebar-block__toggle-icon icon-style--{{ settings.toggle_icon_style }}" aria-label="Toggle section">
               {% if settings.toggle_icon_style == 'plus_and_minus' %}
                 {% render 'icon',
                         name: 'plus',
@@ -159,12 +159,12 @@
                     name="{{ filter.min_value.param_name }}"
                     id="Filter-{{ filter.label }}-{{ forloop.index }}"
                     {% if filter.min_value.value -%}
-                      value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                      value="{{ filter.min_value.value | money_without_currency | remove: ',' | split: '.' | first }}"
                     {%- endif %}
                     type="number"
                     placeholder="0"
                     min="0"
-                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    max="{{ filter.range_max | money_without_currency | remove: ',' | split: '.' | first }}"
                   >
                 </div>
                 <div class="faceted-filter-group-display__price-range-to">
@@ -180,12 +180,12 @@
                     name="{{ filter.max_value.param_name }}"
                     id="Filter-{{ filter.label }}-{{ forloop.index }}"
                     {% if filter.max_value.value -%}
-                      value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                      value="{{ filter.max_value.value | money_without_currency | remove: ',' | split: '.' | first }}"
                     {%- endif %}
                     type="number"
-                    placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    placeholder="{{ filter.range_max | money_without_currency | remove: ',' | split: '.' | first }}"
                     min="0"
-                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    max="{{ filter.range_max | money_without_currency | remove: ',' | split: '.' | first }}"
                   >
                 </div>
               </div>

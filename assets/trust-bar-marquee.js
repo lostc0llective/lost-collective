@@ -48,7 +48,11 @@
     container.style.display = 'inline-flex';
     container.style.flexWrap = 'nowrap';
     container.style.maxWidth = 'none';
-    container.style.animation = 'trustMarquee ' + duration + 's linear infinite';
+
+    // Respect reduced-motion preference — show static items instead of scrolling
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      container.style.animation = 'trustMarquee ' + duration + 's linear infinite';
+    }
 
     // Fade in — CSS has opacity:0 on .container to prevent pre-JS layout flash
     container.style.opacity = '1';

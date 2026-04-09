@@ -299,22 +299,30 @@
                       "
                     >
                       {% if button_1 != blank %}
+                        {% assign btn1_href = button_1_link | default: link %}
+                        {% assign btn1_aria = button_1 | append: ' — ' | append: title %}
+                        {% capture btn1_attribute %}aria-label="{{ btn1_aria | escape }}"{% endcapture %}
                         {%
                           render 'button',
                           label: button_1,
-                          href: button_1_link,
+                          href: btn1_href,
                           type: "link",
                           style: block.settings.button_1_style,
+                          attribute: btn1_attribute,
                         %}
                       {% endif %}
 
                       {% if button_2 != blank %}
+                        {% assign btn2_href = button_2_link | default: link %}
+                        {% assign btn2_aria = button_2 | append: ' — ' | append: title %}
+                        {% capture btn2_attribute %}aria-label="{{ btn2_aria | escape }}"{% endcapture %}
                         {%
                           render 'button',
                           label: button_2,
-                          href: button_2_link,
+                          href: btn2_href,
                           type: "link",
                           style: block.settings.button_2_style,
+                          attribute: btn2_attribute,
                         %}
                       {% endif %}
                     </div>

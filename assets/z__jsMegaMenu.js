@@ -70,6 +70,9 @@ window.PXUTheme.jsMegaMenu = {
     if ($('.dropdown-click--false').length > 0) {
       $('.navbar-item, .header__brand, .header__search').on('mouseover', function(){
 
+        // Don't close mega menu when hovering its own children
+        if ($(this).closest('.mega-menu__section').length) return;
+
         //Close any mega menus on hover
         $('.mega-menu__section').removeClass('is-active');
 

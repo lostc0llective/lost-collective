@@ -250,7 +250,7 @@
                         is-hidden-mobile-only
                       "
                       {% if image != blank %}
-                        href="{{ image | img_url: '2000x' }}"
+                        href="{{ image | image_url: width: 2000 }}"
                         data-fancybox="{{ section.id }}"
                       {% endif %}
                     >
@@ -266,7 +266,7 @@
                         is-hidden-desktop-only
                       "
                       {% if mobile_image != blank %}
-                        href="{{ mobile_image | img_url: '2000x' }}"
+                        href="{{ mobile_image | image_url: width: 2000 }}"
                         data-fancybox="{{ section.id }}"
                       {% endif %}
                     >

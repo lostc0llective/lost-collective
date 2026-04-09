@@ -1,5 +1,11 @@
 name: Deploy Theme
 
+# Deployment workflow with environment-based gates:
+# - Staging deploys automatically on pushes to staging branch
+# - Production deploys automatically on pushes to main branch
+# - Production deployments require manual approval via GitHub environment
+# - See "environments" section in repository settings to configure required reviewers
+
 on:
   push:
     branches:
@@ -15,9 +21,10 @@ on:
       - 'templates/**'
 
 jobs:
-  deploy:
-    name: Push to Shopify
+  staging-deploy:
+    name: Deploy to Staging
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
 
     steps:
       - name: Checkout
@@ -31,24 +38,55 @@ jobs:
       - name: Install Shopify CLI
         run: npm install -g @shopify/cli@latest @shopify/theme@latest
 
-      - name: Deploy to production (main branch)
-        if: github.ref == 'refs/heads/main'
-        env:
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_STORE_TOKEN }}
-        run: |
-          shopify theme push \
-            --store lost-collective.myshopify.com \
-            --theme 143356625062 \
-            --allow-live \
-            --no-color
-
-      - name: Deploy to staging (staging branch)
-        if: github.ref == 'refs/heads/staging'
+      - name: Deploy to staging
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_STORE_TOKEN }}
         run: |
           shopify theme push \
             --store lost-collective.myshopify.com \
             --theme 141183910054 \
+            --allow-live \
+            --no-color
+
+  production-approval:
+    name: Request Production Approval
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      approved: ${{ job.status == 'success' }}
+
+    environment:
+      name: production
+      url: https://lost-collective.myshopify.com
+
+    steps:
+      - name: Awaiting Approval
+        run: echo "Waiting for manual approval to deploy to production..."
+
+  production-deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: production-approval
+    if: github.ref == 'refs/heads/main' && success()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli@latest @shopify/theme@latest
+
+      - name: Deploy to production
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_STORE_TOKEN }}
+        run: |
+          shopify theme push \
+            --store lost-collective.myshopify.com \
+            --theme 143356625062 \
             --allow-live \
             --no-color

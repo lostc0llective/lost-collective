@@ -37,7 +37,7 @@
 %}
 
 {%- if predictive_search.performed -%}
-  <div class="search__results">
+  <div class="search__results" aria-live="polite" role="region" aria-label="{{ 'general.search.results' | t }}">
 
     {%- if queries_available or collections_results_available -%}
       <div class="search__results__suggestions">
@@ -49,7 +49,7 @@
                 href="{{ query.url }}"
                 class="search__results__item__suggestions"
               >
-                {{ query.styled_text }}
+                {{ query.styled_text | escape }}
               </a>
             </li>
           {%- endfor -%}
@@ -78,7 +78,7 @@
                             lazyload
                             transition--{{ settings.image_loading_style }}
                           "
-                          src="{{ product.featured_media | image_url: height: '300' }}"
+                          src="{{ product.featured_media | image_url: width: 300 }}"
                           alt="{{ product.featured_media.alt }}"
                           loading="lazy"
                           width="300"

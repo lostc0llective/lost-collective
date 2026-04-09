@@ -23,11 +23,23 @@
     },
     "main": {
       "type": "collection__main",
+      "blocks": {
+        "faceted_filtering": {
+          "type": "faceted_filtering",
+          "settings": {
+            "show_filter_product_count": true,
+            "filter_groups_open": 3
+          }
+        }
+      },
+      "block_order": [
+        "faceted_filtering"
+      ],
       "settings": {
         "collection_breadcrumb": true,
         "collection_tags": true,
         "collection_sort": true,
-        "show_sidebar": true,
+        "show_sidebar": false,
         "sidebar_position": "left",
         "show_promo_banner": false,
         "image_darken": false,

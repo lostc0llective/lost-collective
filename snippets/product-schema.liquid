@@ -1,3 +1,11 @@
+{%- comment -%}
+  Edition sizes — reads from product metafields (custom.edition_size_m, custom.edition_size_l,
+  custom.edition_size_xl) with defaults of 100 / 50 / 25 for products without metafields set.
+{%- endcomment -%}
+{%- assign edition_size_m = product.metafields.custom.edition_size_m | default: 100 -%}
+{%- assign edition_size_l = product.metafields.custom.edition_size_l | default: 50 -%}
+{%- assign edition_size_xl = product.metafields.custom.edition_size_xl | default: 25 -%}
+
 {%- assign price_valid_until = 'now' | date: '%s' | plus: 63072000 | date: '%Y-%m-%d' -%}
 <script type="application/ld+json">
 {
@@ -41,9 +49,9 @@
     {%- assign _schema_size = product.selected_or_first_available_variant.option1 -%}
     {%- if _schema_size == 'M' or _schema_size == 'L' or _schema_size == 'XL' -%}
       {%- case _schema_size -%}
-        {%- when 'M' -%}{%- assign _schema_edition = 100 -%}
-        {%- when 'L' -%}{%- assign _schema_edition = 50 -%}
-        {%- when 'XL' -%}{%- assign _schema_edition = 25 -%}
+        {%- when 'M' -%}{%- assign _schema_edition = edition_size_m -%}
+        {%- when 'L' -%}{%- assign _schema_edition = edition_size_l -%}
+        {%- when 'XL' -%}{%- assign _schema_edition = edition_size_xl -%}
       {%- endcase -%}
       {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Edition Size","value":{{ _schema_edition | json }}}
     {%- endif -%}

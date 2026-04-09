@@ -1,0 +1,59 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "property-no-unknown": [
+      true,
+      {
+        "ignoreProperties": [
+          "/^--/"
+        ]
+      }
+    ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        "ignorePseudoElements": [
+          "v-deep",
+          "v-slotted"
+        ]
+      }
+    ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "supports",
+          "document",
+          "include",
+          "mixin",
+          "extend"
+        ]
+      }
+    ],
+    "declaration-block-no-duplicate-properties": true,
+    "no-descending-specificity": null,
+    "unit-allowed-list": [
+      "px",
+      "em",
+      "rem",
+      "%",
+      "s",
+      "ms",
+      "deg",
+      "vh",
+      "vw"
+    ],
+    "color-hex-length": "short",
+    "indentation": 2,
+    "max-nesting-depth": [
+      3,
+      {
+        "ignoreAtRules": [
+          "media",
+          "supports"
+        ]
+      }
+    ],
+    "selector-max-specificity": "0,3,3"
+  }
+}
