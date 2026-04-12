@@ -57,7 +57,7 @@
     {%- endif -%}
   ],
   {%- endif -%}
-  {%- assign _review_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count | plus: 0 -%}
+  {%- assign _review_count = product.metafields.reviews.rating_count | plus: 0 -%}
   {%- if product.metafields.reviews.rating.value != blank and _review_count > 0 %}
   "aggregateRating": {
     "@type": "AggregateRating",
