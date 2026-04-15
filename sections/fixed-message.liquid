@@ -40,14 +40,15 @@
   %}
 {% endstyle %}
 
-{% comment %} Brand-consistent overrides — inline so they win over the settings-driven CSS above {% endcomment %}
+{% comment %} Brand-consistent overrides — now use CSS custom properties from custom.css :root.
+    Inline so they win over the settings-driven CSS above. {% endcomment %}
 {% style %}
   #shopify-section-{{ id }} .fixed-message__container {
     background-color: rgba(26, 26, 26, 0.96) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    color: #ffffff !important;
-    border-top: 2px solid #ebac20 !important;
+    color: var(--color-white) !important;
+    border-top: 2px solid var(--color-brand-yellow) !important;
     border-bottom: none !important;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5) !important;
   }
@@ -58,15 +59,15 @@
     line-height: 1.6;
   }
   #shopify-section-{{ id }} .fixed-message__text a {
-    color: #ebac20 !important;
+    color: var(--color-brand-yellow) !important;
     text-decoration: underline;
   }
   #shopify-section-{{ id }} .fixed-message__button .button,
   #shopify-section-{{ id }} .fixed-message__button .age-gate__confirm_btn {
-    background-color: #ebac20 !important;
-    color: #1a1a1a !important;
-    border-color: #ebac20 !important;
-    border-radius: 35px !important;
+    background-color: var(--color-brand-yellow) !important;
+    color: var(--color-dark) !important;
+    border-color: var(--color-brand-yellow) !important;
+    border-radius: var(--radius-pill) !important;
     font-weight: 700 !important;
     font-size: 13px !important;
     letter-spacing: 0.06em !important;
@@ -78,9 +79,9 @@
   }
   #shopify-section-{{ id }} .fixed-message__button .button:hover,
   #shopify-section-{{ id }} .fixed-message__button .age-gate__confirm_btn:hover {
-    background-color: #1a1a1a !important;
-    color: #ebac20 !important;
-    border-color: #1a1a1a !important;
+    background-color: var(--color-dark) !important;
+    color: var(--color-brand-yellow) !important;
+    border-color: var(--color-dark) !important;
   }
 {% endstyle %}
 
@@ -91,14 +92,14 @@
               is-width-{{ width }}">
     <div class="container is-align-center">
       <div class="fixed-message__text seven-tenths column has-padding-top has-padding-bottom">
-        <p>This site uses cookies to personalise your experience and analyse traffic. By continuing, you agree to their use.</p>
+        {{ section.settings.text }}
       </div>
       <div class="fixed-message__button three-tenths column is-flex is-justify-center is-align-center">
         {% render 'button',
-                label: 'Got it',
+                label: section.settings.button_label,
                 href: section.settings.link,
                 type: "link",
-                style: 'button--primary',
+                style: section.settings.button_style,
                 class: "js-close-fixed-message"
         %}
       </div>

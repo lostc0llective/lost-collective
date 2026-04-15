@@ -135,7 +135,7 @@
   </section>
 {% endif %}
 
-{{ 'trust-bar-marquee.js' | asset_url | script_tag }}
+<script src="{{ 'trust-bar-marquee.js' | asset_url }}" defer></script>
 
 {% schema %}
   {

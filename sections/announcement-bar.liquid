@@ -151,7 +151,7 @@
   }
 </script>
 <script src="{{ 'z__jsAnnouncementBar.js' | asset_url }}"></script>
-{{ 'announcement-bar-marquee.js' | asset_url | script_tag }}
+<script src="{{ 'announcement-bar-marquee.js' | asset_url }}" defer></script>
 
 {% schema %}
   {
