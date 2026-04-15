@@ -78,7 +78,7 @@
   <script src="{{ 'app.js' | asset_url }}" defer></script>
 
   {%- if settings.show_multiple_currencies or shop.enabled_currencies.size > 1 or localization.available_countries.size > 1 -%}
-    <script type="text/javascript" src="/services/javascripts/currencies.js"></script>
+    <script src="/services/javascripts/currencies.js" defer></script>
     <script src="{{ 'currencyConversion.js' | asset_url }}" defer></script>
   {%- endif -%}
 

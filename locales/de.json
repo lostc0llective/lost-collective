@@ -230,12 +230,11 @@
       "name": "Name",
       "email": "E-Mail",
       "comment": "Kommentar",
-      "comment_pladeholder": "Was möchtest du sagen?",
+      "comment_placeholder": "Was möchtest du sagen?",
       "post": "Kommentar posten",
       "moderated": "Kommentare werden vor der Veröffentlichung genehmigt.",
       "success_moderated": "Ihr Kommentar wurde erfolgreich gepostet. Er muss vor der Veröffentlichung genehmigt werden.",
-      "success": "Ihr Kommentar wurde erfolgreich gepostet. Vielen Dank!",
-      "comment_placeholder": "Was möchtest du sagen?"
+      "success": "Ihr Kommentar wurde erfolgreich gepostet. Vielen Dank!"
     }
   },
   "collections": {
