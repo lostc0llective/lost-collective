@@ -86,10 +86,10 @@ All scripts run from `~/lost-collective/` root:
 
 ## Shopify theme
 
-- **Live theme ID:** `143356625062` (Flex v5.2.1 by Out of the Sandbox)
-- **Staging theme ID:** `141183910054`
-- Push to staging: `shopify theme push --theme 141183910054 --store lost-collective.myshopify.com --allow-live`
-- Push to live: `shopify theme push --theme 143356625062 --store lost-collective.myshopify.com --allow-live`
+- **Live theme ID:** `141183910054` ("Lost Collective Live", Flex v5.2.1 by Out of the Sandbox)
+- **Staging theme ID:** `143356625062` ("Copy of Lost Collective Live")
+- Push to staging: `shopify theme push --theme 143356625062 --store lost-collective.myshopify.com --allow-live`
+- Push to live: `shopify theme push --theme 141183910054 --store lost-collective.myshopify.com --allow-live`
 - Custom CSS: `assets/custom.css` (sections 24–30 are custom additions)
 - Custom JS: `assets/swatch-layout.js`
 

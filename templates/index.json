@@ -12,32 +12,30 @@
     "index_video_e3PxRq": {
       "type": "index__video",
       "settings": {
-        "iframe_video": "",
-        "html5_video": "https://cdn.shopify.com/videos/c/o/v/078da6fbfbf4406a9827965cf4bba5c4.mp4",
+        "iframe_video": "https://vimeo.com/1045887806?share=copy#t=0",
         "autoplay": true,
         "autoloop": true,
-        "mute_video": true,
+        "mute_video": false,
         "controls": false,
         "aspect_ratio": "16:9",
         "image": "shopify://shop_images/Exploring_Abandoned_Places_Shop_Lost_Collective_Prints.jpg",
         "pretext": "",
-        "title": "Still Here",
-        "subtitle": "Fine art prints from buildings that outlived their purpose.",
+        "title": "",
+        "subtitle": "",
         "pretext_color": "rgba(0,0,0,0)",
         "heading_color": "#ffffff",
         "subheading_color": "#ffffff",
-        "text_align": "left",
-        "horizontal_text_position": "left",
+        "text_align": "center",
+        "horizontal_text_position": "center",
         "vertical_text_position": "center",
         "button_label": "",
         "button_style": "button--primary",
-        "cta_label": "Shop Best Sellers",
-        "cta_url": "/collections/best-sellers",
-        "cta_style": "button--primary-action",
+        "cta_label": "",
+        "cta_url": "",
+        "cta_style": "button--primary",
         "text_width": 100,
-        "overlay_style": "full",
-        "video_overlay_color": "#000000",
-        "background_opacity": 35,
+        "overlay_style": "fade",
+        "background_opacity": 0,
         "gradient": "rgba(0,0,0,0)",
         "gradient_rotation": 0,
         "width": "wide",
@@ -48,8 +46,6 @@
         "animation": "none",
         "mobile_text_below_video": false,
         "pretext_color_mobile": "rgba(0,0,0,0)",
-        "heading_color_mobile": "#ffffff",
-        "subheading_color_mobile": "#ffffff",
         "mobile_text_alignment": "none",
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0,
@@ -889,9 +885,7 @@
     },
     "lc-instagram": {
       "type": "index__instagram",
-      "settings": {
-        "label": "Follow the story"
-      }
+      "settings": {}
     }
   },
   "order": [
