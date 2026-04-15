@@ -15,16 +15,14 @@ window.PXUTheme.jsMap = {
       map_style: this.map_style
     };
 
-    // Enable caching to avoid duplicate google maps files
-    $.ajaxSetup({ cache: true });
-
     if (mapData.apikey) {
-      // Load maps script and find location coordinates
-      $.getScript(
-        'https://maps.googleapis.com/maps/api/js?key=' + mapData.apikey
-      ).then(function () {
+      // Load maps script and find location coordinates (cache: true avoids duplicate loads)
+      $.ajax({
+        url: 'https://maps.googleapis.com/maps/api/js?key=' + mapData.apikey,
+        dataType: 'script',
+        cache: true
+      }).then(function () {
         window.PXUTheme.jsMap.findLocation(mapData);
-        $.ajaxSetup({ cache: false });
       });
     }
   },

@@ -6,22 +6,17 @@ window.PXUTheme.jsCollection = {
     // Add settings from schema to current object
     window.PXUTheme.jsCollection = $.extend(this, window.PXUTheme.getSectionData($section));
 
-    // function to check if browser is IE
-    var isIE11 = !!navigator.userAgent.match(/Trident.*rv\:11\./);
-
     // Ensure product media libraries are present
-    if (!isIE11) {
-      window.Shopify.loadFeatures([
-        {
-          name: 'shopify-xr',
-          version: '1.0',
-        },
-        {
-          name: 'model-viewer-ui',
-          version: '1.0',
-        }
-      ],)
-    }
+    window.Shopify.loadFeatures([
+      {
+        name: 'shopify-xr',
+        version: '1.0',
+      },
+      {
+        name: 'model-viewer-ui',
+        version: '1.0',
+      }
+    ],)
 
     if (this.enable_sorting == true) {
       $('#sort-by').val($('#sort-by').data('default-sort'));

@@ -41,7 +41,7 @@ window.PXUTheme.jsCustomContactForm = {
     if (completeForm) {
       return;
     } else {
-      event.preventDefault();
+      e.preventDefault();
     }
   });
   },

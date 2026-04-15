@@ -181,7 +181,7 @@
   <script>
     document.documentElement.className=document.documentElement.className.replace(/\bno-js\b/,'js');
     if(window.Shopify&&window.Shopify.designMode)document.documentElement.className+=' in-theme-editor';
-    if(('ontouchstart' in window)||window.DocumentTouch&&document instanceof DocumentTouch)document.documentElement.className=document.documentElement.className.replace(/\bno-touch\b/,'has-touch');
+    if('ontouchstart' in window)document.documentElement.className=document.documentElement.className.replace(/\bno-touch\b/,'has-touch');
   </script>
 
 

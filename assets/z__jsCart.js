@@ -46,7 +46,7 @@ window.PXUTheme.jsCart = {
         }
       },
       error: function (XMLHttpRequest, textStatus) {
-        var response = eval('(' + XMLHttpRequest.responseText + ')');
+        var response = JSON.parse(XMLHttpRequest.responseText);
         response = response.description;
       }
     });
@@ -55,10 +55,8 @@ window.PXUTheme.jsCart = {
 
     if (cart.item_count > 0) {
       $.ajax({
-        dataType: "json",
-        async: false,
-        cache: false,
         dataType: 'html',
+        cache: false,
         url: "/cart",
         success: function (html) {
 
