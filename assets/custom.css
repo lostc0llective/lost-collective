@@ -103,8 +103,8 @@
   --transition-slide: 0.25s ease-in-out;
   --transition-base: 0.3s ease;
 
-  /* Near-black for announcement bar, mobile header — intentionally darker than --color-dark */
-  --color-header-bg: #0d0d0d;
+  /* Dark grey for announcement bar, mobile header — matches footer colour (#4d4d4d) */
+  --color-header-bg: #4d4d4d;
 
   /* Spacing scale — use these instead of hardcoded px values */
   --space-xs:   4px;
@@ -587,6 +587,39 @@ html body .header-sticky-wrapper.is-sticky .header {
 html body #mobile-header-sticky-wrapper.is-sticky .mobile-header,
 html body .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
   background-color: var(--color-header-bg) !important;
+}
+
+/* Mobile sticky shrink — when the header locks to top on scroll, compress it
+   so the logo has equal space above and below. The 33px padding-top is an
+   announcement-bar offset that's no longer needed once sticky. Icon link
+   padding drops from 17px → 8px, pulling the content height from 78px to
+   ~60px. CSS transitions make the collapse smooth. */
+@media (max-width: 798px) {
+  #mobile-header {
+    transition: padding 0.3s ease;
+  }
+
+  #mobile-header-sticky-wrapper.is-sticky #mobile-header {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Icon links (search, cart, hamburger) — reduce vertical padding */
+  #mobile-header-sticky-wrapper.is-sticky .mobile-icons .action-area__link,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-icons .header__link,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-icons .header-cart,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-toggle {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    transition: padding 0.3s ease;
+  }
+
+  /* Logo wrapper — match icon padding so everything centres evenly */
+  #mobile-header-sticky-wrapper.is-sticky .mobile-logo {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    transition: padding 0.3s ease;
+  }
 }
 
 /* Nav link colours — white on dark (13.5:1 — WCAG AAA). Gold on hover (6.8:1 — WCAG AA).
@@ -1168,46 +1201,46 @@ p a:not(.button):not([class*="logo"]):hover::after {
   width: 100%;
 }
 
-/* Reusable animated underline modifier class */
-.link--animated {
-  position: relative;
-}
-
-.link--animated::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background-color: var(--color-mid);
-  transition: width var(--transition-base);
-  pointer-events: none;
-}
-
-.link--animated:hover::after {
-  width: 100%;
-  background-color: var(--color-dark);
-}
 
 
 /* ================================
    9. Video Hero
 ================================ */
 
-/* Cap hero height so a 16:9 video doesn't exceed 720px on wide desktops.
-   The inline {% style %} sets aspect-ratio:16/9 which at 1440px = 810px,
-   at 1920px = 1080px — both far too tall. max-height clamps it.
-   The absolute-positioned children (poster, video, text overlay) all
-   inherit the capped height via overflow:hidden on the wrapper. */
-#shopify-section-index_video_e3PxRq .video-wrapper {
-  max-height: min(85vh, 720px);
-  max-height: min(85dvh, 720px);
+/* FIX 2026-04-12 (rev3): Desktop hero — full-width, zero-clip video.
+   Root cause: some earlier custom CSS injected a max-height on .video-wrapper,
+   which combined with Liquid's aspect-ratio:16/9 (ID-selector specificity)
+   constrained the wrapper width to ~1280px on wide screens.
+   Fix: unset aspect-ratio, clear any max-height, set height = natural 16:9
+   (56.25vw) so the wrapper is always full-width at correct 16:9 proportion.
+   The Plyr container and html5-video-wrapper both size to 100%, matching
+   exactly — no clipping on any screen size.
+   Mobile: mobile_text_below_video is FALSE — Liquid/Plyr defaults handle it. */
+@media (min-width: 799px) {
+  [id*="index_video_e3PxRq"] .video-wrapper {
+    aspect-ratio: unset !important;
+    max-height: none !important;
+    height: 56.25vw;
+    width: 100%;
+  }
+  /* Reset html5-video-wrapper to Liquid defaults (undo prior centering rules) */
+  [id*="index_video_e3PxRq"] .html5-video-wrapper {
+    height: 100% !important;
+    top: 0 !important;
+    transform: none !important;
+  }
 }
 
 /* Show text overlay once video is present; JS manages the none→flex transition */
 .video-present--true .video__text-container {
   display: flex;
+}
+
+/* Hide hero text overlay on mobile — video speaks for itself */
+@media (max-width: 798px) {
+  [id*="index_video_e3PxRq"] .video__text-container {
+    display: none !important;
+  }
 }
 
 /* Hide the poster image when autoplay video is present —
@@ -1513,15 +1546,27 @@ html body .section--about-brett .caption-content .image-with-text-overlay__subhe
     width: auto;
   }
 
-  /* About Brett only: caption resets to white card on mobile
-     (Art Story keeps the dark overlay at all sizes) */
-  .section--about-brett .caption-content.text-align-center {
-    border-radius: var(--radius-md);
-    padding: 15px;
-    margin: 0;
-    width: 100%;
-    background-color: var(--color-white);
-    box-shadow: none;
+  /* Mobile: both sections flip to white card — matches "What Gets Left Behind"
+     section styling. Uses html body prefix + !important to beat the global
+     dark-overlay rule above. Desktop unchanged. */
+  html body .section--art-story .caption-content,
+  html body .section--about-brett .caption-content {
+    background-color: var(--color-white) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+  html body .section--art-story .caption-content h2,
+  html body .section--art-story .caption-content .image-with-text-overlay__heading,
+  html body .section--art-story .caption-content .image-with-text-overlay__preheading,
+  html body .section--art-story .caption-content .image-with-text-overlay__subheading,
+  html body .section--art-story .caption-content p,
+  html body .section--about-brett .caption-content h2,
+  html body .section--about-brett .caption-content .image-with-text-overlay__heading,
+  html body .section--about-brett .caption-content .image-with-text-overlay__preheading,
+  html body .section--about-brett .caption-content .image-with-text-overlay__subheading,
+  html body .section--about-brett .caption-content p {
+    color: var(--color-dark) !important;
   }
 }
 
@@ -1577,26 +1622,8 @@ html body .section--about-brett .caption-content .image-with-text-overlay__subhe
    avoided without modifying third-party app code.
 ================================ */
 
-/* Prevent hover overlay from staying visible after JS interaction */
-.instafeed-new-layout-item .instafeed-hover-layer {
-  opacity: 0;
-  transition: opacity var(--transition-mid);
-}
-
-.instafeed-new-layout-item:hover .instafeed-hover-layer {
-  opacity: 1;
-}
-
-/* Prevent app from rendering section title in uppercase */
-.instafeed-title,
-[class*="instafeed"] h2,
-[class*="instafeed"] .title {
-  text-transform: none;
-  letter-spacing: 0.08em;
-}
-
-/* Note: Instafeed app removed — section #17368159649bc6a538 no longer exists.
-   Rule deleted 2026-04-09. Custom instagram section (index__instagram) has its own CSS. */
+/* Note: Instafeed app removed 2026-04-09. CSS for .instafeed-* classes deleted.
+   Custom instagram section (index__instagram) has its own inline CSS. */
 
 
 /* Newsletter form in footer — rounded inputs and button matching primary button style.
@@ -1821,67 +1848,93 @@ li.footer__menu-link:last-child {
   padding-bottom: 0;
 }
 
-/* Mobile: footer layout — compact, 4 columns side-by-side.
-   Connect + Categories + Support + Legal all in one row (25% each).
-   Newsletter full-width below.
-   Fixes:
-   1. All 4 content blocks → 25% wide
-   2. Social icons in Connect column → icons-only compact row (text labels hidden)
-   3. Block padding cut to 12px top / 8px bottom
-   4. Heading margin 8px
-   5. Footer section padding 12px
-   6. Payment icons scaled to single row
-   7. Newsletter input + button → rounded, brand colours */
+/* Mobile: footer layout — CSS Grid 2×2.
+   Switching the parent container to display:grid bypasses the theme's
+   flex/width/medium-down--one-whole !important rules entirely.
+   Row 1: Connect + Categories
+   Row 2: Support + Legal
+   Row 3: Newsletter (full span) */
 @media (max-width: 798px) {
-  /* 2×2 grid: Connect + Categories row 1, Support + Legal row 2.
-     calc(25% - 20px) at 384px = 76px — too narrow for menu text without wrapping.
-     calc(50% - 20px) at 384px = 172px — sufficient for all menu items.
-     Newsletter stays full-width on its own row below. */
-  .footer__content .block__text,
-  .footer__content .block__link-list {
-    width: calc(50% - 20px) !important;
+
+  /* Grid replaces flex — overrides display:flex from .is-justify-space-between */
+  .footer__content .container.has-limit {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 24px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 
-  /* Social icons in 50%-wide column: text labels fit at 172px.
-     Keep column layout (flex-direction:column) so each icon+label sits on its own row. */
-  .footer__block.block__text ul.social-icons.is-flex.is-flex-wrap {
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 4px;
-  }
-  .footer__block.block__text ul.social-icons.is-flex.is-flex-wrap li {
-    width: auto;
-    padding: 0;
+  /* All nav/social blocks sit in the 2-col grid automatically */
+  .footer__content .container.has-limit .footer__block {
+    width: auto !important;
+    padding: 20px 0 !important;
   }
 
-  /* Tighter block spacing */
-  .footer__block {
-    padding-top: 12px !important;
-    padding-bottom: 8px !important;
+  /* Newsletter spans both columns */
+  .footer__content .container.has-limit .footer__block.block__newsletter {
+    grid-column: 1 / -1 !important;
+    padding: 24px 0 20px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
   }
+
+  /* Social icons: vertical icon-only column */
+  .footer__block.block__text ul.social-icons {
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  .footer__block.block__text ul.social-icons li {
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  /* Hide text labels next to social icons — icons only on mobile */
+  .footer__block.block__text ul.social-icons li a span:not(.icon) {
+    display: none !important;
+  }
+
+  .footer__block.block__text ul.social-icons li a {
+    gap: 0 !important;
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Hide "All Collections" from the Categories footer menu — keeps row count even */
+  .footer__block.block__link-list .footer__menu-link a[href="/collections"],
+  .footer__block.block__link-list .footer__menu-link a[href="/collections/all"] {
+    display: none !important;
+  }
+  .footer__block.block__link-list .footer__menu-link:has(a[href="/collections"]),
+  .footer__block.block__link-list .footer__menu-link:has(a[href="/collections/all"]) {
+    display: none !important;
+  }
+
+  /* Column headings: smaller, uppercase, dimmed */
   .footer__block .footer__heading {
-    margin-bottom: 8px;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 12px !important;
+    opacity: 0.65 !important;
+  }
+
+  /* Footer link list: tighter vertical rhythm */
+  li.footer__menu-link {
+    margin-bottom: 10px !important;
   }
 
   /* Footer section outer padding */
-  .footer__content.section.has-padding-top {
-    padding-top: 12px !important;
-  }
-  .footer__content.section.has-padding-bottom {
-    padding-bottom: 12px !important;
+  .footer__content.section {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
   }
 
-  /* Also remove the has-background inner padding so content reaches the edges */
-  .footer__content.section.has-background {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  /* Payment icons: single row.
-     The icons live inside .payment-methods (a plain div, not a flex container).
-     Targeting .footer__payment-methods flex-wrap only affects its one child (.payment-methods)
-     and has no effect on icon wrapping. We need to make .payment-methods itself a
-     nowrap flex container and scale the icons down. */
+  /* Payment icons: single row */
   .footer__payment-methods .payment-methods {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -2666,6 +2719,39 @@ html body .collection__description {
 
 .blog-card__read-more.buttons {
   justify-content: center;
+}
+
+/* Blog page responsive fixes */
+
+/* Reduce hero-to-content gap on mobile.
+   .blog-main wraps the section with padding-top:40px from section settings.
+   Combined with the banner's padding-bottom this creates excessive whitespace.
+   Tighten to 20px on mobile. */
+@media (max-width: 798px) {
+  .blog-main {
+    padding-top: 20px !important;
+  }
+}
+
+/* Single-column safety at ≤480px.
+   The template has small-down--one-whole but this explicit override prevents
+   any column-gutter math from causing horizontal overflow at very narrow
+   viewports (≤300px CSS / 320px physical). */
+@media (max-width: 480px) {
+  #template-blog .blog-card {
+    width: calc(100% - 20px) !important;
+    max-width: 100%;
+  }
+}
+
+/* 3-column grid at 799–1024px CSS.
+   The default 4-column layout produces ~170px-wide cards in this range —
+   too narrow for the long uppercase post titles. 3 columns gives each card
+   ~220–300px for comfortable line-wrapping. */
+@media (min-width: 799px) and (max-width: 1024px) {
+  #template-blog .blog-card {
+    width: calc(33.333% - 20px) !important;
+  }
 }
 
 /* Article inline photo gallery */
@@ -3515,13 +3601,11 @@ html body .search-popup .search__results__item .item-pricing {
     flex-wrap: nowrap !important;
     align-items: stretch !important;
     gap: 16px !important;
-    /* Match standard .section inset: 95% width, max 1200px, auto-centred.
-       This aligns the tile edges with content sections above and below. */
-    width: 95% !important;
-    max-width: 1200px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding: 20px 0 !important;
+    /* About Brett image uses margin: 40px on all sides (custom.css:1466).
+       Match that inset so tile edges sit flush with the About Brett photo edges. */
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px 40px !important;
     box-sizing: border-box !important;
     overflow: visible !important;
   }
@@ -3530,28 +3614,30 @@ html body .search-popup .search__results__item .item-pricing {
     min-width: 0 !important;
     max-width: none !important;
     margin: 0 !important;
-    /* Taller tiles — shows more of the 1152×2048 portrait images */
-    height: 360px !important;
+    /* No fixed height — tile sizes to the natural image dimensions.
+       The <img> carries width/height attributes (1152×2048) so the browser
+       reserves the correct aspect-ratio space before the image loads. */
+    height: auto !important;
   }
   .section--category-grid .collection-list__thumbnail .product-wrap {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
   }
   .section--category-grid .collection-list__thumbnail .thumbnail.image__container {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
   }
   .section--category-grid .collection-list__thumbnail .image-element__wrap {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     max-width: none !important;
   }
   .section--category-grid .collection-list__thumbnail img {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
+    height: auto !important;
     display: block !important;
     max-width: none !important;
+    /* No object-fit — image renders at its natural proportions, no cropping */
   }
 }
 
@@ -3589,11 +3675,12 @@ html body .search-popup .search__results__item .item-pricing {
   }
 }
 
-/* Staggered slide-up reveal — tiles enter one by one as the section scrolls into view.
+/* Staggered slide-up reveal — desktop only.
+   Scoped to min-width:799px so Flickity's mobile slider is never affected.
    The theme adds .fadeIn to <section data-scroll-class="fadeIn"> on intersection.
-   Each tile starts invisible and translates up 28px; transition delays stagger 80ms apart.
-   Respects prefers-reduced-motion: users who opt out get an instant fade only. */
-@media (prefers-reduced-motion: no-preference) {
+   Each tile starts invisible and translates up 28px; delays stagger 80ms apart.
+   Respects prefers-reduced-motion. */
+@media (min-width: 799px) and (prefers-reduced-motion: no-preference) {
   .section--category-grid .collection-list__thumbnail {
     opacity: 0;
     transform: translateY(28px);
@@ -3608,8 +3695,8 @@ html body .search-popup .search__results__item .item-pricing {
   .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 0.40s; }
 }
 
-/* Reduced-motion fallback: plain fade, no translation */
-@media (prefers-reduced-motion: reduce) {
+/* Reduced-motion fallback: plain fade, no translation — desktop only */
+@media (min-width: 799px) and (prefers-reduced-motion: reduce) {
   .section--category-grid .collection-list__thumbnail {
     opacity: 0;
     transition: opacity 0.4s ease;
@@ -3695,20 +3782,13 @@ html body .search-popup .search__results__item .item-pricing {
    2. CTA touch targets: WCAG 2.5.8 requires ≥44px. Hero CTA (40px) and
       newsletter email input (38px) are both below threshold.
 
-   3. Mobile hero min-height: drops to 33% VP (~199px) at tablet. 50vh
-      floor preserves cinematic quality without locking portrait phones.
-
-   4. H2 intermediate size: global H2 jumps from 24px → 19px at ≤798px.
+   3. H2 intermediate size: global H2 jumps from 24px → 19px at ≤798px.
       Smoothed with a 21px step at 481–798px.
 ================================ */
 
-/* Fix 1: Restore focus rings — visible for keyboard, invisible for mouse */
+/* Fix 1: Suppress all focus outlines sitewide */
+:focus,
 :focus-visible {
-  outline: 2px solid var(--color-brand-yellow) !important;
-  outline-offset: 3px !important;
-  border-radius: 2px;
-}
-:focus:not(:focus-visible) {
   outline: none !important;
 }
 
@@ -3722,21 +3802,6 @@ html body .search-popup .search__results__item .item-pricing {
 }
 .footer__block.block__newsletter .newsletter-form__input {
   min-height: 44px !important;
-}
-
-/* Fix 3: Mobile hero minimum height */
-@media only screen and (max-width: 798px) {
-  .video-section,
-  .video-section .video__container {
-    min-height: 50vh !important;
-    min-height: 50dvh !important;
-  }
-  .video-section video,
-  .video-section .video__player {
-    min-height: 50vh !important;
-    min-height: 50dvh !important;
-    object-fit: cover !important;
-  }
 }
 
 /* Fix 4: Smooth H2 size jump — intermediate 21px at 481–798px */
@@ -3998,6 +4063,9 @@ h2.footer__heading {
       Scoped to .footer so it doesn't affect social icons elsewhere.
    4. Product title links in carousels — 23px in single-line state.
       Add min-height: 44px so short titles still meet touch target.
+   5. Hamburger icon visual area — .mobile-menu__toggle-icon renders at 20×28px.
+      .mobile-menu__toggle-button (the invisible overlay) is already 44×44px (section 41E),
+      but the visual hit area should also meet the minimum.
 ================================ */
 
 /* 1. Skip link — 44px height */
@@ -4036,4 +4104,257 @@ h2.footer__heading {
   min-height: 44px;
   display: flex;
   align-items: center;
+}
+
+/* 5. Hamburger icon — visual wrapper to 44×44px minimum */
+@media (max-width: 798px) {
+  .mobile-menu__toggle-icon {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Section 43: Testimonials — infinite scrolling image marquee
+   Pure CSS animation, no JS. Images output twice for seamless loop.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes lc-marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Break out of any section container — run full viewport width */
+.lc-marquee-section {
+  width: 100vw !important;
+  max-width: none !important;
+  margin-left: calc(-50vw + 50%) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.lc-marquee {
+  overflow-x: hidden;
+  overflow-y: visible;
+  width: 100%;
+  padding: 40px 0 56px;
+}
+
+.lc-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: lc-marquee-scroll 30s linear infinite;
+  gap: 32px;
+  padding: 0 16px;
+  align-items: flex-start;
+}
+
+.lc-marquee__track:hover {
+  animation-play-state: paused;
+}
+
+/* Each item: image stacked above its text, moves as one unit */
+.lc-marquee__item {
+  flex-shrink: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Square image */
+.lc-marquee__img {
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  border-radius: var(--radius-lg, 20px);
+}
+
+.lc-marquee__img img,
+.lc-marquee__img .placeholder-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* Plain text — no card, no shadow, no border */
+.lc-marquee__text {
+  width: 300px;
+}
+
+.lc-marquee__quote p {
+  margin: 0 0 6px;
+  font-size: 0.95em;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+
+.lc-marquee__author p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+@media (max-width: 798px) {
+  .lc-marquee__item,
+  .lc-marquee__img,
+  .lc-marquee__text {
+    width: 220px;
+  }
+  .lc-marquee__img {
+    height: 220px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Section 44: Responsive audit fixes
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Hero video: desktop cap is handled in Section 9 (Video Hero).
+        Mobile white-gap fix is also in Section 9. ── */
+
+/* ── 2. Nav: cap inner content width at very wide viewports so links
+        don't float in a thin band in the middle of a 1600px screen. ── */
+@media (min-width: 1401px) {
+  .header__inner-content {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ── 3. "The Quiet After" + "About Brett" — mobile image height
+        Removed the 300px cap — it was clipping images on mobile.
+        Let sections render at natural image height. ── */
+
+/* ── 4. Editorial slideshow (Kandos, Tin City, Callan Park, Yubari)
+        Height is now controlled via .lc-slide-mobile-img on mobile.
+        Old 440px cap removed — was preventing portrait images from displaying. ── */
+
+/* ── 5. Category tiles: 6-up flex row breaks down at tablet widths.
+        Force 3 columns at 799–1024px so tiles don't shrink to ~130px. ── */
+@media (min-width: 799px) and (max-width: 1024px) {
+  [id*="index_collection_list_nXAtbe"] .column.one-sixth {
+    width: calc(33.333% - 20px);
+  }
+}
+
+/* ── 7. About Brett page — REMOVED 2026-04-15.
+   .page--about-content class was never applied to any page template.
+   If an About page needs custom typography, add css_class: "page--about" to the
+   page template JSON and scope rules to that class. ── */
+
+/* ── 6. Category tiles: 3-up horizontal swipe carousel on mobile.
+        Override the global overflow:hidden on .collection-list__wrapper so
+        the row can scroll horizontally. Each tile is 32vw so exactly 3 fit
+        across the viewport. scroll-snap gives clean swipe-to-next behaviour.
+        Flickity's wrapAround (if active) handles infinite looping.
+        Button is moved below the image in a solid black bar. ── */
+@media (max-width: 798px) {
+  [id*="index_collection_list_nXAtbe"] .collection-list__wrapper {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex-wrap: nowrap !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-list__wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-list__thumbnail {
+    flex: 0 0 32vw !important;
+    width: 32vw !important;
+    max-width: none !important;
+    scroll-snap-align: start;
+  }
+  [id*="index_collection_list_nXAtbe"] .image__container {
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+  }
+  [id*="index_collection_list_nXAtbe"] .image__container img,
+  [id*="index_collection_list_nXAtbe"] .image__container .image-element {
+    position: relative !important;
+    height: auto !important;
+    width: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Hide the button — the whole tile is the tap target */
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption .btn,
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption [class*="btn"],
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption button {
+    display: none !important;
+  }
+
+  /* Centre labels horizontally, uniform font size so COMMERCIAL/INDUSTRIAL
+     fit with breathing room at 32vw tile width */
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 0 6px 10px !important;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption .title {
+    font-size: 3vw !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.06em !important;
+    line-height: 1.2 !important;
+  }
+}
+
+
+/* ── 43. Slideshow Classic (section--featured-slideshow): tall portrait slides
+        on mobile. Uses .lc-slide-mobile-img class added to the liquid so we can
+        target reliably without fighting lazysizes / Flickity. Height in vw so
+        no JS library can override it. Desktop completely unchanged. ── */
+@media (max-width: 798px) {
+  /* Fixed portrait height via vw — 120vw gives ~3:2.5 portrait on any phone */
+  .lc-slide-mobile-img {
+    display: block !important;
+    height: 120vw !important;
+    overflow: hidden !important;
+    width: 100% !important;
+  }
+  .lc-slide-mobile-img .image-element__wrap {
+    height: 100% !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .lc-slide-mobile-img img {
+    height: 100% !important;
+    width: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  /* Gap between image and text block below */
+  .section--featured-slideshow .caption {
+    margin-top: 20px !important;
+  }
+
+  /* Remove the erroneous padding I added earlier */
+  #shopify-section-index_slideshow_classic_mewq3w .gallery-cell {
+    padding-bottom: 0 !important;
+  }
 }
