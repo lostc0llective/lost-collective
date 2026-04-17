@@ -2,10 +2,10 @@
 
 ## Read this first, every session
 
-Memory files live at `~/.claude/projects/-Users-brettpatman-lost-collective/memory/`.
+Memory files live at `~/.claude/projects/-Users-brettpatman/memory/` (user-level, shared across all Brett's projects).
 The index (`MEMORY.md`) loads automatically. Read the relevant files before acting — they hold credentials, account IDs, decisions already made, and working style rules. Do not ask Brett for information that is already in memory.
 
-Master context: `~/lost-collective/CLAUDE.md`
+Master context: `~/Claude/lost-collective/CLAUDE.md`
 
 ---
 
@@ -46,7 +46,7 @@ Key rules:
 
 All credentials are in **1Password (Private vault)**. Scripts inject them via:
 ```bash
-# Run from ~/lost-collective/ root (where .env.tpl lives)
+# Run from ~/Claude/lost-collective/ root (where .env.tpl lives)
 op run --env-file=.env.tpl -- python3 shopify/scripts/[script].py
 ```
 
@@ -61,7 +61,7 @@ Never ask Brett for API keys or tokens — check 1Password or `.env.tpl` first. 
 
 ## Available scripts
 
-All scripts run from `~/lost-collective/` root:
+All scripts run from `~/Claude/lost-collective/` root:
 
 | Script | What it does | Run command |
 |--------|-------------|-------------|
