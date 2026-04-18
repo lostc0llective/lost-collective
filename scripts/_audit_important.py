@@ -42,6 +42,16 @@ for p in (ROOT / "layout").glob("*.liquid"):
 C4_SUSPECT_PROPS = {"display", "visibility", "position", "z-index", "pointer-events",
                     "opacity", "transform", "overflow"}
 
+# Phase 5 T5 bug 1 fix: selectors that are generic enough that Flex section-id
+# scoping (#shopify-section-{name}) routinely beats them. When the LC rule
+# targets one of these and Flex has a competing rule anywhere (incl. with
+# higher specificity), classify as C-4 (genuine override) rather than C-1.
+GENERIC_CONTAINER_SELECTORS = {
+    ".header", ".mobile-header", ".header-sticky-wrapper", ".footer",
+    ".nav", ".mega-menu", ".announcement-bar", ".announcement-container",
+    "html body .header", "html body .mobile-header", "html body .footer",
+}
+
 
 def strip_comments(css: str) -> str:
     out = list(css)
@@ -219,8 +229,32 @@ def main():
                 if comp_imp and comp_plain:
                     break
 
+        # Phase 5 T5 bug 1: if LC selector is a generic container and Flex has
+        # a competing rule on this property, Flex's rule is likely scoped to
+        # #shopify-section-{id} which beats the LC selector without !important.
+        # The LC rule legitimately needs the flag — C-4, not C-1.
+        sel_clean = sel.strip()
+        # Check if the selector targets a generic container: either a direct
+        # match, a compound descendant selector ending at a generic container
+        # (`html body .header-sticky-wrapper.is-sticky .header`), or the first
+        # of a comma-separated group is one.
+        generics_no_prefix = {s.lstrip("html body ").strip()
+                              for s in GENERIC_CONTAINER_SELECTORS}
+        last_component = sel_clean.split(",")[0].strip().split(" ")[-1]
+        is_generic_container = (
+            sel_clean in GENERIC_CONTAINER_SELECTORS or
+            any(sel_clean.startswith(g + ",") or sel_clean.startswith(g + " ")
+                for g in GENERIC_CONTAINER_SELECTORS) or
+            last_component in generics_no_prefix or
+            last_component.rstrip(".is-sticky").rstrip(".is-opened") in generics_no_prefix
+        )
+
         if comp_imp:
             bucket, fix = "C-2", "delete"
+        elif comp_plain and is_generic_container:
+            # Flex beats us on specificity via #shopify-section-{id} scoping —
+            # !important is the legit defence.
+            bucket, fix = "C-4", "keep+comment"
         elif comp_plain:
             bucket, fix = "C-1", "tighten:#section-id"
         elif prop in C4_SUSPECT_PROPS:
