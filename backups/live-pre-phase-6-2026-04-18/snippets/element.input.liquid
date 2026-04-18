@@ -1,0 +1,363 @@
+{% doc %}
+  Copyright © 2025 Archetype Themes LP. All rights reserved.
+
+  A flexible input component that supports both input and textarea elements. Features various states and variants
+  including inline, transparent, and inverted styles.
+  @param {string} [name] - The name of the input field
+  @param {string} [type] - The type of the input field
+  @param {string} [label] - The label for the input field
+  @param {string} [placeholder] - The placeholder text for the input field
+  @param {string} [value] - The value of the input field
+  @param {string} [attributes] - Additional attributes for the input field
+  @param {string} [style] - Additional styles for the input field
+  @param {string} [classlist] - Additional classes for the input field
+  @param {string} [variant] - The variant of the input field
+  @param {number} [multiline] - The number of lines for a textarea
+  @param {boolean} [inverted] - Whether the input is inverted
+  @param {boolean} [transparent] - Whether the input is transparent
+  @param {string} [start_slot] - The start slot for the input field
+  @param {string} [end_slot] - The end slot for the input field
+  @example
+  {% render 'element.input', name: 'email', type: 'email', label: 'Email address' %}
+{% enddoc %}
+
+{%- liquid
+  assign name = name | default: ''
+  assign type = type | default: ''
+  assign placeholder = placeholder | default: ''
+  assign value = value | default: ''
+  assign attributes = attributes | default: ''
+  assign style = style | default: ''
+  assign classlist = classlist | default: ''
+  assign variant = variant | default: ''
+  assign multiline = multiline | default: null
+  assign inverted = inverted | default: false
+  assign transparent = transparent | default: false
+  assign start_slot = start_slot | default: ''
+  assign end_slot = end_slot | default: ''
+
+  capture id_default
+    render 'utility.id', name: name
+  endcapture
+
+  assign id_default = id_default | strip
+  assign id = id | default: id_default
+
+  case variant
+    when 'inline'
+      assign classlist = classlist | append: ' element-input--inline'
+  endcase
+
+  if transparent
+    assign classlist = classlist | append: ' element-input--transparent'
+  endif
+
+  if inverted
+    assign classlist = classlist | append: ' element-input--inverted'
+  endif
+-%}
+
+{%- capture input_attributes -%}
+  id="{{ id }}"
+  {% if name != blank -%}
+    name="{{ name }}"
+  {%- endif %}
+
+  {% if type != blank -%}
+    type="{{ type }}"
+  {%- endif %}
+
+  {% if placeholder != blank -%}
+    placeholder="{{ placeholder | strip }}"
+  {%- endif %}
+
+  {% if attributes != blank -%}
+    {{ attributes }}
+  {%- endif %}
+
+  {% if style != blank -%}
+    
+  {%- endif %}
+{%- endcapture -%}
+
+{%- if label != blank -%}
+  <label for="{{ id }}" class="visually-hidden">
+    {{- label -}}
+  </label>
+{%- endif -%}
+
+{% comment %}
+  TODO: Add a separate textarea component
+{% endcomment %}
+{%- if multiline != blank -%}
+  <textarea
+    class="element-textarea {{ classlist }}"
+    {{ input_attributes }}
+    {% if multiline != blank -%}
+      rows="{{ multiline }}"
+    {%- endif -%}
+  >
+    {%- if value != blank -%}
+      {{ value }}
+    {%- endif -%}
+  </textarea>
+
+{%- else -%}
+  <element-input class="element-input {{ classlist }}" style="{{ style }}">
+    <span class="element-input__start">
+      {{ start_slot }}
+    </span>
+    <input
+      class="element-input__input"
+      {{ input_attributes }}
+      {% if value != blank -%}
+        value="{{ value }}"
+      {%- endif %}
+    >
+    <span class="element-input__end">
+      {{ end_slot }}
+    </span>
+  </element-input>
+{%- endif -%}
+
+{% render 'style.primitive-tokens' %}
+{% render 'style.normalize' %}
+
+{% stylesheet %}
+  :root {
+    /* Base Layout Variables */
+    --element-input-width: auto;
+    --element-input-height: auto;
+    --element-input-radius: var(--radius-xs);
+    --element-input-padding-inline: var(--size-3);
+    --element-input-padding-block: var(--size-3);
+
+    /* Base Typography Variables */
+    --element-input-font-family: var(--element-text-font-family--body), var(--element-text-font-family-fallback--body);
+    --element-input-font-size: var(--element-text-font-size--body-md);
+    --element-input-line-height: var(--element-text-line-height--body);
+    --element-input-letter-spacing: var(--element-text-letter-spacing--body-md);
+    --element-input-text-align: var(--element-text-text-align--body);
+
+    /* Base Outline Variables */
+    --element-input-box-shadow-horizontal-offset: 0;
+    --element-input-box-shadow-vertical-offset: 0;
+    --element-input-box-shadow-blur-radius: 0;
+    --element-input-box-shadow-spread-radius: 1px;
+
+    /* Base Colors Variables */
+    --element-input-color-primary: initial;
+    --element-input-color-secondary: initial;
+    --element-input-box-shadow-shade: 12%;
+    --element-input-background-shade: 0%;
+    --element-input-text-shade: 70%;
+    --element-input-text-shade-placeholder: 50%;
+    --element-input-color-start-end: initial;
+
+    /* Active State Variables */
+    --element-input-box-shadow-spread-radius--active: 2px;
+    --element-input-box-shadow-shade--active: var(--element-input-box-shadow-shade);
+    --element-input-background-shade--active: var(--element-input-background-shade);
+    --element-input-text-shade--active: 100%;
+    --element-input-box-shadow-color--active: var(--color-focus, #0000ff);
+
+    /* Focus State Variables */
+    --element-input-box-shadow-spread-radius--focus: 2px;
+    --element-input-box-shadow-shade--focus: var(--element-input-box-shadow-shade);
+    --element-input-background-shade--focus: var(--element-input-background-shade);
+    --element-input-text-shade--focus: var(--element-input-text-shade);
+    --element-input-box-shadow-color--focus: var(--color-focus, #0000ff);
+
+    /* Hover State Variables */
+    --element-input-box-shadow-spread-radius--hover: 2px;
+    --element-input-box-shadow-shade--hover: var(--element-input-box-shadow-shade);
+    --element-input-background-shade--hover: 4%;
+    --element-input-text-shade--hover: 100%;
+
+    /* Disabled State Variables */
+    --element-input-box-shadow-spread-radius--disabled: 2px;
+    --element-input-box-shadow-shade--disabled: 8%;
+    --element-input-background-shade--disabled: 8%;
+    --element-input-text-shade--disabled: 20%;
+
+    /* Error State Variables */
+    --element-input-box-shadow-spread-radius--error: 2px;
+    --element-input-box-shadow-shade--error: 8%;
+    --element-input-background-shade--error: initial;
+    --element-input-text-shade--error: 100%;
+    --element-input-box-shadow-color--error: var(--color-error, #ff0000);
+  }
+
+  .element-input,
+  .element-textarea {
+    /* Base Layout*/
+    --_width: var(--element-input-width);
+    --_height: var(--element-input-height);
+    --_radius: var(--element-input-radius);
+    --_padding-inline: var(--element-input-padding-inline);
+    --_padding-block: var(--element-input-padding-block);
+
+    /* Base Typography */
+    --_font-family: var(--element-input-font-family);
+    --_font-size: var(--element-input-font-size);
+    --_line-height: var(--element-input-line-height);
+    --_letter-spacing: var(--element-input-letter-spacing);
+    --_text-align: var(--element-input-text-align);
+
+    /* Base Colors */
+    --_color-primary: var(--element-input-color-primary, var(--root-color-primary, #000));
+    --_color-secondary: var(--element-input-color-secondary, var(--root-color-secondary, #fff));
+    --_color-error: var(--element-input-color-error);
+    --_color-active: var(--element-input-color-active);
+    --_shade-box-shadow: var(--element-input-box-shadow-shade);
+    --_shade-background: var(--element-input-background-shade);
+    --_shade-text: var(--element-input-text-shade);
+    --_shade-text-placeholder: var(--element-input-text-shade-placeholder);
+    --_color-text-start-end: var(--element-input-color-start-end, var(--_color-text));
+
+    --_color-background: color-mix(in srgb, var(--_color-primary) var(--_shade-background), var(--_color-secondary));
+    --_color-text: color-mix(in srgb, var(--_color-primary) var(--_shade-text), var(--_color-secondary));
+    --_color-text-placeholder: color-mix(
+      in srgb,
+      var(--_color-primary) var(--_shade-text-placeholder),
+      var(--_color-secondary)
+    );
+    --_color-box-shadow: color-mix(in srgb, var(--_color-primary) var(--_shade-box-shadow), var(--_color-secondary));
+
+    /* Base Outline */
+    --_box-shadow-horizontal-offset: var(--element-input-box-shadow-horizontal-offset);
+    --_box-shadow-vertical-offset: var(--element-input-box-shadow-vertical-offset);
+    --_box-shadow-blur-radius: var(--element-input-box-shadow-blur-radius);
+    --_box-shadow-spread-radius: var(--element-input-box-shadow-spread-radius);
+    --_box-shadow: inset var(--_box-shadow-horizontal-offset) var(--_box-shadow-vertical-offset)
+      var(--_box-shadow-blur-radius) var(--_box-shadow-spread-radius) var(--_color-box-shadow);
+
+    box-shadow: var(--_box-shadow);
+    border-radius: var(--_radius);
+    background-color: var(--_color-background);
+    width: var(--_width);
+    height: var(--_height);
+
+    & ~ button {
+      --element-button-height: 100%;
+    }
+  }
+
+  .element-input:has(.element-input__input:hover:not(:disabled)),
+  .element-input:has(.element-input__textarea:hover:not(:disabled)),
+  .element-textarea:hover:not(:disabled) {
+    --_box-shadow-spread-radius: var(--element-input-box-shadow-spread-radius--hover);
+    --_shade-box-shadow: var(--element-input-box-shadow-shade--hover);
+    --_shade-background: var(--element-input-background-shade--hover);
+    --_shade-text: var(--element-input-text-shade--hover);
+  }
+
+  .element-input:has(.element-input__input:active),
+  .element-input:has(.element-input__textarea:active),
+  .element-textarea:active {
+    --_box-shadow-spread-radius: var(--element-input-box-shadow-spread-radius--active);
+    --_shade-box-shadow: var(--element-input-box-shadow-shade--active);
+    --_shade-background: var(--element-input-background-shade--active);
+    --_shade-text: var(--element-input-text-shade--active);
+    --_color-box-shadow: var(--element-input-box-shadow-color--active);
+  }
+
+  .element-input:has(.element-input__input:focus),
+  .element-input:has(.element-input__textarea:focus),
+  .element-textarea:focus {
+    --_box-shadow-spread-radius: var(--element-input-box-shadow-spread-radius--focus);
+    --_shade-box-shadow: var(--element-input-box-shadow-shade--focus);
+    --_shade-background: var(--element-input-background-shade--focus);
+    --_shade-text: var(--element-input-text-shade--focus);
+    --_color-box-shadow: var(--element-input-box-shadow-color--focus);
+  }
+
+  .element-input:has(.element-input__input:disabled),
+  .element-input:has(.element-input__textarea:disabled),
+  .element-textarea:disabled {
+    --_box-shadow-spread-radius: var(--element-input-box-shadow-spread-radius--disabled);
+    --_shade-box-shadow: var(--element-input-box-shadow-shade--disabled);
+    --_shade-background: var(--element-input-background-shade--disabled);
+    --_shade-text: var(--element-input-text-shade--disabled);
+    cursor: not-allowed;
+  }
+
+  .element-input:has(.element-input__input[aria-invalid='true']),
+  .element-input:has(.element-input__textarea[aria-invalid='true']),
+  .element-textarea[aria-invalid='true'] {
+    --_box-shadow-spread-radius: var(--element-input-box-shadow-spread-radius--error);
+    --_shade-box-shadow: var(--element-input-box-shadow-shade--error);
+    --_shade-background: var(--element-input-background-shade--error);
+    --_shade-text: var(--element-input-text-shade--error);
+    --_color-box-shadow: var(--element-input-box-shadow-color--error);
+  }
+
+  .element-input,
+  .element-textarea,
+  .element-input__input,
+  .element-input__textarea {
+    display: flex;
+    align-items: center;
+    font-family: var(--_font-family);
+    font-size: var(--_font-size);
+    line-height: var(--_line-height);
+    letter-spacing: var(--_letter-spacing);
+    color: var(--_color-text);
+    padding-inline: var(--_padding-inline);
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    &[type="number"] {
+      -webkit-appearance: textfield;
+      -moz-appearance: textfield;
+      appearance: textfield;
+      margin: 0;
+    }
+  }
+
+  .element-textarea,
+  .element-input__input,
+  .element-input__textarea {
+    border: none;
+    outline: none;
+    padding-block: var(--_padding-block);
+    background: transparent;
+    text-align: var(--_text-align);
+    width: 100%;
+
+    &::placeholder {
+      color: var(--_color-text-placeholder);
+    }
+  }
+
+  .element-input__start,
+  .element-input__end {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--_color-text-start-end);
+  }
+
+  .element-input--inverted {
+    --_color-secondary: var(--element-input-color-primary, var(--color-primary, #000));
+    --_color-primary: var(--element-input-color-secondary, var(--color-secondary, #fff));
+  }
+
+  .element-input--transparent {
+    --_color-primary: var(--element-input-color-primary, var(--color-primary, #000));
+    --_color-secondary: transparent;
+  }
+
+  .element-input--inverted.element-input--transparent {
+    --_color-primary: var(--element-input-color-secondary, var(--rootcolor-secondary, #fff));
+    --_color-secondary: transparent;
+  }
+
+  .element-input--inline {
+    --_radius: var(--radius-none);
+    --_box-shadow: inset 0 calc(var(--_box-shadow-spread-radius) * -1) 0 0 var(--_color-box-shadow);
+  }
+{% endstylesheet %}

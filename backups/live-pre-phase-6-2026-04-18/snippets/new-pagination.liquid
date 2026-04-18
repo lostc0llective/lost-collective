@@ -1,0 +1,67 @@
+{% doc %}
+  @param {object} collection - The collection to paginate
+  @param {number} items_per_page - The number of items to show per page
+{% enddoc %}
+
+{% paginate collection.products by items_per_page %}
+  {% if paginate.pages > 1 %}
+    <div class="paginate paginate--new" data-current-page="{{ paginate.current_page }}" data-paginate-pages="{{ paginate.pages }}">
+      <nav class="pagination {% if paginate.previous and paginate.next %}paginate--both{% endif %}" role="navigation" aria-label="pagination">
+        {%- if paginate.previous-%}
+          <a
+            href="{{ paginate.previous.url }}"
+            class="pagination-previous"
+            {% render 'list.hot-reload.attributes', pagination_part: paginate.previous %}
+          >
+            {{ 'general.pagination.previous' | t }}
+          </a>
+        {% endif %}
+
+        <ul
+          class="pagination-list"
+          style="
+            {% if paginate.previous and paginate.next %}
+              justify-content: center;
+            {% elsif paginate.previous %}
+              justify-content: flex-start;
+            {% elsif paginate.next %}
+              justify-content: flex-end;
+            {% endif %}
+          "
+        >
+          {%- for part in paginate.parts -%}
+            {% if part.is_link %}
+              <li>
+                <a
+                  class="pagination-link"
+                  href="{{ part.url }}"
+                  {% render 'list.hot-reload.attributes', pagination_part: part %}
+                >
+                  {{ part.title }}
+                </a>
+              </li>
+            {% elsif part.title == '&hellip;' %}
+              <li>
+                <a class="pagination-ellipsis">&hellip;</a>
+              </li>
+            {% else %}
+              <li>
+                <a class="pagination-link is-current">{{ part.title }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+
+        {%- if paginate.next-%}
+          <a
+            href="{{ paginate.next.url }}"
+            class="pagination-next"
+            {% render 'list.hot-reload.attributes', pagination_part: paginate.next %}
+          >
+            {{ 'general.pagination.next' | t }}
+          </a>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
+{% endpaginate %}

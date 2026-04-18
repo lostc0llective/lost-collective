@@ -1,0 +1,692 @@
+{% doc %}
+  Renders a section.collection-feed component.
+  @param {object} context - The collection or search object
+  @param {number} [items_per_page] - The number of products to show per page, default: 36
+  Control bar
+  @param {boolean} [show_layout_controls] - Whether to show the layout controls, default: true
+  @param {boolean} [show_standard_view] - Whether to show the standard feed view, default: true
+  @param {boolean} [show_compact_view] - Whether to show the compact feed view, default: true
+  @param {boolean} [show_list_view] - Whether to show the list view, default: true
+  @param {boolean} [sticky_control_bar_mobile] - Whether to enable sticky control bar on mobile, default: true
+  Layout
+  @param {string} [feed_view_default] - The default feed view to show, default: 'standard'
+  @param {number} [columns_desktop] - The number of columns to show on desktop (standard view only), default: 4
+  @param {number} [columns_mobile] - The number of columns to show on mobile (multi-column views only), default: 1
+  @param {number} [horizontal_gap_md] - If set, overrides the horizontal grid gap on md and up
+  @param {number} [vertical_gap_md] - If set, overrides the vertical grid gap on md and up
+  @param {boolean} [round_compact_view] - Whether to round the compact columns up to the nearest row, default: false
+  Filters & sort
+  @param {string} [sidebar_placement] - The placement of the filters ('start' or 'end'), default: 'start'
+  @param {boolean} [show_sort_by] - Whether to show the sort by section, default: true
+  @param {boolean} [show_filters] - Whether to show filters, default: true
+  @param {boolean} [show_product_count] - Whether to show the product count per filter, default: true
+  @param {boolean} [open_filters] - Whether to open the filter groups by default, default: true
+  @param {string} [sidebar_extras] - Liquid content to show in the sidebar
+  @param {string} [accordion_icon_open] - Icon for accordion open state, default: 'plus'
+  @param {string} [accordion_icon_closed] - Icon for accordion closed state, default: 'minus'
+  Pagination
+  @param {string} [slot_pagination] - Custom pagination slot
+  @example
+  {% render 'section.collection-feed', context: collection %}
+{% enddoc %}
+
+{% liquid
+  assign context = context | default: collection
+  assign items_per_page = items_per_page | default: 36
+  # Layout controls
+  assign show_layout_controls = show_layout_controls | default: true, allow_false: true
+  assign show_standard_view = show_standard_view | default: true, allow_false: true
+  assign show_compact_view = show_compact_view | default: true, allow_false: true
+  # Layout
+  assign feed_view_default = feed_view_default | default: 'standard'
+  assign columns_desktop = columns_desktop | default: 4
+  assign columns_mobile = columns_mobile | default: 1
+  assign show_list_view = show_list_view | default: true, allow_false: true
+  assign horizontal_gap_md = horizontal_gap_md | default: null
+  assign vertical_gap_md = vertical_gap_md | default: null
+  assign round_compact_view = round_compact_view | default: false, allow_false: true
+  assign sticky_control_bar_mobile = sticky_control_bar_mobile | default: true, allow_false: true
+  # Filters & sort
+  assign sidebar_placement = sidebar_placement | default: 'start'
+  assign show_sort_by = show_sort_by | default: true, allow_false: true
+  assign show_filters = show_filters | default: true, allow_false: true
+  assign show_product_count = show_product_count | default: true, allow_false: true
+  assign open_filters = open_filters | default: true, allow_false: true
+  assign sidebar_extras = sidebar_extras | default: ''
+  assign accordion_icon_open = accordion_icon_open | default: nil
+  assign accordion_icon_closed = accordion_icon_closed | default: nil
+  # Pagination
+  assign slot_pagination = slot_pagination | default: ''
+
+  # Sidebar
+  assign show_sidebar = false
+  if show_filters
+    assign show_sidebar = true
+  endif
+
+  # Feed view to show
+  assign feed_view = cart.attributes.feed_view | default: feed_view_default
+  if show_layout_controls == false
+    assign feed_view = feed_view_default
+  endif
+
+  # Round to nearest multiple of 6 for compact view (if round_compact_view is true)
+  assign items_per_page_compact = items_per_page
+  if feed_view == 'compact' and round_compact_view
+    assign items_per_page_compact = items_per_page | plus: 5 | divided_by: 6 | times: 6 | at_most: 50
+  endif
+
+  # View buttons display
+  if show_layout_controls == false
+    assign show_view_buttons = false
+  elsif show_standard_view or show_compact_view or show_list_view
+    assign show_view_buttons = true
+  endif
+
+  # Control bar display
+  if show_sidebar or show_view_buttons or show_sort_by
+    assign show_control_bar = true
+  else
+    assign show_control_bar = false
+  endif
+
+  # Control bar stack order
+  if sidebar_placement == 'end'
+    assign drawer_toggle_flexbox = 'justify-content: end; order: 3'
+    assign view_buttons_flexbox = 'justify-content: start; order: 1'
+  else
+    assign drawer_toggle_flexbox = 'justify-content: start; order: 1'
+    assign view_buttons_flexbox = 'justify-content: end; order: 3'
+  endif
+%}
+
+{% liquid 
+  # TRANSLATIONS
+
+  ## Items count
+  if show_control_bar
+    assign items_count_number = context.products.size | default: context.results_count | default: 0
+    assign fallback_one_product = '1 product'
+    assign fallback_n_products = items_count_number | append: ' products'
+    assign fallback_one_result = '1 result'
+    assign fallback_n_results = items_count_number | append: ' results'
+    capture items_count
+      if context.products and items_count_number == 1
+        assign one_product = 'labels.one_product' | t: count: items_count_number
+        render 'utility.translate', t: one_product, fallback: fallback_one_product
+      elsif context.products and items_count_number > 1
+        assign n_products = 'labels.n_products' | t: count: items_count_number
+        render 'utility.translate', t: n_products, fallback: fallback_n_products
+      elsif context.results and items_count_number == 1
+        assign one_result = 'labels.one_result' | t: count: items_count_number
+        render 'utility.translate', t: one_result, fallback: fallback_one_result
+      elsif context.results and items_count_number > 1
+        assign n_results = 'labels.n_results' | t: count: items_count_number
+        render 'utility.translate', t: n_results, fallback: fallback_n_results
+      endif
+    endcapture
+  endif
+
+  ## View buttons
+  if show_view_buttons
+    if show_standard_view
+      capture standard_view_text
+        render 'utility.translate', key: 'actions.view_standard', fallback: 'Standard view'
+      endcapture
+    endif
+
+    if show_compact_view
+      capture compact_view_text
+        render 'utility.translate', key: 'actions.view_compact', fallback: 'Compact view'
+      endcapture
+    endif
+
+    if show_list_view
+      capture list_view_text
+        render 'utility.translate', key: 'actions.view_list', fallback: 'List view'
+      endcapture
+    endif
+  endif
+
+  ## Sort by
+  if show_sort_by
+    capture sort_by_text
+      render 'utility.translate', key: 'actions.sort_by', fallback: 'Sort by'
+    endcapture
+  endif
+
+  ## Sidebar toggle
+  if show_sidebar
+    capture sidebar_toggle_text
+      if show_sort_by and show_filters
+        render 'utility.translate', key: 'actions.filter_and_sort', fallback: 'Filter & sort'
+      elsif show_sort_by
+        render 'utility.translate', key: 'actions.sort', fallback: 'Sort'
+      elsif show_filters
+        render 'utility.translate', key: 'actions.filter', fallback: 'Filter'
+      endif
+    endcapture
+  endif
+
+  ## Active filters count
+  if show_filters
+    capture filter_count
+      render 'list.active-filters.count', context: context
+    endcapture
+    assign filter_count = 1 | times: filter_count
+    if filter_count > 0
+      assign fallback_filter_count_label = 'Filters (' | append: filter_count | append: ')'
+      assign filter_count_label = 'labels.filter_count_label' | t: filter_count: filter_count
+      capture drawer_heading
+        render 'utility.translate', t: filter_count_label, fallback: fallback_filter_count_label
+      endcapture
+    endif
+  endif
+
+  ## Filter form actions
+  capture reset_filters_text
+    render 'utility.translate', key: 'actions.reset_filters', fallback: 'Clear all'
+  endcapture
+  capture apply_filters_text
+    render 'utility.translate', key: 'actions.apply_filters', fallback: 'Apply'
+  endcapture
+%}
+
+{% comment %} end translations {% endcomment %}
+
+{% if show_sidebar %}
+  {% capture sidebar_drawer %}
+    {% if show_filters and drawer_heading %}
+      {% capture drawer_label %}
+        {% render 'element.text', as: 'h2', text: drawer_heading, variant: 'heading-sm' %}
+      {% endcapture %}
+    {% endif %}
+
+    {% capture drawer_slot %}
+      {% capture sidebar_content %}
+        {% if show_filters %}
+          {% render 'list.active-filters',
+            context: context,
+            classlist: 'collection-feed__active-filters'
+          %}
+        {% endif %}
+
+        {% capture form_attributes %}
+          {% render 'list.hot-reload.attributes', change_trigger: 'form' %}
+        {% endcapture %}
+      
+        <form class="collection-feed__filter-sort-form" {{ form_attributes }}>
+          {% if show_sort_by %}
+            {% capture sort_by_slot %}
+              {% capture sort_by_radios %}
+                {% for sort_option in context.sort_options %}
+                  {% assign is_checked = false %}
+                  {% assign sort_by = context.sort_by | default: context.default_sort_by %}
+                  {% if sort_option.value == sort_by %}
+                    {% assign is_checked = true %}
+                  {% endif %}
+      
+                  {% render 'element.radio',
+                    name: 'sort_by',
+                    value: sort_option.value,
+                    label: sort_option.name,
+                    checked: is_checked,
+                    index: forloop.index
+                  %}
+                {% endfor %}
+              {% endcapture %}
+              {% render 'layout.stack', slot: sort_by_radios, gap: 'sm' %}
+            {% endcapture %}
+
+            {% render 'element.accordion',
+              title: sort_by_text,
+              slot: sort_by_slot,
+              open: true,
+              icon_open: accordion_icon_open,
+              icon_closed: accordion_icon_closed
+            %}
+          {% endif %}
+
+          {% if show_filters %}
+            {% capture filters_slot %}
+              <div class="collection-feed__filters">
+                {% for filter in context.filters %}
+                  {% if open_filters or filter.active_values.size > 0 or filter.min_value.value or filter.max_value.value %}
+                    {% assign filter_open = true %}
+                  {% else %}
+                    {% assign filter_open = false %}
+                  {% endif %}
+
+                  {% capture slot_collapsible %}
+                    {% if filter.type == 'list' or filter.type == 'boolean' %}
+                      {% render 'list.checkbox-filter', filter: filter, show_count: show_product_count %}
+                    {% elsif filter.type == 'price_range' %}
+                      {% render 'list.price-range', filter: filter %}
+                    {% endif %}
+                  {% endcapture %}
+                  
+                  {% render 'element.accordion',
+                    title: filter.label,
+                    slot: slot_collapsible,
+                    open: filter_open,
+                    icon_open: accordion_icon_open,
+                    icon_closed: accordion_icon_closed
+                  %}
+                {% endfor %}
+              </div>
+
+              {% capture form_actions %}                
+                {%- capture clear_all_attributes -%}
+                  {% render 'list.hot-reload.attributes', url_to_remove: context.url %}
+                {%- endcapture -%}
+                <div>
+                  {% render 'element.button',
+                    text: reset_filters_text,
+                    href: context.url,
+                    full: true,
+                    inverted: true,
+                    transparent: true,
+                    attributes: clear_all_attributes
+                  %}
+                </div>
+
+                <div>
+                  {% render 'element.button',
+                    text: apply_filters_text,
+                    type: 'submit',
+                    full: true
+                  %}
+                </div>
+              {% endcapture %}
+
+              {% render 'layout.grid',
+                slot: form_actions,
+                gap: 'xs', 
+                columns: 2
+              %}
+            {% endcapture %}
+
+            {% render 'layout.stack', slot: filters_slot, gap: 'sm' %}
+          {% endif %}
+        </form>
+
+        {{ sidebar_extras }}
+      {% endcapture %}
+
+      {% render 'layout.stack', slot: sidebar_content, gap: 'sm' %}
+    {% endcapture %}
+
+    {% capture style %}
+      --overlay-drawer-padding-inline: var(--size-4-5);
+      --overlay-drawer-padding-inline--md: var(--size-10);
+      --overlay-drawer-padding-block: var(--size-4-5);
+      --overlay-drawer-padding-block--md: var(--size-10);
+    {% endcapture %}
+    {% render 'overlay.drawer',
+      label: drawer_label,
+      slot: drawer_slot,
+      id: 'collection-feed-drawer',
+      placement: sidebar_placement,
+      style: style
+    %}
+  {% endcapture %}
+{% endif %}
+
+{% if show_control_bar %}
+  {% capture control_bar %}
+    {% capture view_buttons %}
+      {% if show_standard_view %}
+        {% capture feed_view_attributes %}
+          aria-label="{{ standard_view_text | strip }}"
+          {% render 'list.hot-reload.attributes', feed_view: 'standard' %}
+        {% endcapture %}
+        {% render 'element.button',
+          icon: 'view-large',
+          attributes: feed_view_attributes,
+          plain: true,
+          size: 'xs',
+          classlist: 'collection-feed__view-button'
+        %}
+      {% endif %}
+
+      {% if show_compact_view %}
+        {% capture feed_view_attributes %}
+          aria-label="{{ compact_view_text | strip }}"
+          {% render 'list.hot-reload.attributes', feed_view: 'compact' %}
+        {% endcapture %}
+        {% render 'element.button',
+          icon: 'view-small',
+          attributes: feed_view_attributes,
+          plain: true,
+          size: 'xs',
+          classlist: 'collection-feed__view-button'
+        %}
+      {% endif %}
+
+      {% if show_list_view %}
+        {% capture feed_view_attributes %}
+          aria-label="{{ list_view_text | strip }}"
+          {% render 'list.hot-reload.attributes', feed_view: 'list' %}
+        {% endcapture %}
+        {% render 'element.button',
+          icon: 'view-list',
+          attributes: feed_view_attributes,
+          plain: true,
+          size: 'xs',
+          classlist: 'collection-feed__view-button'
+        %}
+      {% endif %}
+    {% endcapture %}
+
+    {% if show_sidebar %}
+      {% capture control_bar_with_sidebar %}
+        <div style="display: flex; {{ drawer_toggle_flexbox }};">
+          {% render 'element.button',
+            text: sidebar_toggle_text,
+            icon: 'filter',
+            icon_position: 'start',
+            plain: true,
+            size: 'xs',
+            attributes: 'data-open-drawer="collection-feed-drawer"'
+          %}
+        </div>
+
+        <div style="order: 2;">
+          {% render 'element.text',
+            text: items_count,
+            variant: 'body-md',
+            classlist: 'collection-feed__count',
+            alignment: 'center'
+          %}
+        </div>
+
+        <div style="display: flex; {{ view_buttons_flexbox }};">
+          {% if show_view_buttons %}
+            {% render 'layout.stack',
+              classlist: 'collection-feed__view-buttons',
+              slot: view_buttons,
+              horizontal: true,
+              align: 'center'
+            %}
+          {% endif %}
+        </div>
+      {% endcapture %}
+
+      {% render 'layout.grid',
+        slot: control_bar_with_sidebar,
+        columns: 3,
+        gap: 'md',
+        align: 'center'
+      %}
+
+    {% else %}
+      {% capture control_bar_without_sidebar %}
+        {% render 'element.text',
+          text: items_count,
+          variant: 'body-md',
+          classlist: 'collection-feed__count'
+        %}
+
+        <div class="collection-feed__sort-layout-controls">
+          {% if show_sort_by %}
+            <div class="collection-feed__sort-layout-item">
+              {% render 'element.text', text: sort_by_text %}
+            </div>
+
+            <div class="
+              collection-feed__sort-layout-item
+              {% if show_view_buttons %}collection-feed__sort-layout-item--separated{% endif %}
+            ">
+              {% capture options %}
+                {% for sort_option in context.sort_options %}
+                  {% assign is_selected = false %}
+                  {% assign sort_by = context.sort_by | default: context.default_sort_by %}
+                  {% if sort_option.value == sort_by %}
+                    {% assign is_selected = true %}
+                  {% endif %}
+      
+                  <option
+                    value="{{ sort_option.value }}"
+                    {% if is_selected %}selected{% endif %}
+                  >
+                    {{ sort_option.name }}
+                  </option>
+                {% endfor %}
+              {% endcapture %}
+
+              {% capture sort_select_attributes %}
+                {% render 'list.hot-reload.attributes', change_trigger: 'sort_select' %}
+              {% endcapture %}
+
+              {% render 'element.select',
+                name: 'sort_by',
+                placeholder: 'Sort by',
+                variant: 'primary',
+                slot: options,
+                size: 'sm',
+                style: '--element-button-icon-size: 1em;',
+                attributes: sort_select_attributes
+              %}
+            </div>
+          {% endif %}
+
+          {% if show_view_buttons %}
+            <div class="collection-feed__sort-layout-item">
+              {% render 'layout.stack',
+                classlist: 'collection-feed__view-buttons',
+                slot: view_buttons,
+                horizontal: true,
+                align: 'center'
+              %}
+            </div>
+          {% endif %}
+        </div>
+      {% endcapture %}
+
+      {% render 'layout.stack',
+        slot: control_bar_without_sidebar,
+        horizontal: true,
+        gap: 'md',
+        justify: 'space-between',
+        align: 'center'
+      %}
+    {% endif %}
+
+  {% endcapture %}
+{% endif %}
+
+{% capture main_feed_view %}
+  {% capture feed_slot_1 %}
+    {% if show_standard_view %}
+      {% render 'list.product-card-basic',
+        context: context,
+        items_per_page: items_per_page,
+        columns_mobile: columns_mobile,
+        columns_desktop: columns_desktop,
+        horizontal_gap_md: horizontal_gap_md,
+        vertical_gap_md: vertical_gap_md
+      %}
+    {% endif %}
+  {% endcapture %}
+
+  {% capture feed_slot_2 %}
+    {% if show_compact_view %}
+      {% render 'list.product-card-basic',
+        context: context,
+        items_per_page: items_per_page_compact,
+        columns_mobile: columns_mobile,
+        columns_desktop: 6,
+        horizontal_gap_md: horizontal_gap_md,
+        vertical_gap_md: vertical_gap_md
+      %}
+    {% endif %}
+  {% endcapture %}
+
+  {% capture feed_slot_3 %}
+    {% if show_list_view %}
+      {% render 'list.product-card-full-row', context: context, items_per_page: items_per_page %}
+    {% endif %}
+  {% endcapture %}
+
+  {% render 'list.view-controller',
+    feed_view_default: feed_view_default,
+    feed_view: feed_view,
+    slot_1: feed_slot_1,
+    slot_2: feed_slot_2,
+    slot_3: feed_slot_3
+  %}
+{% endcapture %}
+
+{% capture collection_feed %}
+  <collection-feed class="collection-feed collection-feed--feed-view-{{ feed_view }}">
+    {% if show_sidebar %}
+      <div class="collection-feed__sidebar">
+        {{ sidebar_drawer }}
+      </div>
+    {% endif %}
+
+    <div class="collection-feed__main">
+      {% if show_control_bar %}
+        <div
+          class="collection-feed__control-bar"
+          {% if sticky_control_bar_mobile %}data-sticky="unstuck"{% endif %}
+        >
+          {{ control_bar }}
+        </div>
+      {% endif %}
+
+      {% if context.products.size > 0 %}
+        {{ main_feed_view }}
+      {% else %}
+        <div class="collection-feed__no-results">
+          {% capture no_results_title_text %}
+            {% render 'utility.translate', key: 'info.no_results_found', fallback: 'No results found' %}
+          {% endcapture %}
+          {% render 'element.text', as: 'h1',variant: 'heading-md', text: no_results_title_text %}
+          {% capture no_results_description_text %}
+            {% render 'utility.translate', key: 'info.try_different_filters', fallback: 'Please try again with different filters.' %}
+          {% endcapture %}
+          {% render 'element.text', as: 'p', text: no_results_description_text %}
+        </div>
+      {% endif %}
+    </div>
+  </collection-feed>
+
+  {% if slot_pagination %}
+    {{ slot_pagination }}
+  {% endif %}
+{% endcapture %}
+
+{% render 'list.hot-reload', context_url: context.url, slot: collection_feed %}
+
+<script type="module">
+  import 'section.collection-feed';
+</script>
+
+{% render 'style.primitive-tokens' %}
+{% render 'style.normalize' %}
+
+{% stylesheet %}
+  :root {
+    --section-collection-feed-control-bar-background: #fff;
+    --section-collection-feed-sticky-offset: 24px;
+    --section-collection-feed-sticky-border-color: #000;
+  }
+
+  .collection-feed {
+    --_control-bar-background: var(--section-collection-feed-control-bar-background);
+    --_control-bar-sticky-offset: var(--section-collection-feed-sticky-offset);
+    --_control-bar-sticky-border-color: var(--section-collection-feed-sticky-border-color);
+
+    display: block;
+  }
+
+  .collection-feed__sidebar {
+    --element-text-font-size--body-md: var(--element-text-font-size--body-sm);
+    --element-input-font-size: var(--element-text-font-size--body-md);
+  }
+
+  .collection-feed__active-filters {
+    border-width: 0;
+    border-style: var(--element-accordion-border-style);
+    border-block-end-width: var(--element-accordion-border-width);
+    border-block-end-color: color-mix(in srgb, var(--element-accordion-color-primary) var(--element-accordion-shade-border), transparent);
+    padding-block-end: var(--size-3);
+  }
+
+  .collection-feed__control-bar {
+    --element-button-icon-size: 1.5em;
+
+    background-color: var(--_control-bar-background);
+    padding-block: var(--size-2);
+    transition: 0.3s ease-in-out;
+    transition-property: padding-block;
+    margin-block-end: calc(var(--gap-size-sm) - var(--size-2));
+
+    &[data-sticky='stuck'] {
+      padding-inline: var(--_control-bar-sticky-offset);
+      padding-block: 0;
+      z-index: 3;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-bottom: 1px solid var(--_control-bar-sticky-border-color);
+    }
+  }
+
+  .collection-feed__sort-layout-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
+  }
+
+  .collection-feed__count {
+    display: none;
+    opacity: 0.7;
+  }
+  .collection-feed__view-buttons {
+    --element-button-padding-block: var(--size-1);
+    --element-button-padding-inline: var(--size-1);
+    --element-icon-stroke-width: 1px;
+
+    display: none;
+  }
+
+  .collection-feed__view-button {
+    --element-icon-opacity: 0.5;
+  }
+
+  .collection-feed--feed-view-standard [data-feed-view='standard'],
+  .collection-feed--feed-view-compact [data-feed-view='compact'],
+  .collection-feed--feed-view-list [data-feed-view='list'] {
+    --element-icon-opacity: 1;
+  }
+{% endstylesheet %}
+
+{% style %}
+  @media ({%- render 'utility.breakpoint', size: 'md' -%}) {
+    .collection-feed__active-filters {
+      padding-block-end: var(--size-4-5);
+    }
+
+    .collection-feed__control-bar {
+      position: static;
+    }
+
+    .collection-feed__count {
+      display: block;
+    }
+
+    .collection-feed__sort-layout-item--separated {
+      border-right-style: var(--_border-style);
+      border-right-width: var(--_border-width);
+      border-right-color: color-mix(in srgb, var(--_border-base-color) var(--_border-shade), transparent);
+      padding-right: calc(var(--size-2) * 2);
+    }
+
+    .collection-feed__view-buttons {
+      display: flex;
+    }
+  }
+{% endstyle %}

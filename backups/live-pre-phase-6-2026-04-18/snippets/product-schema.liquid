@@ -1,0 +1,154 @@
+{%- comment -%}
+  Edition sizes — reads from product metafields (custom.edition_size_m, custom.edition_size_l,
+  custom.edition_size_xl) with defaults of 100 / 50 / 25 for products without metafields set.
+{%- endcomment -%}
+{%- assign edition_size_m = product.metafields.custom.edition_size_m | default: 100 -%}
+{%- assign edition_size_l = product.metafields.custom.edition_size_l | default: 50 -%}
+{%- assign edition_size_xl = product.metafields.custom.edition_size_xl | default: 25 -%}
+
+{%- assign price_valid_until = 'now' | date: '%s' | plus: 63072000 | date: '%Y-%m-%d' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | escape | json }},
+  "description": {{ product.description | strip_html | escape | json }},
+  "url": {{ canonical_url | json }},
+  "image": [
+    {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }}
+  ],
+  {%- if product.selected_or_first_available_variant.sku != blank -%}
+  "sku": {{ product.selected_or_first_available_variant.sku | json }},
+  {%- endif -%}
+  "brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | json }}
+  },
+  {%- assign _has_ap = false -%}
+  {%- if product.metafields.custom.collection_series != blank or product.metafields.custom.location != blank or product.metafields.custom.year_photographed != blank or product.metafields.custom.print_technique != blank or product.metafields.custom.paper_type != blank -%}{%- assign _has_ap = true -%}{%- endif -%}
+  {%- assign _ap_size = product.selected_or_first_available_variant.option1 -%}
+  {%- if _ap_size == 'M' or _ap_size == 'L' or _ap_size == 'XL' -%}{%- assign _has_ap = true -%}{%- endif -%}
+  {%- if _has_ap -%}
+  "additionalProperty": [
+    {%- assign _ap_comma = false -%}
+    {%- if product.metafields.custom.collection_series != blank -%}
+      {"@type":"PropertyValue","name":"Series","value":{{ product.metafields.custom.collection_series | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.location != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Location","value":{{ product.metafields.custom.location | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.year_photographed != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Year Photographed","value":{{ product.metafields.custom.year_photographed | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.print_technique != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Print Technique","value":{{ product.metafields.custom.print_technique | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- if product.metafields.custom.paper_type != blank -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Paper","value":{{ product.metafields.custom.paper_type | json }}}{%- assign _ap_comma = true -%}
+    {%- endif -%}
+    {%- assign _schema_size = product.selected_or_first_available_variant.option1 -%}
+    {%- if _schema_size == 'M' or _schema_size == 'L' or _schema_size == 'XL' -%}
+      {%- case _schema_size -%}
+        {%- when 'M' -%}{%- assign _schema_edition = edition_size_m -%}
+        {%- when 'L' -%}{%- assign _schema_edition = edition_size_l -%}
+        {%- when 'XL' -%}{%- assign _schema_edition = edition_size_xl -%}
+      {%- endcase -%}
+      {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Edition Size","value":{{ _schema_edition | json }}}
+    {%- endif -%}
+  ],
+  {%- endif -%}
+  {%- assign _review_count = product.metafields.reviews.rating_count | plus: 0 -%}
+  {%- if product.metafields.reviews.rating.value != blank and _review_count > 0 %}
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ product.metafields.reviews.rating.value.rating | times: 1.0 }},
+    "reviewCount": {{ _review_count }},
+    "bestRating": 5,
+    "worstRating": 1
+  },
+  {%- endif %}
+  "hasMerchantReturnPolicy": {
+    "@type": "MerchantReturnPolicy",
+    "applicableCountry": "AU",
+    "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+    "merchantReturnLink": "https://lostcollective.com/policies/refund-policy"
+  },
+  {%- if product.price_min != product.price_max -%}
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "{{ shop.currency }}",
+    "lowPrice": "{{ product.price_min | money_without_currency | remove: ',' }}",
+    "highPrice": "{{ product.price_max | money_without_currency | remove: ',' }}",
+    "offerCount": {{ product.variants.size }},
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "url": {{ canonical_url | json }},
+    "priceValidUntil": "{{ price_valid_until }}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "15.00",
+        "currency": "AUD"
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "AU"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 5,
+          "maxValue": 10,
+          "unitCode": "DAY"
+        },
+        "transitTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 3,
+          "maxValue": 7,
+          "unitCode": "DAY"
+        }
+      }
+    }
+  }
+  {%- else -%}
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "{{ shop.currency }}",
+    "price": "{{ product.price | money_without_currency | remove: ',' }}",
+    "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "url": {{ canonical_url | json }},
+    "priceValidUntil": "{{ price_valid_until }}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "15.00",
+        "currency": "AUD"
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "AU"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 5,
+          "maxValue": 10,
+          "unitCode": "DAY"
+        },
+        "transitTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 3,
+          "maxValue": 7,
+          "unitCode": "DAY"
+        }
+      }
+    }
+  }
+  {%- endif -%}
+}
+</script>

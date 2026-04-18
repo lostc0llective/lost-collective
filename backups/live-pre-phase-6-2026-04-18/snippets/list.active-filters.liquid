@@ -1,0 +1,107 @@
+{% doc %}
+  Renders a list.active-filters component.
+  @param {object} context - The collection or search object
+  @param {boolean} [enable_reset_all_filters] - Whether to enable the reset-all-filters button (default: false)
+  @param {string} [classlist] - Additional classes to add
+  @example
+  {% render 'list.active-filters', context: collection %}
+{% enddoc %}
+
+{%- liquid
+  assign context = context | default: collection
+  assign enable_reset_all_filters = enable_reset_all_filters | default: false, allow_false: true
+  assign classlist = classlist | default: '' | append: ' active-filters' | strip
+  assign context_url = context.url
+
+  if request.page_type == 'search'
+    assign terms = context.terms | escape
+    assign sort_by = context.sort_by | default: context.default_sort_by
+    assign context_url = '?q=' | append: terms | append: '&sort_by=' | append: sort_by
+  endif
+-%}
+
+{% capture current_filter_size %}
+  {% render 'list.active-filters.count', context: context %}
+{% endcapture %}
+{% assign current_filter_size = 1 | times: current_filter_size %}
+
+{% if current_filter_size > 0 %}
+  {%- capture tag_list_items -%}
+    {%- for filter in context.filters -%}
+
+      {%- for filter_value in filter.active_values -%}
+        <li>
+          {%- capture filter_chip_attributes -%}
+            {% render 'list.hot-reload.attributes', url_to_remove: filter_value.url_to_remove %}
+          {%- endcapture -%}
+          {%- render 'element.chip',
+            href: filter_value.url_to_remove,
+            label: filter_value.label,
+            dismissible: true,
+            attributes: filter_chip_attributes
+          -%}
+        </li>
+      {%- endfor -%}
+
+      {%- if filter.type == 'price_range' and filter.min_value.value or filter.max_value.value -%}
+        <li>
+          {%- capture price_chip_attributes -%}
+            {% render 'list.hot-reload.attributes', url_to_remove: filter.url_to_remove %}
+          {%- endcapture -%}
+          {%- capture chip_label -%}
+            {{ filter.min_value.value | default: 0 | money }} - {{ filter.max_value.value | default: filter.range_max | money }}
+          {%- endcapture -%}
+          {%- render 'element.chip',
+            href: filter.url_to_remove,
+            label: chip_label,
+            dismissible: true,
+            attributes: price_chip_attributes
+          -%}
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {% capture tag_list_stack %}
+    {%- render 'layout.stack',
+      as: 'ul',
+      horizontal: true,
+      slot: tag_list_items,
+      gap: 'xs'
+    -%}
+  {% endcapture %}
+
+  {% capture reset_all_text %}
+    {% if enable_reset_all_filters %}
+      {%- capture filter_chip_attributes -%}
+        {% render 'list.hot-reload.attributes', url_to_remove: context_url %}
+      {%- endcapture -%}
+      {% capture reset_all_link %}
+        <a
+          href="{{ context_url }}"
+          class="active-filters__reset-all-link"
+          {{ filter_chip_attributes }}
+        >
+          {% render 'utility.translate', key: 'actions.reset_filters', fallback: 'Clear all' -%}
+        </a>
+      {% endcapture %}
+
+      {% render 'element.text', variant: 'body-md', text: reset_all_link %}
+    {% endif %}
+  {% endcapture %}
+
+  {% capture content %}
+    {{ tag_list_stack }}
+    {{ reset_all_text }}
+  {% endcapture %}
+
+  <active-filters class="{{ classlist }}" style="{{ style }}">
+    {% render 'layout.stack', slot: content, gap: 'xs', wrap: 'wrap' -%}
+  </active-filters>
+{% endif %}
+
+{% stylesheet %}
+  .active-filters__reset-all-link {
+    text-decoration: none;
+  }
+{% endstylesheet %}

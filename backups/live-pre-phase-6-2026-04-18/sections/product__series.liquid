@@ -1,0 +1,210 @@
+{% comment %}
+** More from this series **
+Displays other products from the same photographic series as the current product.
+Driven by the custom.collection_series metafield — looks up collections[series_handle] to
+find sibling products. Falls back gracefully when:
+  - The product has no collection_series metafield
+  - No Shopify collection exists matching the series handle
+  - The series collection has only one product (the current one)
+
+The section is hidden entirely when there are no related products to show.
+{% endcomment %}
+
+{% liquid
+  assign id = section.id
+  assign products_per_row = section.settings.products_per_row
+  assign limit = section.settings.products_limit
+
+  # Null-safe metafield access — guard before calling .value
+  assign series_name = ""
+  if product.metafields.custom.collection_series != blank
+    assign series_name = product.metafields.custom.collection_series.value
+  endif
+  assign series_handle = series_name | handleize
+  assign series_collection = collections[series_handle]
+
+  # Only proceed if the collection exists and has more than just this product
+  assign show_section = false
+  if series_name != blank and series_collection != blank and series_collection.products_count > 1
+    assign show_section = true
+  endif
+
+  # Pre-compute loop ceiling: fetch one extra to account for skipping the current product
+  assign loop_limit = limit | plus: 1
+%}
+
+{% style %}
+  #shopify-section-{{ id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  @media only screen and (max-width: 798px) {
+    #shopify-section-{{ id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+{% if show_section %}
+  <section class="section product__series-section" id="shopify-section-{{ id }}">
+    <div class="container">
+      <div class="one-whole column">
+        {% if section.settings.heading != blank %}
+          <h2 class="product__series-heading title">
+            <a href="{{ series_collection.url }}">{{ section.settings.heading | replace: '[series]', series_name }}</a>
+          </h2>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="container">
+      {% assign rendered_count = 0 %}
+      {% for series_product in series_collection.products limit: loop_limit %}
+        {% if series_product.id != product.id and rendered_count < limit %}
+          {% assign rendered_count = rendered_count | plus: 1 %}
+          <div class="
+            {% render 'column-width', value: products_per_row %}
+            medium-down--one-half
+            small-down--one-half
+            column
+            thumbnail
+            product__thumbnail
+            product__grid-item
+            has-padding-bottom
+          ">
+            <div class="product-wrap">
+              <div class="product-image__wrapper">
+                <div class="image__container product__imageContainer">
+                  <a href="{{ series_product.url | within: series_collection }}" title="{{ series_product.title | escape }}">
+                    {%
+                      render 'image-element',
+                      image: series_product.featured_media,
+                      alt: series_product.featured_media.preview_image.alt | default: series_product.title,
+                    %}
+                  </a>
+                </div>
+              </div>
+
+              <div class="thumbnail__caption text-align-center">
+                <p class="product-thumbnail__title">
+                  <a href="{{ series_product.url | within: series_collection }}">{{ series_product.title | escape }}</a>
+                </p>
+                <span class="price">
+                  {% if series_product.price_varies %}
+                    <small><em>{{ 'products.general.from' | t }}</em></small>
+                  {% endif %}
+                  <span class="money">
+                    {%
+                      render 'price-element',
+                      price: series_product.price_min
+                    %}
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_view_all %}
+      <div class="container">
+        <div class="one-whole column text-align-center has-padding-top">
+          <a href="{{ series_collection.url }}" class="button button--secondary">
+            View all {{ series_name }} prints
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "More from this series",
+    "templates": ["product"],
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "More from [series]",
+        "info": "Use [series] as a placeholder — it will be replaced with the actual series name from the product's metafield."
+      },
+      {
+        "type": "range",
+        "id": "products_limit",
+        "label": "Number of products to show",
+        "min": 2,
+        "max": 8,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "select",
+        "id": "products_per_row",
+        "label": "Products per row",
+        "options": [
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" }
+        ],
+        "default": "4"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' link to series collection",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Spacing"
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "label": "Top spacing",
+        "min": 0,
+        "max": 80,
+        "default": 40,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "label": "Bottom spacing",
+        "min": 0,
+        "max": 80,
+        "default": 40,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "padding_top_mobile",
+        "label": "Mobile top spacing",
+        "min": 0,
+        "max": 80,
+        "default": 24,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom_mobile",
+        "label": "Mobile bottom spacing",
+        "min": 0,
+        "max": 80,
+        "default": 24,
+        "unit": "px"
+      }
+    ],
+    "presets": [
+      {
+        "name": "More from this series",
+        "category": "Product"
+      }
+    ]
+  }
+{% endschema %}

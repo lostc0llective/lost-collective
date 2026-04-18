@@ -1,0 +1,40 @@
+{% doc %}
+  Renders the correct feed view based on the feed_view cart attribute.
+
+  @param {string} [slot_1] - Product card slot (at least one slot is required)
+  @param {string} [slot_2] - Product card slot (at least one slot is required)
+  @param {string} [slot_3] - Product card slot (at least one slot is required)
+  @param {string} [feed_view_default] - The default feed view to show, default: 'standard'
+  @param {string} [feed_view] - The feed view to show (overrides cart.attributes.feed_view), default: 'standard'
+  @example
+  {% render 'list.view-controller',
+  slot_1: feed_slot_1,
+  slot_2: feed_slot_2,
+  slot_3: feed_slot_3
+  %}
+{% enddoc %}
+
+{% liquid
+  assign slot_1 = slot_1 | default: ''
+  assign slot_2 = slot_2 | default: ''
+  assign slot_3 = slot_3 | default: ''
+  assign feed_view_default = feed_view_default | default: 'standard'
+  assign feed_view = feed_view | default: cart.attributes.feed_view | default: feed_view_default
+%}
+
+<view-controller class="view-controller">
+  {% case feed_view %}
+    {% when 'standard' %}
+      {{ slot_1 }}
+    {% when 'compact' %}
+      {{ slot_2 }}
+    {% when 'list' %}
+      {{ slot_3 }}
+  {% endcase %}
+</view-controller>
+
+{% stylesheet %}
+  .view-controller {
+    display: contents;
+  }
+{% endstylesheet %}

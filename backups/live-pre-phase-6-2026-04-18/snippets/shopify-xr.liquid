@@ -1,0 +1,13 @@
+{% comment %}
+  Renders the Shopify XR model initialisation script required for 3D/AR product media.
+  Must be included once per product context on any template that renders product media.
+
+  @param product {Product} — the product object
+{% endcomment %}
+{% if product.media %}
+  <script>
+    window.ShopifyXR=window.ShopifyXR||function(){(ShopifyXR.q=ShopifyXR.q||[]).push(arguments)}
+    {% assign models = product.media | where: 'media_type', 'model' | json %}
+    ShopifyXR('addModels', {{ models }});
+  </script>
+{% endif %}

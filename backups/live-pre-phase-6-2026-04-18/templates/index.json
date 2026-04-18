@@ -1,0 +1,893 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "index_video_e3PxRq": {
+      "type": "index__video",
+      "settings": {
+        "iframe_video": "https://vimeo.com/1045887806?share=copy#t=0",
+        "autoplay": true,
+        "autoloop": true,
+        "mute_video": false,
+        "controls": false,
+        "aspect_ratio": "16:9",
+        "image": "shopify://shop_images/Exploring_Abandoned_Places_Shop_Lost_Collective_Prints.jpg",
+        "pretext": "",
+        "title": "",
+        "subtitle": "",
+        "pretext_color": "rgba(0,0,0,0)",
+        "heading_color": "#ffffff",
+        "subheading_color": "#ffffff",
+        "text_align": "center",
+        "horizontal_text_position": "center",
+        "vertical_text_position": "center",
+        "button_label": "",
+        "button_style": "button--primary",
+        "text_width": 100,
+        "overlay_style": "fade",
+        "background_opacity": 0,
+        "gradient": "rgba(0,0,0,0)",
+        "gradient_rotation": 0,
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "none",
+        "mobile_text_below_video": false,
+        "pretext_color_mobile": "rgba(0,0,0,0)",
+        "mobile_text_alignment": "none",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "trust_icon_bar": {
+      "type": "footer__icon-bar",
+      "blocks": {
+        "trust_text_1": {
+          "type": "text",
+          "settings": {
+            "icon": "checkmark",
+            "text": "Personally signed prints",
+            "link": ""
+          }
+        },
+        "trust_text_2": {
+          "type": "text",
+          "settings": {
+            "icon": "heart",
+            "text": "Supporting the arts",
+            "link": ""
+          }
+        },
+        "trust_text_3": {
+          "type": "text",
+          "settings": {
+            "icon": "truck",
+            "text": "Fast and secure shipping",
+            "link": ""
+          }
+        },
+        "trust_text_4": {
+          "type": "text",
+          "settings": {
+            "icon": "gem",
+            "text": "Museum grade materials",
+            "link": ""
+          }
+        },
+        "trust_text_5": {
+          "type": "text",
+          "settings": {
+            "icon": "flag",
+            "text": "2016 National Trust Heritage Award",
+            "link": "/blogs/blog/national-trust-2016-heritage-awards"
+          }
+        }
+      },
+      "block_order": [
+        "trust_text_1",
+        "trust_text_2",
+        "trust_text_3",
+        "trust_text_4",
+        "trust_text_5"
+      ],
+      "settings": {
+        "show_icon_bar": true,
+        "icon_position": "column",
+        "alignment": "center",
+        "mobile_alignment": "center",
+        "size": "medium",
+        "background": "#ffffff",
+        "link_color": "#2a2a2a",
+        "link_hover_color": "#000000",
+        "text_color": "#4d4d4d",
+        "width": "wide",
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "index_rich_text_6jwa8r": {
+      "type": "index__rich-text",
+      "custom_css": [],
+      "settings": {
+        "title": "What Gets Left Behind",
+        "heading_font": "montserrat_n8",
+        "heading_alignment": "center",
+        "heading_size": 24,
+        "text": "<p>Power stations that once ran cities. Hotels where the hallways are still set for guests who stopped coming. Lost Collective documents the places that remain after everyone else has moved on. 62 series. 1,809 prints.</p>",
+        "text_font": "lato_n5",
+        "text_alignment": "center",
+        "text_size": 17,
+        "columns": 1,
+        "button_label": "Shop Fine Art Prints",
+        "button_link": "shopify://collections/best-sellers",
+        "button_style": "button--secondary",
+        "button_alignment": "center",
+        "heading_color": "rgba(0,0,0,0)",
+        "text_color": "rgba(0,0,0,0)",
+        "background": "rgba(0,0,0,0)",
+        "gradient": "rgba(0,0,0,0)",
+        "gradient_rotation": 0,
+        "width": "wide",
+        "padding_top": 30,
+        "padding_bottom": 24,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "fadeInDown",
+        "mobile_title": "",
+        "mobile_text": "",
+        "mobile_alignment": "none",
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 16,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "image_with_text_overlay": {
+      "type": "index__image-with-text-overlay",
+      "settings": {
+        "image": "shopify://shop_images/landscape-pool-room-abandoned-building-prints.jpg",
+        "mobile_image": "shopify://shop_images/portrait-pool-room-abandoned-building-prints.jpg",
+        "link": "shopify://collections/best-sellers",
+        "pretext": "<h2>The Quiet After</h2>",
+        "title": "",
+        "subtitle": "<p>Every series starts with a locked door and a question. What happened here? Who was the last person to leave? The photographs are the answers that came back.</p>",
+        "pretext_color": "#ffffff",
+        "heading_color": "#ffffff",
+        "subheading_color": "#cccccc",
+        "text_alignment": "center",
+        "text_horizontal_position": "left",
+        "text_vertical_position": "middle",
+        "text_width": 40,
+        "background_color": "#000000",
+        "background_opacity": 72,
+        "border_color": "#ffffff",
+        "border_width": 0,
+        "button_1": "Shop Best Sellers",
+        "button_1_link": "shopify://collections/best-sellers",
+        "button_1_style": "button--primary-action",
+        "button_2": "Browse Collections",
+        "button_2_link": "shopify://collections",
+        "button_2_style": "button--secondary",
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "none",
+        "mobile_text_below_image": true,
+        "mobile_preheading": "",
+        "mobile_heading": "",
+        "mobile_subheading": "",
+        "pretext_color_mobile": "rgba(0,0,0,0)",
+        "heading_color_mobile": "rgba(0,0,0,0)",
+        "subheading_color_mobile": "rgba(0,0,0,0)",
+        "text_alignment_mobile": "center",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "css_class": "section--art-story",
+        "custom_css": ""
+      }
+    },
+    "index_featured_collection_TdCMFp": {
+      "type": "index__featured-collection",
+      "settings": {
+        "title": "Best Sellers",
+        "collection": "best-sellers",
+        "products_per": 4,
+        "products_limit": 6,
+        "align_height": false,
+        "collection_height": 400,
+        "button_label": "",
+        "button_style": "button--primary",
+        "collection_style": "slider",
+        "width": "wide",
+        "show_gutter": true,
+        "padding_top": 0,
+        "padding_bottom": 60,
+        "animation": "fadeIn",
+        "collection_layout_mobile": "slider",
+        "mobile_products_per_row": "1",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 40,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "logo_list": {
+      "type": "index__logo-list",
+      "blocks": {
+        "logo_image_Kr68H7": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/abc-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_7AtxL9": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/7-news-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_L4VNma": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/the-sydney-morning-herald-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_zhrQNf": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/cnn-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_KeXYDM": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/business-insider-logo-greyscale.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_VP8m67": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/commercial-real-estate-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_QkqcBY": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/atomos-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_rgPjaX": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/rnz-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_EyV4D9": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/vice-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_baf7Te": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/curbed-logo-greyscale.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_y9dDLR": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/the-sun-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_TjinTg": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/smith-journal-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_image_kMqjzX": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/domain-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_list-0": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/broad-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_list-1": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/capture-mag-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_list-4": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/nikon-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_list-2": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/pedestrian-logo.jpg",
+            "link": ""
+          }
+        },
+        "logo_list-3": {
+          "type": "logo_image",
+          "settings": {
+            "image": "shopify://shop_images/the-guardian-logo.jpg",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "logo_image_Kr68H7",
+        "logo_image_7AtxL9",
+        "logo_image_L4VNma",
+        "logo_image_zhrQNf",
+        "logo_image_KeXYDM",
+        "logo_image_VP8m67",
+        "logo_image_QkqcBY",
+        "logo_image_rgPjaX",
+        "logo_image_EyV4D9",
+        "logo_image_baf7Te",
+        "logo_image_y9dDLR",
+        "logo_image_TjinTg",
+        "logo_image_kMqjzX",
+        "logo_list-0",
+        "logo_list-1",
+        "logo_list-4",
+        "logo_list-2",
+        "logo_list-3"
+      ],
+      "settings": {
+        "logo_size": "small",
+        "background": "rgba(0,0,0,0)",
+        "gradient": "rgba(0,0,0,0)",
+        "gradient_rotation": 0,
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "none",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "index_rich_text_gdKFKy": {
+      "type": "index__rich-text",
+      "settings": {
+        "title": "Six Categories. Two Countries. One Thread.",
+        "heading_font": "montserrat_n8",
+        "heading_alignment": "center",
+        "heading_size": 24,
+        "text": "<p>Factories, hospitals, hotels, farmsteads, and the abandoned towns between them. Documented across Australia and Japan over 15 years.</p>",
+        "text_font": "lato_n5",
+        "text_alignment": "center",
+        "text_size": 19,
+        "columns": 1,
+        "button_label": "",
+        "button_link": "",
+        "button_style": "button--primary",
+        "button_alignment": "center",
+        "heading_color": "rgba(0,0,0,0)",
+        "text_color": "rgba(0,0,0,0)",
+        "background": "rgba(0,0,0,0)",
+        "gradient": "rgba(0,0,0,0)",
+        "gradient_rotation": 180,
+        "width": "wide",
+        "padding_top": 60,
+        "padding_bottom": 32,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "fadeInDown",
+        "mobile_title": "",
+        "mobile_text": "",
+        "mobile_alignment": "center",
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 20,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "index_collection_list_nXAtbe": {
+      "type": "index__collection-list",
+      "blocks": {
+        "collection_KDpq4X": {
+          "type": "collection",
+          "settings": {
+            "feature_collection": "commercial",
+            "image": "shopify://shop_images/abandoned-commercial-bar-fine-art-prints-lost-collective_1.webp",
+            "title": "COMMERCIAL",
+            "button_label": "View Products"
+          }
+        },
+        "collection_Mf67kj": {
+          "type": "collection",
+          "settings": {
+            "feature_collection": "industrial",
+            "image": "shopify://shop_images/abandoned-industrial-turbine-fine-art-prints-lost-collective_1.webp",
+            "title": "INDUSTRIAL",
+            "button_label": "View Products"
+          }
+        },
+        "collection_LQEmYD": {
+          "type": "collection",
+          "settings": {
+            "feature_collection": "medical",
+            "image": "shopify://shop_images/abandoned-operating-room-medical-fine-art-lost-collective_1.webp",
+            "title": "MEDICAL",
+            "button_label": "View Products"
+          }
+        },
+        "collection_mcjLr4": {
+          "type": "collection",
+          "settings": {
+            "feature_collection": "landscapes",
+            "image": "shopify://shop_images/jincumbilly-train-station-under-stars-landscape-fine-art-lost-collective_1.webp",
+            "title": "LANDSCAPES",
+            "button_label": "View Products"
+          }
+        },
+        "collection_nBiVyh": {
+          "type": "collection",
+          "settings": {
+            "feature_collection": "rural",
+            "image": "shopify://shop_images/abandoned-rural-stone-house-fine-art-prints-lost-collective_1.webp",
+            "title": "RURAL",
+            "button_label": "View Products"
+          }
+        },
+        "collection_ADPYgf": {
+          "type": "collection",
+          "settings": {
+            "feature_collection": "japan",
+            "image": "shopify://shop_images/japan-abandoned-barber-shop-fine-art-lost-collective_1.webp",
+            "title": "JAPAN",
+            "button_label": "View Products"
+          }
+        }
+      },
+      "block_order": [
+        "collection_KDpq4X",
+        "collection_Mf67kj",
+        "collection_LQEmYD",
+        "collection_mcjLr4",
+        "collection_nBiVyh",
+        "collection_ADPYgf"
+      ],
+      "settings": {
+        "align_height": false,
+        "collection_height": 200,
+        "enable_zoom": true,
+        "button_style": "button--secondary",
+        "overlay_text": "#ffffff",
+        "overlay_background": "rgba(0,0,0,0)",
+        "overlay_background_opacity": 0,
+        "collection_title_below_image": false,
+        "width": "wide",
+        "show_gutter": true,
+        "padding_top": 0,
+        "padding_bottom": 60,
+        "animation": "fadeIn",
+        "mobile_layout": "slider",
+        "show_arrows": false,
+        "show_navigation_dots": false,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 40,
+        "css_class": "section--category-grid",
+        "custom_css": ""
+      }
+    },
+    "index_image_with_text_overlay_bMtjLA": {
+      "type": "index__image-with-text-overlay",
+      "settings": {
+        "image": "shopify://shop_images/brett-patman-photographer-inside-abandoned-building.webp",
+        "mobile_image": "shopify://shop_images/brett-patman-photographer-inside-abandoned-building-mobile.webp",
+        "link": "shopify://pages/about",
+        "pretext": "<h2>About Brett</h2>",
+        "title": "",
+        "subtitle": "<p>Brett Patman spent 15 years as a tradesman working inside industrial buildings before he started photographing them. The shift was less a career change and more a failure to stop being curious about what was behind the next door. Lost Collective is the result of that curiosity applied to every boarded-up building, decommissioned reactor, and closed-down hotel he could talk his way into.</p>",
+        "pretext_color": "#ffffff",
+        "heading_color": "#ffffff",
+        "subheading_color": "#cccccc",
+        "text_alignment": "center",
+        "text_horizontal_position": "right",
+        "text_vertical_position": "middle",
+        "text_width": 40,
+        "background_color": "#000000",
+        "background_opacity": 72,
+        "border_color": "#ffffff",
+        "border_width": 0,
+        "button_1": "",
+        "button_1_link": "shopify://collections/best-sellers",
+        "button_1_style": "button--secondary",
+        "button_2": "Discover the Story",
+        "button_2_link": "shopify://pages/about",
+        "button_2_style": "button--secondary",
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "none",
+        "mobile_text_below_image": true,
+        "mobile_preheading": "",
+        "mobile_heading": "",
+        "mobile_subheading": "",
+        "pretext_color_mobile": "rgba(0,0,0,0)",
+        "heading_color_mobile": "rgba(0,0,0,0)",
+        "subheading_color_mobile": "rgba(0,0,0,0)",
+        "text_alignment_mobile": "center",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "css_class": "section--about-brett",
+        "custom_css": ""
+      }
+    },
+    "index_rich_text_aJTEX9": {
+      "type": "index__rich-text",
+      "settings": {
+        "title": "Recently Added",
+        "heading_font": "montserrat_n8",
+        "heading_alignment": "center",
+        "heading_size": 24,
+        "text": "<p>New series added as Brett continues to document. Limited editions from 25 to 100. First to see new work: <a href=\"/pages/contact\">subscribe to updates</a>.</p>",
+        "text_font": "lato_n5",
+        "text_alignment": "center",
+        "text_size": 17,
+        "columns": 1,
+        "button_label": "Shop New Fine Art Prints",
+        "button_link": "shopify://collections/new",
+        "button_style": "button--secondary",
+        "button_alignment": "center",
+        "heading_color": "rgba(0,0,0,0)",
+        "text_color": "rgba(0,0,0,0)",
+        "background": "rgba(0,0,0,0)",
+        "gradient": "rgba(0,0,0,0)",
+        "gradient_rotation": 0,
+        "width": "wide",
+        "padding_top": 60,
+        "padding_bottom": 48,
+        "padding_left": 0,
+        "padding_right": 0,
+        "animation": "fadeInDown",
+        "mobile_title": "",
+        "mobile_text": "",
+        "mobile_alignment": "none",
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 32,
+        "css_class": "section--label",
+        "custom_css": ""
+      }
+    },
+    "index_featured_collection_EixxbM": {
+      "type": "index__featured-collection",
+      "settings": {
+        "title": "New Arrivals",
+        "collection": "new",
+        "products_per": 4,
+        "products_limit": 6,
+        "align_height": false,
+        "collection_height": 400,
+        "button_label": "",
+        "button_style": "button--primary",
+        "collection_style": "slider",
+        "width": "wide",
+        "show_gutter": true,
+        "padding_top": 0,
+        "padding_bottom": 60,
+        "animation": "fadeIn",
+        "collection_layout_mobile": "slider",
+        "mobile_products_per_row": "1",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 40,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "index_testimonial_YAdkq9": {
+      "type": "index__testimonial",
+      "blocks": {
+        "image_cxDDz3": {
+          "type": "image",
+          "settings": {
+            "quote": "<p>\"My glass print arrived and is absolutely stunning. An incredible photo that looks awesome in glass. Great communication and service too.This was a gift and the recipient was overwhelmed, thanks so much Brett.\" - <strong>Matt Harwood</strong></p>",
+            "image": "shopify://shop_images/industrial-art-print-modern-decor.webp",
+            "text": "",
+            "info_text": "rgba(0,0,0,0)",
+            "info_background": "rgba(0,0,0,0)"
+          }
+        },
+        "image_mBM8N4": {
+          "type": "image",
+          "settings": {
+            "quote": "<p>\"Love, love, love my prints from Lost Collective.  Was really drawn to them at the Finders Keepers Market, and being able to talk to the artist about why he took the photograph, and the history behind the subject was awesome.  Will definitely  purchase from them again.\" - <strong>Houze Family</strong></p><p></p>",
+            "image": "shopify://shop_images/office-art-prints-three-landscape-frame.webp",
+            "text": "",
+            "info_text": "rgba(0,0,0,0)",
+            "info_background": "rgba(0,0,0,0)"
+          }
+        },
+        "image_rYfbTR": {
+          "type": "image",
+          "settings": {
+            "quote": "<p>\"I bought the Eveleigh paint shop print and am blown away by the quality. Lost collective also framed it. It looks amazing and my Husband absolutely loves it. The service also was amazing and we will definitely purchase from them again.\" - <strong>Natalie Bugaj</strong></p>",
+            "image": "shopify://shop_images/train-depot-art-print-living-room.webp",
+            "text": "",
+            "info_text": "rgba(0,0,0,0)",
+            "info_background": "rgba(0,0,0,0)"
+          }
+        },
+        "image_WF84GQ": {
+          "type": "image",
+          "settings": {
+            "quote": "<p>\"I bought three prints. I love looking at these so much, studying them, thinking about times past.   Thank you so much for sharing your work with the world :)  love them so much TEN STARS ❤️\" - <strong>Hannelore T</strong></p>",
+            "image": "shopify://shop_images/three-art-prints-modern-console-shelf.webp",
+            "text": "",
+            "info_text": "rgba(0,0,0,0)",
+            "info_background": "rgba(0,0,0,0)"
+          }
+        },
+        "image_HFUNNr": {
+          "type": "image",
+          "settings": {
+            "quote": "<p>\"I have been eagerly following Lost Collective for a few years now and have just purchased my first print. Brett was extremely helpful, delivery was quick and the product is stunning! I'm seeing new details in the print every time I look at it, the quality is unbelievable. Many thanks to Brett for his creative brilliance behind the camera. I highly recommend his work to anyone fascinated by abandoned spaces.\" - <strong>Beth Lane</strong></p>",
+            "image": "shopify://shop_images/decayed-room-art-print-grey-armchair.webp",
+            "text": "",
+            "info_text": "rgba(0,0,0,0)",
+            "info_background": "rgba(0,0,0,0)"
+          }
+        },
+        "image_BnaNkf": {
+          "type": "image",
+          "settings": {
+            "quote": "<p>\"I received my framed print in the mail - all intact and better than I imagined. The quality of the photographic paper seems to enhance the somewhat surreal image. I just love it! Thank you.\" - <strong>Alexis Lawrence</strong></p>",
+            "image": "shopify://shop_images/industrial-architecture-art-prints-green-sofa.webp",
+            "text": "",
+            "info_text": "rgba(0,0,0,0)",
+            "info_background": "rgba(0,0,0,0)"
+          }
+        }
+      },
+      "block_order": [
+        "image_cxDDz3",
+        "image_mBM8N4",
+        "image_rYfbTR",
+        "image_WF84GQ",
+        "image_HFUNNr",
+        "image_BnaNkf"
+      ],
+      "settings": {
+        "show_border": false,
+        "enable_images": true,
+        "crop_shape": "square",
+        "card_alignment": "center",
+        "card_text": "rgba(0,0,0,0)",
+        "card_background": "rgba(0,0,0,0)",
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "animation": "none",
+        "show_arrows": false,
+        "show_navigation_dots": false,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "index_slideshow_classic_mewq3w": {
+      "type": "index__slideshow-classic",
+      "blocks": {
+        "image_X7tqCH": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/kandos-cement-works-ball-mill.webp",
+            "mobile_image": "shopify://shop_images/kandos-cement-works-ball-mill-mobile.webp",
+            "link": "shopify://collections/kandos-cement-works",
+            "pretext": "<h2>Kandos Cement Works</h2>",
+            "title": "",
+            "subtitle": "<p>Sixty-seven years of cement dust settled into every surface. Rotary kilns, clinker coolers, and a rail siding that once fed half of Sydney's post-war construction boom, now silent in the Capertee Valley.</p>",
+            "pretext_color": "#000000",
+            "heading_color": "#000000",
+            "subheading_color": "#6f6f6f",
+            "text_alignment": "center",
+            "text_horizontal_position": "center",
+            "text_width": 40,
+            "button_1": "View Prints",
+            "button_1_link": "",
+            "button_1_style": "button--secondary",
+            "button_2": "",
+            "button_2_link": "",
+            "button_2_style": "button--secondary",
+            "background_color": "#ffffff",
+            "background_opacity": 77,
+            "border_color": "#ffffff",
+            "border_width": 0,
+            "mobile_pretext": "",
+            "mobile_title": "",
+            "mobile_subtitle": "",
+            "pretext_color_mobile": "rgba(0,0,0,0)",
+            "heading_color_mobile": "rgba(0,0,0,0)",
+            "subheading_color_mobile": "rgba(0,0,0,0)",
+            "mobile_text_alignment": "none"
+          }
+        },
+        "image_i3cqJ3": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/tin-city-stockton-dunes.webp",
+            "mobile_image": "shopify://shop_images/tin-city-stockton-dunes-mobile.webp",
+            "link": "shopify://collections/tin-city",
+            "pretext": "<h2>Tin City</h2>",
+            "title": "",
+            "subtitle": "<p>Showcasing its windswept dunes and iconic shacks, these prints bring a touch of adventure and history to your space.</p>",
+            "pretext_color": "#000000",
+            "heading_color": "#000000",
+            "subheading_color": "#6f6f6f",
+            "text_alignment": "center",
+            "text_horizontal_position": "center",
+            "text_width": 40,
+            "button_1": "View Prints",
+            "button_1_link": "shopify://collections/tin-city",
+            "button_1_style": "button--secondary",
+            "button_2": "",
+            "button_2_link": "",
+            "button_2_style": "button--secondary",
+            "background_color": "#ffffff",
+            "background_opacity": 77,
+            "border_color": "#ffffff",
+            "border_width": 0,
+            "mobile_pretext": "",
+            "mobile_title": "",
+            "mobile_subtitle": "",
+            "pretext_color_mobile": "rgba(0,0,0,0)",
+            "heading_color_mobile": "rgba(0,0,0,0)",
+            "subheading_color_mobile": "rgba(0,0,0,0)",
+            "mobile_text_alignment": "none"
+          }
+        },
+        "image_iMgY4z": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/callan-park-entertainment-room.webp",
+            "mobile_image": "shopify://shop_images/callan-park-entertainment-room-mobile.webp",
+            "link": "shopify://collections/callan-park",
+            "pretext": "<h2>Callan Park</h2>",
+            "title": "",
+            "subtitle": "<p>A psychiatric hospital, a convalescent home, a sandstone campus slowly reclaimed by fig roots and salt air. These prints walk the wards and corridors of Callan Park before the last walls come down.</p>",
+            "pretext_color": "#000000",
+            "heading_color": "#000000",
+            "subheading_color": "#6f6f6f",
+            "text_alignment": "center",
+            "text_horizontal_position": "center",
+            "text_width": 40,
+            "button_1": "View Prints",
+            "button_1_link": "shopify://collections/callan-park",
+            "button_1_style": "button--secondary",
+            "button_2": "",
+            "button_2_link": "",
+            "button_2_style": "button--secondary",
+            "background_color": "#ffffff",
+            "background_opacity": 77,
+            "border_color": "#ffffff",
+            "border_width": 0,
+            "mobile_pretext": "",
+            "mobile_title": "",
+            "mobile_subtitle": "",
+            "pretext_color_mobile": "rgba(0,0,0,0)",
+            "heading_color_mobile": "rgba(0,0,0,0)",
+            "subheading_color_mobile": "rgba(0,0,0,0)",
+            "mobile_text_alignment": "none"
+          }
+        },
+        "image_EWTnCn": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/abandoned-car-dealership-hokkaido.webp",
+            "mobile_image": "shopify://shop_images/abandoned-car-dealership-hokkaido-mobile.webp",
+            "link": "shopify://collections/streetscapes-of-yubari",
+            "pretext": "<h2>Streetscapes of Yubari</h2>",
+            "title": "",
+            "subtitle": "<p>Prints capturing the quiet allure of Yubari’s streetscapes, preserving its fading charm and rich history. A nostalgic and beautiful addition to your walls.</p>",
+            "pretext_color": "#000000",
+            "heading_color": "#000000",
+            "subheading_color": "#6f6f6f",
+            "text_alignment": "center",
+            "text_horizontal_position": "center",
+            "text_width": 40,
+            "button_1": "View Prints",
+            "button_1_link": "shopify://collections/streetscapes-of-yubari",
+            "button_1_style": "button--secondary",
+            "button_2": "",
+            "button_2_link": "",
+            "button_2_style": "button--secondary",
+            "background_color": "#ffffff",
+            "background_opacity": 77,
+            "border_color": "#ffffff",
+            "border_width": 0,
+            "mobile_pretext": "",
+            "mobile_title": "",
+            "mobile_subtitle": "",
+            "pretext_color_mobile": "rgba(0,0,0,0)",
+            "heading_color_mobile": "rgba(0,0,0,0)",
+            "subheading_color_mobile": "rgba(0,0,0,0)",
+            "mobile_text_alignment": "none"
+          }
+        }
+      },
+      "block_order": [
+        "image_X7tqCH",
+        "image_i3cqJ3",
+        "image_iMgY4z",
+        "image_EWTnCn"
+      ],
+      "settings": {
+        "image_slideshow_speed": 4,
+        "image_transition": "slide",
+        "show_arrows": false,
+        "show_nav_buttons": false,
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 13,
+        "animation": "none",
+        "mobile_text_below_image": true,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0
+      }
+    }
+  },
+  "order": [
+    "index_video_e3PxRq",
+    "trust_icon_bar",
+    "index_rich_text_6jwa8r",
+    "image_with_text_overlay",
+    "index_featured_collection_TdCMFp",
+    "logo_list",
+    "index_rich_text_gdKFKy",
+    "index_collection_list_nXAtbe",
+    "index_image_with_text_overlay_bMtjLA",
+    "index_rich_text_aJTEX9",
+    "index_featured_collection_EixxbM",
+    "index_testimonial_YAdkq9",
+    "index_slideshow_classic_mewq3w"
+  ]
+}

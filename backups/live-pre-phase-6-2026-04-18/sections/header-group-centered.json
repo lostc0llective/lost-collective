@@ -1,0 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "settings": {}
+    },
+    "header_top_bar": {
+      "type": "header-centered__top-bar",
+      "settings": {}
+    },
+    "header": {
+      "type": "header-centered",
+      "settings": {}
+    },
+    "mega_menu": {
+      "type": "mega-menu",
+      "blocks": {
+        "menu": {
+          "type": "menu",
+          "settings": {}
+        },
+        "featured_promo": {
+          "type": "featured_promo",
+          "settings": {}
+        },
+        "mixed": {
+          "type": "mixed",
+          "settings": {}
+        },
+        "empty_column": {
+          "type": "empty_column",
+          "settings": {}
+        },
+        "image": {
+          "type": "image",
+          "settings": {}
+        },
+        "featured_product": {
+          "type": "featured_product",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "menu",
+        "featured_promo",
+        "mixed",
+        "empty_column",
+        "image",
+        "featured_product"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "header_top_bar",
+    "header",
+    "mega_menu"
+  ]
+}

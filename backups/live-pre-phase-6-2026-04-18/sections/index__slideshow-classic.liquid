@@ -1,0 +1,528 @@
+{% render 'section.slideshow',
+  autoplay_duration: section.settings.image_slideshow_speed,
+  disable_timer_animation: true,
+  slideshow_text_animation: 'none',
+  show_pagination_below_image: true,
+  show_pagination_below_content: true,
+  pagination_color: '#333',
+  show_navigation_arrows: section.settings.show_arrows,
+  show_pagination: section.settings.show_nav_buttons,
+  navigation_arrows_style: 'circle',
+  placeholder_style: 'transparent_mix',
+  enable_grab_cursor: true,
+  slideshow_width: section.settings.width,
+  slideshow_text_below_image: section.settings.mobile_text_below_image,
+  button_wrapper: true,
+  mobile_breakpoint_size: 'small',
+  slide_transition_speed: 600,
+  slideshow_flex_spacing: true,
+  slideshow_animation: section.settings.image_transition
+%}
+
+{% schema %}
+{
+  "name": "Slideshow - classic",
+  "class": "overlaid-header-option slideshow-section under-menu",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "id": "slideshow_height",
+      "type": "select",
+      "label": "Slide height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "adapt",
+          "label": "Adapt to first image"
+        },
+        {
+          "value": "original",
+          "label": "Original aspect ratio"
+        }
+      ],
+      "default": "original"
+    },
+    {
+      "id": "enable_autoplay",
+      "type": "checkbox",
+      "label": "Autoplay slideshow",
+      "default": true
+    },
+    {
+      "id": "image_slideshow_speed",
+      "type": "range",
+      "label": "Change slides every",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "image_transition",
+      "label": "Image transition",
+      "options": [
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "slide",
+          "label": "Slide"
+        }
+      ],
+      "default": "slide"
+    },
+    {
+      "id": "show_arrows",
+      "type": "checkbox",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "id": "show_nav_buttons",
+      "type": "checkbox",
+      "label": "Show navigation dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "id": "width",
+      "type": "select",
+      "label": "Width",
+      "default": "full",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "full",
+          "label": "Wide"
+        }
+      ]
+    },
+    {
+      "id": "padding_top",
+      "type": "range",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "id": "padding_bottom",
+      "type": "range",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "id": "animation",
+      "type": "select",
+      "label": "Animation",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fadeIn",
+          "label": "Fade in"
+        },
+        {
+          "value": "fadeInDown",
+          "label": "Fade in down"
+        },
+        {
+          "value": "fadeInLeft",
+          "label": "Fade in left"
+        },
+        {
+          "value": "fadeInRight",
+          "label": "Fade in right"
+        },
+        {
+          "value": "slideInLeft",
+          "label": "Slide in left"
+        },
+        {
+          "value": "slideInRight",
+          "label": "Slide in right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "id": "slideshow_height_mobile",
+      "type": "select",
+      "label": "Slide height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "adapt",
+          "label": "Adapt to first image"
+        },
+        {
+          "value": "original",
+          "label": "Original aspect ratio"
+        }
+      ],
+      "default": "original"
+    },
+    {
+      "id": "mobile_text_below_image",
+      "type": "checkbox",
+      "label": "Show text below image",
+      "default": true
+    },
+    {
+      "id": "padding_top_mobile",
+      "type": "range",
+      "label": "Mobile top spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "id": "padding_bottom_mobile",
+      "type": "range",
+      "label": "Mobile bottom spacing",
+      "min": 0,
+      "max": 80,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "1800 x 1000px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobile Image",
+          "info": "Optional. Desktop image will show on mobile by default."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Background link"
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "richtext",
+          "id": "pretext",
+          "label": "Preheading",
+          "default": "<p>Preheading</p>"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Classic slideshow"
+        },
+        {
+          "type": "richtext",
+          "id": "subtitle",
+          "label": "Subheading",
+          "default": "<p>Additional info in the subheading</p>"
+        },
+        {
+          "type": "color",
+          "id": "pretext_color",
+          "label": "Preheading",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "subheading_color",
+          "label": "Subheading",
+          "default": "#000000"
+        },
+        {
+          "type": "text_alignment",
+          "id": "text_alignment",
+          "label": "Text alignment",
+          "default": "center"
+        },
+        {
+          "type": "select",
+          "id": "text_horizontal_position",
+          "label": "Horizontal text position",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "range",
+          "id": "text_width",
+          "label": "Text width",
+          "min": 40,
+          "max": 100,
+          "default": 40,
+          "unit": "%"
+        },
+        {
+          "type": "header",
+          "content": "Buttons"
+        },
+        {
+          "type": "text",
+          "id": "button_1",
+          "label": "Button 1 label",
+          "default": "Button 1"
+        },
+        {
+          "type": "url",
+          "id": "button_1_link",
+          "label": "Button 1 link"
+        },
+        {
+          "type": "select",
+          "id": "button_1_style",
+          "label": "Button 1 style",
+          "options": [
+            {
+              "value": "button--primary",
+              "label": "Primary"
+            },
+            {
+              "value": "button--secondary",
+              "label": "Secondary"
+            },
+            {
+              "value": "button--link-style",
+              "label": "Link style"
+            }
+          ],
+          "default": "button--secondary"
+        },
+        {
+          "type": "text",
+          "id": "button_2",
+          "label": "Button 2 label",
+          "default": "Button 2"
+        },
+        {
+          "type": "url",
+          "id": "button_2_link",
+          "label": "Button 2 link"
+        },
+        {
+          "type": "select",
+          "id": "button_2_style",
+          "label": "Button 2 style",
+          "options": [
+            {
+              "value": "button--primary",
+              "label": "Primary"
+            },
+            {
+              "value": "button--secondary",
+              "label": "Secondary"
+            },
+            {
+              "value": "button--link-style",
+              "label": "Link style"
+            }
+          ],
+          "default": "button--secondary"
+        },
+        {
+          "type": "header",
+          "content": "Text background"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_text_background",
+          "label": "Enable text background",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "range",
+          "id": "background_opacity",
+          "label": "Background opacity",
+          "min": 0,
+          "max": 100,
+          "default": 77,
+          "unit": "%"
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "Border color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "range",
+          "id": "border_width",
+          "label": "Border width",
+          "min": 0,
+          "max": 20,
+          "default": 0,
+          "unit": "px"
+        },
+        {
+          "type": "header",
+          "content": "Mobile text"
+        },
+        {
+          "type": "richtext",
+          "id": "mobile_pretext",
+          "label": "Mobile preheading"
+        },
+        {
+          "type": "text",
+          "id": "mobile_title",
+          "label": "Mobile heading"
+        },
+        {
+          "type": "richtext",
+          "id": "mobile_subtitle",
+          "label": "Mobile subheading"
+        },
+        {
+          "type": "color",
+          "id": "pretext_color_mobile",
+          "label": "Preheading",
+          "default": "transparent"
+        },
+        {
+          "type": "color",
+          "id": "heading_color_mobile",
+          "label": "Heading",
+          "default": "transparent"
+        },
+        {
+          "type": "color",
+          "id": "subheading_color_mobile",
+          "label": "Subheading",
+          "default": "transparent"
+        },
+        {
+          "type": "select",
+          "id": "mobile_text_alignment",
+          "label": "Mobile text alignment",
+          "options": [
+            {
+              "value": "none",
+              "label": "Same as desktop"
+            },
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "none"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slideshow - classic",
+      "category": "Image",
+      "settings": {},
+      "blocks": [
+        {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "title": "Flex Shopify Theme",
+            "subtitle": ""
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "pretext": "<p>Preheading</p>",
+            "title": "Classic slideshow",
+            "subtitle": "<p>Additional info in the subheading</p>"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["*"]
+  }
+}
+{% endschema %}

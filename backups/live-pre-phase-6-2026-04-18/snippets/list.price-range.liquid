@@ -1,0 +1,212 @@
+{% doc %}
+  Renders a list.price-range component.
+  @param {object} filter - The filter object
+  @param {boolean} [hot_reload] - Whether the filter should trigger list.hot-reload
+  @example
+  {% render 'list.price-range', filter: filter %}
+{% enddoc %}
+
+{%- liquid
+  assign filter = filter | default: blank
+  assign hot_reload = hot_reload | default: false
+
+  assign currencies_using_comma_decimals = 'ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VES,VND' | split: ','
+  assign uses_comma_decimals = false
+
+  if currencies_using_comma_decimals contains cart.currency.iso_code
+    assign uses_comma_decimals = true
+  endif
+
+  assign filter_range_min = 0 | money_without_currency | round | replace: ',', ''
+  assign filter_range_max = filter.range_max | money_without_currency | round | replace: ',', ''
+  assign filter_min_value = filter.min_value.value | default: 0
+  assign filter_max_value = filter.max_value.value | default: filter.range_max
+  assign filter_min_value = filter_min_value | money_without_currency | round | replace: ',', ''
+  assign filter_max_value = filter_max_value | money_without_currency | round | replace: ',', ''
+
+  if uses_comma_decimals
+    if filter.min_value.value
+      assign filter_min_value = filter.min_value.value | money_without_currency | round | replace: '.', '' | replace: ',', '.'
+    endif
+
+    if filter.max_value.value
+      assign filter_max_value = filter.max_value.value | money_without_currency | round | replace: '.', '' | replace: ',', '.'
+    endif
+
+    assign filter_range_min = filter.range_min | money_without_currency | round | replace: '.', '' | replace: ',', '.'
+    assign filter_range_max = filter.range_max | money_without_currency | round | replace: '.', '' | replace: ',', '.'
+  endif
+-%}
+
+<price-range
+  class="price-range"
+  min-value="{{ filter_min_value }}"
+  min-name="{{ filter.min_value.param_name }}"
+  min="{{ filter_range_min }}"
+  max-value="{{ filter_max_value }}"
+  max-name="{{ filter.max_value.param_name }}"
+  max="{{ filter_range_max }}"
+  hot-reload="{{ hot_reload }}"
+>
+  {% capture slider_wrapper %}
+    <div class="price-range__slider-wrapper">
+      <div class="price-range__slider"></div>
+    </div>
+  {% endcapture %}
+
+  {%- capture min_input_attributes -%}
+    min="0"
+    max="{{ filter_range_max }}"
+    {% render 'list.hot-reload.attributes', change_trigger: 'form_price_range_min' %}
+  {%- endcapture -%}
+
+  {%- capture max_input_attributes -%}
+    min="0"
+    max="{{ filter_range_max }}"
+    {% render 'list.hot-reload.attributes', change_trigger: 'form_price_range_max' %}
+  {%- endcapture -%}
+
+  {%- capture currency_symbol -%}
+    {% for currency in shop.enabled_currencies %}
+      {% if currency.iso_code == shop.currency %}
+        {{ currency.symbol }}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {%- endcapture -%}
+
+  {% capture input_style %}
+    --element-input-width: 100%;
+    --element-input-text-align: right;
+  {% endcapture %}
+
+  {% capture slot_inputs %}
+    {% render 'element.input',
+      name: filter.min_value.param_name,
+      type: 'number', 
+      value: filter_min_value,
+      classlist: 'price-range__input price-range__input-min',
+      attributes: min_input_attributes,
+      start_slot: currency_symbol,
+      style: input_style
+    %}
+    {% capture to_text %}
+      {% render 'utility.translate', key: 'labels.to', fallback: 'to' %}
+    {% endcapture %}
+    {% render 'element.text',
+      text: to_text,
+      classlist: 'price-range__input-separator',
+      variant: 'body-md'
+    %}
+    {% render 'element.input',
+      name: filter.max_value.param_name,
+      type: 'number',
+      value: filter_max_value, 
+      classlist: 'price-range__input price-range__input-max',
+      attributes: max_input_attributes,
+      start_slot: currency_symbol,
+      style: input_style
+    %}
+  {% endcapture %}
+
+  {% capture inputs_wrapper %}
+    {% render 'layout.stack',
+      slot: slot_inputs,
+      horizontal: true,
+      justify: 'space-between',
+      align: 'center',
+      gap: 'sm',
+      wrap: 'nowrap'
+    %}
+  {% endcapture %}
+
+  {% capture contents %}
+    {{ slider_wrapper }}
+    {{ inputs_wrapper }}
+  {% endcapture %}
+
+  {% render 'layout.stack', slot: contents, gap: 'xs' %}
+</price-range>
+
+<script type="module">
+  import 'list.price-range';
+</script>
+
+{% render 'style.primitive-tokens' %}
+{% render 'style.normalize' %}
+{% render 'css.vendor.nouislider' %}
+
+{% stylesheet %}
+  :root {
+    --price-range-slider-height: 6px;
+    --price-range-slider-handle-size: 12px;
+    --price-range-slider-handle-hover-size: 14px;
+    --price-range-slider-target-color: #f4f4f4;
+    --price-range-slider-handle-color: #000;
+    --price-range-slider-handle-box-shadow-color: #fff;
+    --price-range-slider-connect-color: #000;
+  }
+
+  .price-range {
+    --_slider-height: var(--price-range-slider-height);
+    --_slider-handle-size: var(--price-range-slider-handle-size);
+    --_slider-handle-hover-size: var(--price-range-slider-handle-hover-size);
+    --_slider-target-color: var(--price-range-slider-target-color);
+    --_slider-handle-color: var(--price-range-slider-handle-color);
+    --_slider-handle-box-shadow-color: var(--price-range-slider-handle-box-shadow-color);
+    --_slider-connect-color: var(--price-range-slider-connect-color);
+  }
+
+  .price-range__slider-wrapper {
+    padding-block: calc((var(--_slider-handle-hover-size) - var(--_slider-height)) / 2);
+  }
+
+  .price-range__slider {
+    cursor: pointer;
+  }
+
+  .price-range .noUi-horizontal {
+    height: var(--_slider-height);
+  }
+
+  .price-range .noUi-horizontal .noUi-handle {
+    border: 0;
+    border-radius: 50%;
+    background: var(--_slider-handle-color);
+    box-shadow: 0 0 1px 2px var(--_slider-handle-box-shadow-color);
+    width: var(--_slider-handle-size);
+    height: var(--_slider-handle-size);
+    cursor: pointer;
+    right: calc(var(--_slider-handle-size) / 2 * -1);
+    top: calc(var(--_slider-height) / 2 - var(--_slider-handle-size) / 2);
+
+    &:hover,
+    &:focus {
+      --_slider-handle-size: var(--_slider-handle-hover-size);
+    }
+
+    &:before,
+    &:after {
+      content: none;
+    }
+  }
+
+  .price-range .noUi-target {
+    background: var(--_slider-target-color);
+    border: 0;
+    box-shadow: none;
+  }
+
+  .price-range .noUi-connect {
+    background: var(--_slider-connect-color);
+  }
+{% endstylesheet %}
+
+{% style %}
+  .price-range__input {
+    --element-input-font-size: max(var(--element-text-font-size--body-md), 16px);
+    @media ({% render 'utility.breakpoint', size: 'sm' %}) {
+      --element-input-font-size: var(--element-text-font-size--body-md);
+    }
+  }
+{% endstyle %}

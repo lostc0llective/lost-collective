@@ -1,0 +1,64 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "fallback_image_banner",
+      "settings": {
+        "image_darken": false,
+        "width": "wide",
+        "banner_height": "small",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "css_class": "",
+        "custom_css": ""
+      }
+    },
+    "main": {
+      "type": "collection__main",
+      "blocks": {
+        "faceted_filtering": {
+          "type": "faceted_filtering",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "faceted_filtering"
+      ],
+      "settings": {
+        "collection_breadcrumb": true,
+        "collection_tags": true,
+        "collection_sort": true,
+        "show_sidebar": false,
+        "sidebar_position": "left",
+        "show_promo_banner": false,
+        "image_darken": false,
+        "promo_title": "",
+        "promo_text": "<p>Description of promotion with lots of details.</p>",
+        "banner_height": "medium",
+        "align_height": false,
+        "collection_height": 150,
+        "products_per_row": 4,
+        "mobile_products_per_row": "2",
+        "pagination_limit": 24,
+        "pagination_type": "basic_pagination",
+        "width": "wide",
+        "padding_top": 0,
+        "padding_bottom": 45,
+        "css_class": "",
+        "custom_css": ""
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "main"
+  ]
+}

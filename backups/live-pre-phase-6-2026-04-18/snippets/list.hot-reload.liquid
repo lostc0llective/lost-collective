@@ -1,0 +1,367 @@
+{% doc %}
+  A component that hot reloads collection/search results when filters or sort options change. This provides a seamless
+  AJAX experience for collection filtering and sorting.
+  @param {string} slot - The slot to render the collection feed content in
+  @param {string} context_url - The URL of the collection or search object
+{% enddoc %}
+
+{% liquid
+  assign slot = slot | default: ''
+  assign context_url = context_url | default: collection.url
+%}
+
+{% capture id %}
+  {% render 'utility.id', name: 'list-hot-reload' %}
+{% endcapture %}
+
+<list-hot-reload
+  id="{{ id }}"
+  section-id="{{ section.id }}"
+  context-url="{{ context_url }}"
+  context-type="{{ request.page_type }}"
+  feed-view="{{ cart.attributes.feed_view }}"
+>
+  {{ slot }}
+</list-hot-reload>
+
+{% stylesheet %}
+  list-hot-reload {
+    display: block;
+    width: 100%;
+  }
+
+  list-hot-reload[loading] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ListHotReload extends HTMLElement {
+    FORM_CHANGE_DEBOUNCE_DELAY = 800;
+    CHANGE_TRIGGER_SELECTOR = '[data-change-trigger]';
+    PAGINATION_SELECTOR = '[data-pagination-part-url]';
+    URL_TO_REMOVE_SELECTOR = '[data-url-to-remove]';
+    FEED_VIEW_SELECTOR = '[data-feed-view]';
+    PRICE_MIN_PARAM_NAME = 'filter.v.price.gte';
+    PRICE_MAX_PARAM_NAME = 'filter.v.price.lte';
+    PRICE_RANGE_MIN_SELECTOR = `[name="${this.PRICE_MIN_PARAM_NAME}"]`;
+    PRICE_RANGE_MAX_SELECTOR = `[name="${this.PRICE_MAX_PARAM_NAME}"]`;
+    CHANGE_TRIGGER_TYPES = [
+      'form',
+      'form_filter',
+      'form_select',
+      'form_price_range_min',
+      'form_price_range_max',
+      'sort_select'
+    ];
+
+    constructor() {
+      super();
+      this.formChangeDebounce = null;
+      this.cachedSections = [];
+      this.abortController = null;
+      this.fetchAbortController = null;
+    }
+
+    connectedCallback() {
+      this.abortController = new AbortController();
+      this.id = this.getAttribute('id');
+      this.sectionId = this.getAttribute('section-id');
+      this.contextUrl = this.getAttribute('context-url');
+      this.contextType = this.getAttribute('context-type');
+      this.feedView = this.getAttribute('feed-view');
+
+      if (!this.id || !this.contextUrl) {
+        console.error('List hot reload: id or contextUrl is not set');
+        return;
+      }
+
+      this.addEventListener('change', this.handleChange.bind(this), { signal: this.abortController.signal });
+      this.addEventListener('list:price-range:slider-change', this.handleFormChange.bind(this), { signal: this.abortController.signal });
+      this.addEventListener('click', this.handleClick.bind(this), { signal: this.abortController.signal });
+      this.addEventListener('submit', this.handleSubmit.bind(this), { signal: this.abortController.signal });
+      window.addEventListener('popstate', this.handlePopstate.bind(this), { signal: this.abortController.signal });
+
+      this.initThemeEditorSupport();
+    }
+
+    disconnectedCallback() {
+      clearTimeout(this.formChangeDebounce);
+      this.fetchAbortController?.abort();
+      this.abortController?.abort();
+    }
+
+    handleChange(event) {
+      const changeTrigger = event.target.dataset.changeTrigger;
+
+      if (!changeTrigger || !this.CHANGE_TRIGGER_TYPES.includes(changeTrigger)) {
+        return;
+      }
+
+      switch (changeTrigger) {
+        case 'sort_select':
+          this.updateSortFromSelect(event.target);
+          break;
+        default:
+          this.handleFormChange(event);
+      }
+    }
+
+    handleFormChange(event) {
+      const form = event.target.closest('form');
+
+      if (!form) return;
+
+      clearTimeout(this.formChangeDebounce);
+      this.formChangeDebounce = setTimeout(() => {
+        this.submitForm(form);
+      }, this.FORM_CHANGE_DEBOUNCE_DELAY);
+    }
+
+    handleSubmit(event) {
+      if (event.target.matches('[data-change-trigger="form"]')) {
+        event.preventDefault();
+        this.submitForm(event.target);
+      }
+    }
+
+    handleClick(event) {
+      const urlToRemoveBtn = event.target.closest(this.URL_TO_REMOVE_SELECTOR);
+      const viewBtn = event.target.closest(this.FEED_VIEW_SELECTOR);
+      const paginationBtn = event.target.closest(this.PAGINATION_SELECTOR);
+
+      if (urlToRemoveBtn) {
+        event.preventDefault();
+        this.renderPage(urlToRemoveBtn.dataset.urlToRemove);
+      } else if (viewBtn && viewBtn.dataset.feedView !== this.feedView) {
+        event.preventDefault();
+        this.updateFeedView(viewBtn.dataset.feedView);
+      } else if (paginationBtn) {
+        event.preventDefault();
+        this.renderPage(paginationBtn.dataset.paginationPartUrl);
+      }
+    }
+
+    handlePopstate(event) {
+      this.renderPage(window.location.href, false);
+    }
+
+    updateSortFromSelect(select) {
+      const currentParams = new URLSearchParams(window.location.search);
+      const value = select.selectedOptions[0].value;
+
+      // Filter out page param
+      const filteredParams = Array.from(currentParams).filter(([key]) => {
+        return key !== 'page';
+      });
+      const newParams = new URLSearchParams(filteredParams);
+
+      newParams.set('sort_by', value);
+      const paramsString = newParams.toString();
+      const url = `${this.contextUrl}${this.contextUrl.includes('?') ? '&' : '?'}${paramsString}`;
+      this.renderPage(url);
+    }
+
+    submitForm(form) {
+      if (!form) return;
+      const formData = new FormData(form);
+      let newParams = new URLSearchParams(formData);
+
+      // Remove price range params if they are the same as the default price range
+      newParams = this.removeDefaultPriceRangeParams(form, newParams);
+
+      // Fetch the page with the new params
+      const paramsString = newParams.toString();
+      const url = `${this.contextUrl}${this.contextUrl.includes('?') ? '&' : '?'}${paramsString}`;
+      this.renderPage(url);
+    }
+
+    removeDefaultPriceRangeParams(form, params) {
+      const gteInput = form.querySelector(this.PRICE_RANGE_MIN_SELECTOR);
+      const lteInput = form.querySelector(this.PRICE_RANGE_MAX_SELECTOR);
+
+      if (!gteInput || !lteInput) return params;
+
+      const priceRangeMin = parseInt(gteInput.getAttribute('min'), 10);
+      const priceRangeMax = parseInt(lteInput.getAttribute('max'), 10);
+      const gteValue = parseInt(params.get(this.PRICE_MIN_PARAM_NAME), 10);
+      const lteValue = parseInt(params.get(this.PRICE_MAX_PARAM_NAME), 10);
+
+      if (gteValue === priceRangeMin && lteValue === priceRangeMax) {
+        params.delete(this.PRICE_MIN_PARAM_NAME);
+        params.delete(this.PRICE_MAX_PARAM_NAME);
+      }
+
+      return params;
+    }
+
+    updateFeedView(feedView) {
+      this.updateAttribute('feed_view', feedView).then(() => {
+        const url = new URL(window.location.href);
+
+        this.feedView = feedView;
+        url.searchParams.delete('page');
+        this.renderPage(url.toString());
+      }).catch((error) => {
+        console.error('Failed to update feed view:', error);
+        throw error;
+      });
+    }
+
+    updateAttribute(key, value) {
+      this.resetFetchAbortController();
+      
+      return fetch(window.Shopify.routes.root + 'cart/update.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          attributes: {
+            [key]: value,
+          },
+        }),
+        signal: this.fetchAbortController.signal,
+      }).then((response) => {
+          if (!response.ok) throw response;
+          return response.json();
+      }).catch((error) => {
+        if (error.name === 'AbortError') throw error;
+        console.error('Failed to update cart attribute:', error);
+        throw error;
+      });
+    }
+
+    renderPage(url, updateURLHash = true) {
+      const fullUrl = new URL(url, window.location.origin).toString();
+
+      this.showLoadingState();
+      this.scrollToTop();
+
+      return this.renderSectionFromCache(fullUrl).catch(() => {
+        return this.renderSectionFromFetch(fullUrl);
+      }).then(() => {
+        if (updateURLHash) this.updateURLHash(fullUrl);
+
+        // Dispatch custom event for other components to react
+        this.dispatchEvent(
+          new CustomEvent('list:hot-reload:updated', {
+            bubbles: true,
+            detail: { context: this.contextType },
+          })
+        );
+
+        this.hideLoadingState();
+      }).catch((error) => {
+        if (error.name === 'AbortError') return;
+        console.error('Failed to render page:', fullUrl, error);
+        this.hideLoadingState();
+        throw error;
+      });
+    }
+
+    scrollToTop() {
+      if (this.getBoundingClientRect().y >= 0) return;
+      this.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    updateURLHash(url) {
+      const currentUrl = new URL(window.location);
+      const newUrl = new URL(url, window.location.origin);
+
+      if (currentUrl.pathname !== newUrl.pathname || currentUrl.search !== newUrl.search) {
+        window.history.pushState({}, '', newUrl.toString());
+      }
+    }
+
+    renderSectionFromCache(url) {
+      const cachedSection = this.cachedSections.find((cachedSection) => {
+        return cachedSection.url === url && cachedSection.feedView === this.feedView;
+      });
+      if (!cachedSection) return Promise.reject();
+
+      this.renderSection(cachedSection.html);
+      return Promise.resolve(cachedSection.url);
+    }
+
+    renderSectionFromFetch(url) {
+      return this.fetchPage(url).then((sectionHtml) => {
+        this.renderSection(sectionHtml);
+      });
+    }
+
+    renderSection(sectionHtml, section) {
+      const html = new DOMParser().parseFromString(sectionHtml, 'text/html');
+      const newContent = html.getElementById(this.id);
+
+      this.textContent = "";
+
+      // Range insertion to preserve declarative shadow DOM
+      const range = document.createRange();
+      range.selectNodeContents(this);
+      range.collapse(true);
+      Array.from(newContent.childNodes).forEach(node => {
+        range.insertNode(node);
+        range.setStartAfter(node);
+      });
+    }
+
+    fetchPage(url) {
+      const sectionUrl = new URL(url, window.location.origin);
+      const cacheUrl = sectionUrl.toString();
+
+      // Add section id to the url
+      sectionUrl.searchParams.set('sections', this.sectionId);
+
+      this.resetFetchAbortController();
+
+      return fetch(sectionUrl.toString(), {
+        signal: this.fetchAbortController.signal,
+      }).then((response) => {
+        if (!response.ok) throw response;
+        return response.json();
+      }).then((sectionsData) => {
+        const sectionHtml = sectionsData[this.sectionId];
+        this.cachedSections.push({ 
+          url: cacheUrl,
+          html: sectionHtml,
+          feedView: this.feedView
+        });
+        return sectionHtml;
+      }).catch((error) => {
+        if (error.name === 'AbortError') throw error;
+        console.error('Failed to fetch page:', error);
+        throw error;
+      });
+    }
+
+    resetFetchAbortController() {
+      this.fetchAbortController?.abort();
+      this.fetchAbortController = new AbortController();
+    }
+
+    showLoadingState() {
+      this.setAttribute('loading', '');
+    }
+
+    hideLoadingState() {
+      this.removeAttribute('loading');
+    }
+
+    initThemeEditorSupport() {
+      if (!window.Shopify?.designMode) return;
+
+      // Clear feed_view cart attribute when section is re-rendered in theme editor
+      document.addEventListener('shopify:section:load', (e) => {
+        if (e.detail?.sectionId !== this.sectionId) return;
+        this.updateAttribute('feed_view', '');
+      });
+    }
+  }
+
+  customElements.define('list-hot-reload', ListHotReload);
+{% endjavascript %}

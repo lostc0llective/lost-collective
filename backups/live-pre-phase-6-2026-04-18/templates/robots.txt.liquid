@@ -1,0 +1,55 @@
+# we use Shopify as our ecommerce platform
+{%- comment -%}
+# Caution! Please read https://help.shopify.com/en/manual/promoting-marketing/seo/editing-robots-txt before proceeding to make changes to this file.
+{% endcomment %}
+User-agent: Googlebot
+Allow: /*?country=*
+Allow: /*?currency=*
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /carts
+Disallow: /account
+Disallow: /*?q=*
+Disallow: /search
+Disallow: /apple-app-site-association
+
+{% for group in robots.default_groups %}
+  {{- group.user_agent }}
+
+  {%- for rule in group.rules -%}
+    {{ rule }}
+  {%- endfor -%}
+
+  {%- if group.user_agent.value == '*' -%}
+{{ 'Allow: /policies/' }}
+{{ 'Disallow: /collections/vendors*?*q=*' }}
+{{ 'Disallow: /collections/types*?*q=*' }}
+{{ 'Disallow: /collections/*?*constraint*' }}
+{{ 'Disallow: /collections/*?*filter*' }}
+{{ 'Disallow: /collections/*?*pf_*' }}
+{{ 'Disallow: /collections/*?sort_by=*' }}
+{{ 'Disallow: /collections/*?*view*' }}
+{{ 'Disallow: /collections/*?*grid_list*' }}
+{{ 'Disallow: /*.atom$' }}
+{{ 'Disallow: /*?section_id=*' }}
+{{ 'Disallow: /*?v=*' }}
+{{ 'Disallow: /*?variant=' }}
+{{ 'Disallow: /*?pr_prod_strat=' }}
+{{ 'Disallow: /*?pr_rec_pid=' }}
+{{ 'Disallow: /*?pr_ref_pid=' }}
+{{ 'Disallow: /*?pr_seq=' }}
+{{ 'Disallow: /web-pixels-manager' }}
+{{ 'Disallow: /wpm@' }}
+{{ 'Disallow: /cdn/wpm/' }}
+{{ 'Disallow: /*?country=*' }}
+{{ 'Disallow: /*?currency=*' }}
+{{ 'Disallow: /*?rb_tags=*' }}
+  {%- endif -%}
+
+  {%- if group.sitemap != blank -%}
+      {{ group.sitemap }}
+  {%- endif -%}
+{% endfor %}

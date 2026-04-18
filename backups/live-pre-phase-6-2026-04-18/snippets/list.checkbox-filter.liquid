@@ -1,0 +1,84 @@
+{% doc %}
+  Renders a list.checkbox-filter component.
+  @param {object} filter - The filter object
+  @param {boolean} [show_count] - Whether the filter count is displayed, default: true
+  @param {boolean} [hot_reload] - Whether the filter should trigger list.hot-reload, default: false
+  @example
+  {% render 'list.checkbox-filter', filter: filter %}
+{% enddoc %}
+
+{% liquid
+  assign filter = filter | default: context.filters.first
+  assign show_count = show_count | default: true, allow_false: true
+  assign hot_reload = hot_reload | default: false
+%}
+
+{% capture content %}
+  {% for filter_value in filter.values %}
+    {% liquid
+      assign use_icon = true
+      if filter_value.swatch or filter_value.image
+        assign use_icon = false
+      endif
+    %}
+
+    <li class="checkbox-filter__item">
+      {% capture checkbox_label %}
+        {% if filter_value.swatch or filter_value.image %}
+          {% render 'element.swatch',
+            swatch: filter_value.swatch,
+            filter_image: filter_value.image,
+            style: '--element-swatch-color-background: transparent;'
+          %}
+        {% endif %}
+
+        {% capture checkbox_label_text %}
+          {{ filter_value.label }}
+          {% if show_count %}
+            <span class="checkbox-filter__count">({{ filter_value.count }})</span>
+          {% endif %}
+        {% endcapture %}
+        {% render 'element.text', variant: 'body-md', text: checkbox_label_text %}
+      {% endcapture %}
+
+      {%- capture checkbox_attributes -%}
+        {% if hot_reload %}
+          {% render 'list.hot-reload.attributes', change_trigger: 'form_filter' %}
+        {% endif %}
+      {%- endcapture -%}
+
+      {% render 'element.checkbox',
+        index: forloop.index,
+        name: filter_value.param_name,
+        value: filter_value.value,
+        checked: filter_value.active,
+        label: checkbox_label,
+        style: style,
+        attributes: checkbox_attributes,
+        display_icon: use_icon
+      %}
+    </li>
+  {% endfor %}
+{% endcapture %}
+
+<checkbox-filter class="checkbox-filter">
+  {% render 'layout.stack', as: 'ul', slot: content, gap: 'sm', wrap: 'wrap' %}
+</checkbox-filter>
+
+{% stylesheet %}
+  :root {
+    --checkbox-filter-count-color: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  .checkbox-filter {
+    display: block;
+  }
+
+  .checkbox-filter__item {
+    line-height: 0;
+  }
+
+  .checkbox-filter__count {
+    color: var(--checkbox-filter-count-color);
+  }
+{% endstylesheet %}
