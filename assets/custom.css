@@ -54,38 +54,54 @@
 ================================ */
 
 :root {
-  /* LC brand + surface tokens.
-     --color-dark is intentionally LC-owned (cookie banner, search popup, mobile
-     sticky ATC, cart drawer, art description boxes, accordion headers — should
-     not track admin heading/body colour).
-     Phase 2 token prep: renamed --color-brand-yellow → --color-brand-gold.
-     --color-body-text now chains through Flex's --element-text-color--body (fed
-     by admin settings.regular_color). Phase 4 will re-wire --color-footer-bg
-     and --color-header-bg through Liquid so admin's footer_background and a new
-     mobile_header_background flow through. */
+  /* LC tokens — post-Phase-4 token landscape.
+     Canonical reference: docs/design-tokens.md
+     Three categories:
+       (1) admin-driven  — emitted by snippets/lc.css-tokens.liquid OR chained
+           through a Flex var via var(--flex-name, fallback).
+       (2) LC-owned      — hardcoded by design. Merchant should not control.
+       (3) structural    — spacing, radii, shadows, transitions; no colour. */
 
-  /* Brand colour */
+  /* ── (2) LC-owned brand tokens ─────────────────────────────────────────── */
+  /* --color-brand-gold: THE Lost Collective brand accent. Merchant should
+     NOT control this — it's LC's identity, not a theme-editor concept.
+     Shipped colour is #ebac20; appears in CTA hover/accent, gold logo box,
+     edition scarcity chip, chevron hover, link hover. */
   --color-brand-gold:   #ebac20;
+  /* --color-dark: LC off-black for cookie banner, search popup, mobile sticky
+     ATC, cart drawer, art description boxes, accordion headers. Distinct from
+     admin heading_color (which may hold true black). */
   --color-dark:         #1a1a1a;
-  /* Chains through admin regular_color via Flex's --element-text-color--body.
-     Fallback matches current admin value if Flex's var emission fails. */
-  --color-body-text:    var(--element-text-color--body, #6f6f6f);
-  /* --color-footer-bg moved to snippets/lc.css-tokens.liquid (Phase 4 T4)
-     so it interpolates from settings.footer_background at compile time. */
-
-  /* LC surface tokens — neutral fills used across custom components */
+  /* --lc-surface-light / --lc-surface-slate: neutral fills for custom
+     components. Happen to match admin dropdown_background and footer_background
+     but used on non-admin-controlled surfaces too (slate fills in cart, etc.). */
   --lc-surface-light:   #f5f5f5;
   --lc-surface-slate:   #4d4d4d;
+  /* --color-light aliases --lc-surface-light for compatibility with pre-Phase-1
+     rule bodies that reference var(--color-light). */
   --color-light:        var(--lc-surface-light);
-
-  /* Hover colour — Brett 2026-04-18 decision: gold is the primary accent */
+  /* --lc-color-hover: LC hover accent. Chains through brand gold rather than
+     admin link_hover_color so the hover always matches LC brand. */
   --lc-color-hover:     var(--color-brand-gold);
 
-  /* Social brand colours */
+  /* --color-twitter/-facebook/-pinterest/-email: external-brand colours.
+     Always LC-owned — these are the real brand hexes for those services,
+     merchant cannot override. */
   --color-twitter:      #1da1f2;
   --color-facebook:     #3b5998;
   --color-pinterest:    #bd081c;
   --color-email:        #333333;
+
+  /* ── (1) admin-driven tokens ──────────────────────────────────────────────
+     --color-body-text     chains settings.regular_color via Flex
+                           --element-text-color--body (fallback #6f6f6f).
+     --color-footer-bg     emitted by snippets/lc.css-tokens.liquid
+                           from settings.footer_background (Phase 4 T4).
+     --color-header-bg     emitted by snippets/lc.css-tokens.liquid
+                           from settings.mobile_header_background (Phase 4 T3).
+     --color-primary       emitted by Flex's theme.css.liquid
+                           from settings.button_primary_bg_color (Phase 4 T2). */
+  --color-body-text:    var(--element-text-color--body, #6f6f6f);
 
   /* Fonts — set in settings_data.json; vars here for use in overrides */
   --font-body:    'Lato', sans-serif;
