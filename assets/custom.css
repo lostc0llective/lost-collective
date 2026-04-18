@@ -239,11 +239,11 @@ body.index {
    min-height: 20px). JS measures the bar after load and sets shadow to match — this creates
    a squish-then-expand effect. Fix: put the bar back in flow (position: relative) so the
    container sizes to the bar directly, and hide the now-redundant shadow. */
-.announcement-container {
-  height: auto !important;
+html body .announcement-container {
+  height: auto;
 }
-.announcement-bar {
-  position: relative !important;
+html body .announcement-bar {
+  position: relative;
   background-color: var(--color-header-bg);
   overflow: hidden !important; /* W3C: prevent 2280px marquee track from contributing to page scroll width */
 }
@@ -253,8 +253,8 @@ body.index {
 
 /* Suppress the 'transition: all 0s linear' that fires on .announcement-container when
    announcement-bar--visible is added to body — even 0s transitions trigger a style-flush repaint. */
-.announcement-bar--visible .announcement-container {
-  transition: none !important;
+html body .announcement-bar--visible .announcement-container {
+  transition: none;
 }
 
 
@@ -311,19 +311,19 @@ h2.rich-text__heading.title {
 
 /* Tier 2: section label headings via rich-text (e.g. "Recently Added")
    — scoped by css_class: "section--label" set in index.json */
-.section--label h2.rich-text__heading.title {
-  font-size: 0.95rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.12em !important;
-  font-weight: 700 !important;
+html body .section--label h2.rich-text__heading.title {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
 }
 
 /* Tier 2: featured-collection section labels ("Best Sellers", "New Arrivals") */
-.featured-collection__title.title {
-  font-size: 0.95rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.12em !important;
-  font-weight: 700 !important;
+html body .featured-collection__title.title {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
 }
 
 /* Product price */
@@ -397,25 +397,25 @@ h2.rich-text__heading.title {
    caused a nav reflow/jump. The data-navlink-handle="shop" rule targets that element from
    first paint, bypassing the is-arrowless gating entirely. */
 .navbar-link:not(.is-arrowless)::after,
-.mobile-menu-link::after {
-  content: "" !important;
+html body .mobile-menu-link::after {
+  content: "";
   font-family: Arial, sans-serif;
   display: inline-block;
-  position: static !important;
-  right: auto !important;
-  top: auto !important;
+  position: static;
+  right: auto;
+  top: auto;
   width: 7px;
   height: 7px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   border-left: none;
   border-top: none;
-  transform: rotate(45deg) !important;
+  transform: rotate(45deg);
   margin-left: 7px;
   vertical-align: 0.1em;
   opacity: 0.55 !important;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
-  pointer-events: none !important;
+  pointer-events: none;
 }
 
 /* Hover: brighten */
@@ -424,8 +424,8 @@ h2.rich-text__heading.title {
 }
 
 /* Open: flip to point UP (click-mode regular dropdowns) */
-.navbar-item.is-opened > .navbar-link:not(.is-arrowless)::after {
-  transform: rotate(-135deg) !important;
+html body .navbar-item.is-opened > .navbar-link:not(.is-arrowless)::after {
+  transform: rotate(-135deg);
   opacity: 1 !important;
 }
 
@@ -433,25 +433,25 @@ h2.rich-text__heading.title {
    On mobile the mega menu is injected into the mobile drawer — the data-navlink-handle
    element doesn't exist in the same form and these rules would be meaningless/harmful. */
 @media (min-width: 799px) {
-  .header__item[data-navlink-handle="shop"] .navbar-link::after {
-    content: "" !important;
+html body .header__item[data-navlink-handle="shop"] .navbar-link::after {
+    content: "";
     font-family: Arial, sans-serif;
     display: inline-block;
-    position: static !important;
-    right: auto !important;
-    top: auto !important;
+    position: static;
+    right: auto;
+    top: auto;
     width: 7px;
     height: 7px;
     border-right: 2px solid currentColor;
     border-bottom: 2px solid currentColor;
     border-left: none;
     border-top: none;
-    transform: rotate(45deg) !important;
+    transform: rotate(45deg);
     margin-left: 7px;
     vertical-align: 0.1em;
     opacity: 0.55 !important;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
-    pointer-events: none !important;
+    pointer-events: none;
   }
 
   .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
@@ -459,8 +459,8 @@ h2.rich-text__heading.title {
   }
 
   .dropdown-click--false .navbar-item.has-mega-menu:hover > .navbar-link:not(.is-arrowless)::after,
-  .dropdown-click--false .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
-    transform: rotate(-135deg) !important;
+html body .dropdown-click--false .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
+    transform: rotate(-135deg);
     opacity: 1 !important;
   }
 }
@@ -550,16 +550,16 @@ html body #mobile-header-sticky-wrapper {
    Mobile .mobile-header: solid default here; overridden to semi-transparent in the
    @media (max-width:798px) block below once the overlay is CSS-forced on mobile. */
 html body .header {
-  background-color: rgba(18, 18, 18, 0.55) !important;
+  background-color: rgba(18, 18, 18, 0.55);
 }
 
 html body .mobile-header {
-  background-color: var(--color-header-bg) !important;
+  background-color: var(--color-header-bg);
 }
 
 /* Sticky: desktop slightly more opaque */
 html body .header-sticky-wrapper.is-sticky .header {
-  background-color: rgba(18, 18, 18, 0.78) !important;
+  background-color: rgba(18, 18, 18, 0.78);
 }
 
 /* Sticky header shrink — css-loop scopes section CSS to #shopify-section-{id},
@@ -567,8 +567,8 @@ html body .header-sticky-wrapper.is-sticky .header {
    than a descendant. The section's scroll_logo_width rule never fires.
    These unscoped rules bypass that and drive the actual shrink. */
 .header-sticky-wrapper.is-sticky .header__logo,
-.header-sticky-wrapper.is-sticky .logo__content {
-  width: 80px !important;
+html body .header-sticky-wrapper.is-sticky .logo__content {
+  width: 80px;
   transition: width 0.3s ease;
 }
 
@@ -580,7 +580,7 @@ html body .header-sticky-wrapper.is-sticky .header {
 /* Mobile sticky: overridden in the @media block below */
 html body #mobile-header-sticky-wrapper.is-sticky .mobile-header,
 html body .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
-  background-color: var(--color-header-bg) !important;
+  background-color: var(--color-header-bg);
 }
 
 /* Mobile sticky shrink — when the header locks to top on scroll, compress it
@@ -594,7 +594,7 @@ html body .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-h
   }
 
   #mobile-header-sticky-wrapper.is-sticky #mobile-header {
-    padding-top: 0 !important;
+    padding-top: 0;
     padding-bottom: 0;
   }
 
@@ -603,15 +603,15 @@ html body .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-h
   #mobile-header-sticky-wrapper.is-sticky .mobile-icons .header__link,
   #mobile-header-sticky-wrapper.is-sticky .mobile-icons .header-cart,
   #mobile-header-sticky-wrapper.is-sticky .mobile-toggle {
-    padding-top: 8px !important;
+    padding-top: 8px;
     padding-bottom: 8px;
     transition: padding 0.3s ease;
   }
 
   /* Logo wrapper — match icon padding so everything centres evenly */
   #mobile-header-sticky-wrapper.is-sticky .mobile-logo {
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+    padding-top: 8px;
+    padding-bottom: 8px;
     transition: padding 0.3s ease;
   }
 }
@@ -646,8 +646,8 @@ html body .mobile-header .header__icon {
    Theme sets fill from settings.header_link_color via .mobile-menu__toggle-icon .icon.
    Override to white for dark header. */
 html body .mobile-menu__toggle-icon .icon {
-  fill: var(--color-white) !important;
-  color: var(--color-white) !important;
+  fill: var(--color-white);
+  color: var(--color-white);
 }
 
 /* Mobile header — fixed at top of viewport on all mobile pages.
@@ -683,8 +683,8 @@ html body .mobile-menu__toggle-icon .icon {
   body.index #mobile-header .header__icon,
   body.index-json #mobile-header .mobile-menu__toggle-icon .icon,
   body.index #mobile-header .mobile-menu__toggle-icon .icon {
-    fill: var(--color-white) !important;
-    color: var(--color-white) !important;
+    fill: var(--color-white);
+    color: var(--color-white);
     filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.8));
   }
 
@@ -695,8 +695,8 @@ html body .mobile-menu__toggle-icon .icon {
     flex-shrink: 0;
   }
   .mobile-header .primary-logo img,
-  .mobile-header .mobile-header__logo img {
-    width: 52px !important;
+html body .mobile-header .mobile-header__logo img {
+    width: 52px;
     height: auto;
     object-fit: contain;
   }
@@ -706,8 +706,8 @@ html body .mobile-menu__toggle-icon .icon {
      Contrast gold-on-near-black = 10.2:1 — continues to exceed WCAG AA 4.5:1.
      Padding kept at 5px/5px: total bar height now ~27px (was ~22px). */
   .announcement-bar.is-regular,
-  .announcement-bar.is-small {
-    font-size: 1rem !important;
+html body .announcement-bar.is-small {
+    font-size: 1rem;
   }
   .announcement-bar .message-header {
     padding-top: 5px;
@@ -720,8 +720,8 @@ html body .mobile-menu__toggle-icon .icon {
      scrim for WCAG AA contrast on white text. */
   .video-section .video__title,
   .video-section .banner__heading,
-  .video__title.banner__heading {
-    font-size: 2rem !important;
+html body .video__title.banner__heading {
+    font-size: 2rem;
     line-height: 1.15;
     padding: 0 20px;
     text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
@@ -730,8 +730,8 @@ html body .mobile-menu__toggle-icon .icon {
   .video-section .banner__subheading,
   .video__subtitle.banner__subheading,
   .video-section .video__text,
-  .video-section .banner__text {
-    font-size: 0.9375rem !important;
+html body .video-section .banner__text {
+    font-size: 0.9375rem;
     line-height: 1.5;
     padding: 0 20px;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
@@ -746,13 +746,13 @@ html body .mobile-menu__toggle-icon .icon {
     padding-top: 6px;
     padding-bottom: 6px;
   }
-  [id*="trust_icon_bar"] .icon-bar__block {
-    padding: 4px 8px !important;
+html body [id*="trust_icon_bar"] .icon-bar__block {
+    padding: 4px 8px;
   }
   [id*="trust_icon_bar"] .icon-bar__block .icon,
-  [id*="trust_icon_bar"] .icon-bar__block svg {
-    width: 14px !important;
-    height: 14px !important;
+html body [id*="trust_icon_bar"] .icon-bar__block svg {
+    width: 14px;
+    height: 14px;
   }
   [id*="trust_icon_bar"] .icon-bar__text {
     font-size: 0.7rem;
@@ -840,8 +840,8 @@ html body .mobile-menu__toggle-icon .icon {
    which sits somewhere in the centre of the header, not the left edge.
    Fix: remove position from the mega menu nav item so the dropdown's containing block becomes
    .header { position: relative } (line 14512) — then left:0; right:0 spans the full header width. */
-.navbar-item.has-mega-menu {
-  position: static !important;
+html body .navbar-item.has-mega-menu {
+  position: static;
 }
 
 /* Mega menu dropdown wrapper — full-width + instant-show.
@@ -849,16 +849,16 @@ html body .mobile-menu__toggle-icon .icon {
    top:100% positions flush at the bottom of the header — no overlap.
    padding, background, box-shadow, opacity, transition all zeroed so the
    .mega-menu panel drives all appearance. */
-.navbar-item.has-mega-menu .navbar-dropdown {
-  left: 0 !important;
+html body .navbar-item.has-mega-menu .navbar-dropdown {
+  left: 0;
   right: 0;
-  width: 100% !important;
-  top: 100% !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  width: 100%;
+  top: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
   background-color: transparent;
-  box-shadow: none !important;
-  opacity: 1 !important;
+  box-shadow: none;
+  opacity: 1;
   transition: none;
 }
 
@@ -873,19 +873,19 @@ html body .mobile-menu__toggle-icon .icon {
    Containing block = header.header (position:relative) since navbar-item is static.
    left:50% + translateX(-50%) centres the max-content panel within the header width.
    min-width:0 overrides theme's min-width:100% which otherwise forces full-width. */
-.mega-menu {
+html body .mega-menu {
   display: block;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  position: absolute !important;
-  left: 50% !important;
+  position: absolute;
+  left: 50%;
   transform: translateX(-50%) !important;
-  width: max-content !important;
-  min-width: 0 !important;
+  width: max-content;
+  min-width: 0;
   max-width: calc(100vw - 4rem);
   margin: 0;
-  background-color: rgba(18, 18, 18, 0.55) !important;
+  background-color: rgba(18, 18, 18, 0.55);
   border-radius: 0 0 12px 12px;
   transition:
     opacity    0.22s ease   0.08s,
@@ -961,18 +961,18 @@ html body .mobile-menu__toggle-icon .icon {
 
 /* Column layout — full-width panel, columns centred with justify-content.
    max-width:none prevents Bulma's .container from capping width at a breakpoint value. */
-.mega-menu .container.has-no-side-gutter {
-  width: auto !important;
-  max-width: none !important;
-  padding: 1.25rem 2rem !important;
+html body .mega-menu .container.has-no-side-gutter {
+  width: auto;
+  max-width: none;
+  padding: 1.25rem 2rem;
   display: flex;
-  flex-wrap: nowrap !important;
+  flex-wrap: nowrap;
   justify-content: center;
 }
 
-.mega-menu .mega-menu__block {
+html body .mega-menu .mega-menu__block {
   flex: 0 1 auto;
-  width: auto !important;
+  width: auto;
   min-width: 0;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -1016,7 +1016,7 @@ html body .mobile-menu__toggle-icon .icon {
 ================================ */
 
 .button,
-a.button {
+html body a.button {
   /* Override Bulma's fixed height (2.25em) which clips text at bottom when
      combined with padding. height:auto lets padding drive the box height.
      align-items:center ensures text is vertically centred in the flex row. */
@@ -1026,7 +1026,7 @@ a.button {
   line-height: 1.2;
   padding-top: 0.65em;
   padding-bottom: 0.65em;
-  white-space: nowrap !important;
+  white-space: nowrap;
   transition:
     background-color var(--transition-base),
     transform var(--transition-base);
@@ -1099,13 +1099,13 @@ button.button--primary-action,
    white-space: nowrap overrides styles.css.liquid line 6213 which sets normal. */
 a.button--secondary.button,
 button.button--secondary.button,
-.button--secondary {
+html body .button--secondary {
   padding-top: 10px;
   padding-bottom: 10px;
   font-size: 1rem;
   line-height: 1.2;
   border-radius: var(--radius-pill);
-  white-space: nowrap !important;
+  white-space: nowrap;
 }
 
 /* "Read more" collapsible toggle (collection descriptions) */
@@ -1140,21 +1140,21 @@ button.button--secondary.button,
    Specificity matches styles.css.liquid's ".button--primary, a.button--primary.button" (0,2,0). */
 .button.button--primary,
 a.button.button--primary,
-button.button--primary {
-  background-color: var(--color-dark) !important;
+html body button.button--primary {
+  background-color: var(--color-dark);
   color: var(--color-brand-gold);
-  border-color: var(--color-dark) !important;
-  border-radius: var(--radius-pill) !important;
+  border-color: var(--color-dark);
+  border-radius: var(--radius-pill);
   font-weight: 700;
-  white-space: nowrap !important; /* overrides styles.css.liquid line 6142 which sets normal */
+  white-space: nowrap; /* overrides styles.css.liquid line 6142 which sets normal */
 }
 
 .button.button--primary:hover,
 a.button.button--primary:hover,
-button.button--primary:hover {
-  background-color: var(--color-body-text) !important;
+html body button.button--primary:hover {
+  background-color: var(--color-body-text);
   color: var(--color-brand-gold);
-  border-color: var(--color-body-text) !important;
+  border-color: var(--color-body-text);
 }
 
 /* Button containers — gap between body copy and CTA
@@ -1679,8 +1679,8 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
 }
 
 [id*="trust_icon_bar"] .section::before,
-[id*="trust_icon_bar"] .section::after {
-  display: none !important;
+html body [id*="trust_icon_bar"] .section::after {
+  display: none;
 }
 
 /* Container is visible immediately; JS enhances with marquee animation */
@@ -1739,9 +1739,9 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
 /* Main footer content: ensure full-width dark background on all screen sizes.
    .section.has-background sets width: calc(95% - 20px) with equal specificity to
    .section.is-width-wide. Force the override here to guarantee edge-to-edge background. */
-.footer__content.section {
-  width: 100% !important;
-  max-width: none !important;
+html body .footer__content.section {
+  width: 100%;
+  max-width: none;
 }
 
 .footer__extra-content .sub-footer {
@@ -1808,8 +1808,8 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
 }
 
 /* Newsletter column: wider than nav columns, form anchored to bottom */
-.footer__block.block__newsletter {
-  width: calc(28% - 20px) !important;
+html body .footer__block.block__newsletter {
+  width: calc(28% - 20px);
   display: flex;
   flex-direction: column;
 }
@@ -1820,8 +1820,8 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
 
 /* Nav columns: slightly narrower to compensate (4 × 18% + 28% = 100%) */
 .footer__content .block__link-list.one-fifth,
-.footer__content .block__text.one-fifth {
-  width: calc(18% - 20px) !important;
+html body .footer__content .block__text.one-fifth {
+  width: calc(18% - 20px);
 }
 
 /* Consistent vertical rhythm in footer menu link lists */
@@ -1848,70 +1848,70 @@ li.footer__menu-link:last-child {
 @media (max-width: 798px) {
 
   /* Grid replaces flex — overrides display:flex from .is-justify-space-between */
-  .footer__content .container.has-limit {
-    display: grid !important;
+html body .footer__content .container.has-limit {
+    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0 24px;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   /* All nav/social blocks sit in the 2-col grid automatically */
-  .footer__content .container.has-limit .footer__block {
-    width: auto !important;
+html body .footer__content .container.has-limit .footer__block {
+    width: auto;
     padding: 20px 0;
   }
 
   /* Newsletter spans both columns */
-  .footer__content .container.has-limit .footer__block.block__newsletter {
+html body .footer__content .container.has-limit .footer__block.block__newsletter {
     grid-column: 1 / -1;
     padding: 24px 0 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   /* Social icons: vertical icon-only column */
-  .footer__block.block__text ul.social-icons {
+html body .footer__block.block__text ul.social-icons {
     flex-direction: column;
     flex-wrap: nowrap;
     gap: 6px;
-    margin-top: 8px !important;
-    align-items: flex-start !important;
+    margin-top: 8px;
+    align-items: flex-start;
   }
 
-  .footer__block.block__text ul.social-icons li {
-    padding: 0 !important;
-    width: auto !important;
+html body .footer__block.block__text ul.social-icons li {
+    padding: 0;
+    width: auto;
   }
 
   /* Hide text labels next to social icons — icons only on mobile */
-  .footer__block.block__text ul.social-icons li a span:not(.icon) {
-    display: none !important;
+html body .footer__block.block__text ul.social-icons li a span:not(.icon) {
+    display: none;
   }
 
-  .footer__block.block__text ul.social-icons li a {
+html body .footer__block.block__text ul.social-icons li a {
     gap: 0;
     min-height: 36px;
     display: flex !important;
-    align-items: center !important;
+    align-items: center;
   }
 
   /* Hide "All Collections" from the Categories footer menu — keeps row count even */
   .footer__block.block__link-list .footer__menu-link a[href="/collections"],
-  .footer__block.block__link-list .footer__menu-link a[href="/collections/all"] {
-    display: none !important;
+html body .footer__block.block__link-list .footer__menu-link a[href="/collections/all"] {
+    display: none;
   }
   .footer__block.block__link-list .footer__menu-link:has(a[href="/collections"]),
-  .footer__block.block__link-list .footer__menu-link:has(a[href="/collections/all"]) {
-    display: none !important;
+html body .footer__block.block__link-list .footer__menu-link:has(a[href="/collections/all"]) {
+    display: none;
   }
 
   /* Column headings: smaller, uppercase, dimmed */
-  .footer__block .footer__heading {
-    font-size: 0.7rem !important;
+html body .footer__block .footer__heading {
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
-    text-transform: uppercase !important;
-    margin-bottom: 12px !important;
-    opacity: 0.65 !important;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.65;
   }
 
   /* Footer link list: tighter vertical rhythm */
@@ -2208,10 +2208,10 @@ html body .collection__description {
 }
 
 /* Once JS has classified the image, ensure the img fills the cropped container */
-.collection-matrix .image-element__wrap[data-mockup-orientation] img {
+html body .collection-matrix .image-element__wrap[data-mockup-orientation] img {
   object-fit: cover;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
 }
 
 @media (max-width: 798px) {
@@ -2225,12 +2225,12 @@ html body .collection__description {
    Sidebar should recede behind the photography, not compete with it. */
 
 /* Section headings: strip h3 weight, render as quiet uppercase labels */
-.sidebar-block__heading {
+html body .sidebar-block__heading {
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-body-text) !important;
+  color: var(--color-body-text);
   margin-bottom: 8px;
 }
 
@@ -2261,33 +2261,33 @@ html body .collection__description {
 }
 
 /* Apply buttons in sidebar — small ghost style, not the heavy primary pill */
-.faceted-filter-group-display__submit .button.button--primary {
-  background-color: transparent !important;
+html body .faceted-filter-group-display__submit .button.button--primary {
+  background-color: transparent;
   color: var(--color-body-text);
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-sm);
   font-size: 0.6875rem;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  padding: 4px 12px !important;
-  height: auto !important;
-  text-transform: uppercase !important;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  height: auto;
+  text-transform: uppercase;
 }
 
-.faceted-filter-group-display__submit .button.button--primary:hover {
-  background-color: var(--color-dark) !important;
+html body .faceted-filter-group-display__submit .button.button--primary:hover {
+  background-color: var(--color-dark);
   color: var(--color-brand-gold);
-  border-color: var(--color-dark) !important;
+  border-color: var(--color-dark);
 }
 
 /* Active filter pills — same ghost treatment */
-.faceted-active-filters__remove-filter.button.button--primary {
-  background-color: transparent !important;
+html body .faceted-active-filters__remove-filter.button.button--primary {
+  background-color: transparent;
   color: var(--color-body-text);
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-sm);
   font-size: 0.6875rem;
-  padding: 3px 8px !important;
+  padding: 3px 8px;
 }
 
 /* Reduce vertical spacing between sidebar blocks */
@@ -3578,14 +3578,14 @@ html body .search-popup .search__results__item .item-pricing {
     width: 100%;
     height: auto;
   }
-  .section--category-grid .collection-list__thumbnail .thumbnail.image__container {
-    width: 100% !important;
+html body .section--category-grid .collection-list__thumbnail .thumbnail.image__container {
+    width: 100%;
     height: auto;
   }
-  .section--category-grid .collection-list__thumbnail .image-element__wrap {
-    width: 100% !important;
-    height: auto !important;
-    max-width: none !important;
+html body .section--category-grid .collection-list__thumbnail .image-element__wrap {
+    width: 100%;
+    height: auto;
+    max-width: none;
   }
   .section--category-grid .collection-list__thumbnail img {
     width: 100%;
@@ -3688,8 +3688,8 @@ html body .search-popup .search__results__item .item-pricing {
 /* Fix 2: prevent nav wrap at narrow desktop */
 @media only screen and (min-width: 799px) and (max-width: 900px) {
   .header__item .navbar-link,
-  .navbar-link {
-    font-size: 0.8rem !important;
+html body .navbar-link {
+    font-size: 0.8rem;
     letter-spacing: 0.5px;
   }
 }
@@ -3712,8 +3712,8 @@ html body .search-popup .search__results__item .item-pricing {
 
 /* Fix 1: 3-column grid at narrow desktop */
 @media only screen and (min-width: 799px) and (max-width: 1024px) {
-  .js-product_section.one-fourth {
-    width: calc(33.3333% - 20px) !important;
+html body .js-product_section.one-fourth {
+    width: calc(33.3333% - 20px);
   }
 }
 
@@ -3749,8 +3749,8 @@ html body .search-popup .search__results__item .item-pricing {
 
 /* Fix 2: Touch targets */
 .video-section .buttons .button,
-.video-section .buttons a.button {
-  min-height: 44px !important;
+html body .video-section .buttons a.button {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3762,8 +3762,8 @@ html body .search-popup .search__results__item .item-pricing {
 /* Fix 4: Smooth H2 size jump — intermediate 21px at 481–798px */
 @media only screen and (min-width: 481px) and (max-width: 798px) {
   h2:not(.featured-collection__title):not(.rich-text__heading),
-  .h2 {
-    font-size: 21px !important;
+html body .h2 {
+    font-size: 21px;
   }
 }
 
@@ -3797,8 +3797,8 @@ h2.footer__heading {
 
 /* Fix 8: Flickity carousel prev/next buttons — theme renders at 30×30px, below WCAG 2.5.8 44px minimum */
 #template-product .flickity-prev-next-button {
-  width: 44px !important;
-  height: 44px !important;
+  width: 44px;
+  height: 44px;
 }
 
 
@@ -3819,8 +3819,8 @@ h2.footer__heading {
 }
 
 /* Filter row — product count on left, selects on right */
-.collection__filters .is-grouped {
-  justify-content: space-between !important;
+html body .collection__filters .is-grouped {
+  justify-content: space-between;
   align-items: center;
 }
 .collection__product-count {
@@ -3876,8 +3876,8 @@ h2.footer__heading {
 
 /* Fix 5: 5-column product grid at ≥1401px — better use of wide screens. */
 @media (min-width: 1401px) {
-  .js-product_section.one-fourth {
-    width: calc(20% - 20px) !important;
+html body .js-product_section.one-fourth {
+    width: calc(20% - 20px);
   }
 }
 
@@ -3931,8 +3931,8 @@ h2.footer__heading {
   /* Rich-text sections: container.has-limit must never collapse below readable width.
      Theme sets width:100% at ≤480px; extend to the full 481–798px range as well. */
   .section.is-width-wide .container.has-limit,
-  .section.is-width-full .container.has-limit {
-    width: 100% !important;
+html body .section.is-width-full .container.has-limit {
+    width: 100%;
   }
 }
 
@@ -3959,23 +3959,23 @@ h2.footer__heading {
 
 /* C. Footer newsletter — full-width block and usable input at mobile */
 @media (max-width: 798px) {
-  .footer__block.block__newsletter {
-    width: 100% !important;
+html body .footer__block.block__newsletter {
+    width: 100%;
     margin-top: 8px;
   }
 
   .footer__block.block__newsletter .newsletter-form__wrapper,
   .footer__block.block__newsletter .newsletter-form,
-  .footer__block.block__newsletter .newsletter-form .field {
-    width: 100% !important;
+html body .footer__block.block__newsletter .newsletter-form .field {
+    width: 100%;
   }
 
   .footer__block.block__newsletter .newsletter-form__input,
-  .footer__block.block__newsletter .newsletter-form input[type="email"] {
-    width: 100% !important;
+html body .footer__block.block__newsletter .newsletter-form input[type="email"] {
+    width: 100%;
     min-width: 0;
     box-sizing: border-box;
-    flex: 1 1 auto !important;
+    flex: 1 1 auto;
   }
 }
 
@@ -3986,10 +3986,10 @@ h2.footer__heading {
     min-height: 32px;
   }
 
-  .mobile-logo img {
-    width: 52px !important;
+html body .mobile-logo img {
+    width: 52px;
     height: auto;
-    display: block !important;
+    display: block;
   }
 }
 
@@ -3997,12 +3997,12 @@ h2.footer__heading {
    Position:absolute and no height constraint caused it to span the full header height
    (111px on the homepage with padding-top:33px), creating an accidentally huge tap zone. */
 @media (max-width: 798px) {
-  .mobile-menu__toggle-button {
-    width: 44px !important;
+html body .mobile-menu__toggle-button {
+    width: 44px;
     height: 44px;
-    top: 50% !important;
+    top: 50%;
     transform: translateY(-50%) !important;
-    display: flex !important;
+    display: flex;
     align-items: center;
     justify-content: center;
   }
@@ -4141,25 +4141,25 @@ h2.footer__heading {
     aspect-ratio: unset;
   }
   [id*="index_collection_list_nXAtbe"] .image__container img,
-  [id*="index_collection_list_nXAtbe"] .image__container .image-element {
-    position: relative !important;
+html body [id*="index_collection_list_nXAtbe"] .image__container .image-element {
+    position: relative;
     height: auto;
-    width: 100% !important;
+    width: 100%;
     object-fit: cover;
   }
 
   /* Hide the button — the whole tile is the tap target */
   [id*="index_collection_list_nXAtbe"] .collection-info__caption .btn,
   [id*="index_collection_list_nXAtbe"] .collection-info__caption [class*="btn"],
-  [id*="index_collection_list_nXAtbe"] .collection-info__caption button {
-    display: none !important;
+html body [id*="index_collection_list_nXAtbe"] .collection-info__caption button {
+    display: none;
   }
 
   /* Centre labels horizontally, uniform font size so COMMERCIAL/INDUSTRIAL
      fit with breathing room at 32vw tile width */
-  [id*="index_collection_list_nXAtbe"] .collection-info__caption {
-    display: flex !important;
-    align-items: flex-end !important;
+html body [id*="index_collection_list_nXAtbe"] .collection-info__caption {
+    display: flex;
+    align-items: flex-end;
     justify-content: center;
   }
   [id*="index_collection_list_nXAtbe"] .collection-info__caption-wrapper {
@@ -4169,12 +4169,12 @@ h2.footer__heading {
     align-items: center;
     padding: 0 6px 10px;
   }
-  [id*="index_collection_list_nXAtbe"] .collection-info__caption .title {
-    font-size: 3vw !important;
-    text-align: center !important;
+html body [id*="index_collection_list_nXAtbe"] .collection-info__caption .title {
+    font-size: 3vw;
+    text-align: center;
     white-space: nowrap;
-    letter-spacing: 0.06em !important;
-    line-height: 1.2 !important;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
   }
 }
 
@@ -4191,11 +4191,11 @@ h2.footer__heading {
     overflow: hidden !important;
     width: 100%;
   }
-  .lc-slide-mobile-img .image-element__wrap {
-    height: 100% !important;
-    max-height: none !important;
-    width: 100% !important;
-    max-width: none !important;
+html body .lc-slide-mobile-img .image-element__wrap {
+    height: 100%;
+    max-height: none;
+    width: 100%;
+    max-width: none;
   }
   .lc-slide-mobile-img img {
     height: 100%;
