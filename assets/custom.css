@@ -147,7 +147,7 @@
 .navbar-link,
 .header__link,
 h1, h2, h3, h4 {
-  font-family: Montserrat, 'Montserrat Fallback', sans-serif !important;
+  font-family: Montserrat, 'Montserrat Fallback', sans-serif;
 }
 
 /* ================================
@@ -399,8 +399,8 @@ h2.rich-text__heading.title {
 .navbar-link:not(.is-arrowless)::after,
 .mobile-menu-link::after {
   content: "" !important;
-  font-family: Arial, sans-serif !important;
-  display: inline-block !important;
+  font-family: Arial, sans-serif;
+  display: inline-block;
   position: static !important;
   right: auto !important;
   top: auto !important;
@@ -435,8 +435,8 @@ h2.rich-text__heading.title {
 @media (min-width: 799px) {
   .header__item[data-navlink-handle="shop"] .navbar-link::after {
     content: "" !important;
-    font-family: Arial, sans-serif !important;
-    display: inline-block !important;
+    font-family: Arial, sans-serif;
+    display: inline-block;
     position: static !important;
     right: auto !important;
     top: auto !important;
@@ -874,7 +874,7 @@ html body .mobile-menu__toggle-icon .icon {
    left:50% + translateX(-50%) centres the max-content panel within the header width.
    min-width:0 overrides theme's min-width:100% which otherwise forces full-width. */
 .mega-menu {
-  display: block !important;
+  display: block;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -965,7 +965,7 @@ html body .mobile-menu__toggle-icon .icon {
   width: auto !important;
   max-width: none !important;
   padding: 1.25rem 2rem !important;
-  display: flex !important;
+  display: flex;
   flex-wrap: nowrap !important;
   justify-content: center;
 }
@@ -1142,7 +1142,7 @@ button.button--secondary.button,
 a.button.button--primary,
 button.button--primary {
   background-color: var(--color-dark) !important;
-  color: var(--color-brand-gold) !important;
+  color: var(--color-brand-gold);
   border-color: var(--color-dark) !important;
   border-radius: var(--radius-pill) !important;
   font-weight: 700;
@@ -1153,7 +1153,7 @@ button.button--primary {
 a.button.button--primary:hover,
 button.button--primary:hover {
   background-color: var(--color-body-text) !important;
-  color: var(--color-brand-gold) !important;
+  color: var(--color-brand-gold);
   border-color: var(--color-body-text) !important;
 }
 
@@ -2263,10 +2263,10 @@ html body .collection__description {
 /* Apply buttons in sidebar — small ghost style, not the heavy primary pill */
 .faceted-filter-group-display__submit .button.button--primary {
   background-color: transparent !important;
-  color: var(--color-body-text) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  color: var(--color-body-text);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-sm) !important;
-  font-size: 0.6875rem !important;
+  font-size: 0.6875rem;
   font-weight: 600 !important;
   letter-spacing: 0.08em !important;
   padding: 4px 12px !important;
@@ -2276,17 +2276,17 @@ html body .collection__description {
 
 .faceted-filter-group-display__submit .button.button--primary:hover {
   background-color: var(--color-dark) !important;
-  color: var(--color-brand-gold) !important;
+  color: var(--color-brand-gold);
   border-color: var(--color-dark) !important;
 }
 
 /* Active filter pills — same ghost treatment */
 .faceted-active-filters__remove-filter.button.button--primary {
   background-color: transparent !important;
-  color: var(--color-body-text) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  color: var(--color-body-text);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-sm) !important;
-  font-size: 0.6875rem !important;
+  font-size: 0.6875rem;
   padding: 3px 8px !important;
 }
 
@@ -3973,7 +3973,7 @@ h2.footer__heading {
   .footer__block.block__newsletter .newsletter-form__input,
   .footer__block.block__newsletter .newsletter-form input[type="email"] {
     width: 100% !important;
-    min-width: 0 !important;
+    min-width: 0;
     box-sizing: border-box;
     flex: 1 1 auto !important;
   }
