@@ -559,17 +559,20 @@ html body #mobile-header-sticky-wrapper {
    Desktop .header: semi-transparent (overlay mode active — hero shows through).
    Mobile .mobile-header: solid default here; overridden to semi-transparent in the
    @media (max-width:798px) block below once the overlay is CSS-forced on mobile. */
+/* WHY: beats Flex {% style %} block scoped to #shopify-section-header which emits admin header_background — keep desktop header dark semi-transparent per LC design */
 html body .header {
-  background-color: rgba(18, 18, 18, 0.55);
+  background-color: rgba(18, 18, 18, 0.55) !important;
 }
 
+/* WHY: same Flex #shopify-section-header scope — mobile header stays LC dark grey */
 html body .mobile-header {
-  background-color: var(--color-header-bg);
+  background-color: var(--color-header-bg) !important;
 }
 
 /* Sticky: desktop slightly more opaque */
+/* WHY: beats Flex {% style %} block scoped to #shopify-section-header sticky variant */
 html body .header-sticky-wrapper.is-sticky .header {
-  background-color: rgba(18, 18, 18, 0.78);
+  background-color: rgba(18, 18, 18, 0.78) !important;
 }
 
 /* Sticky header shrink — css-loop scopes section CSS to #shopify-section-{id},
