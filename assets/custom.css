@@ -58,14 +58,18 @@
      --color-dark is intentionally LC-owned (cookie banner, search popup, mobile
      sticky ATC, cart drawer, art description boxes, accordion headers — should
      not track admin heading/body colour).
-     Phase 2 token prep: --color-brand-gold was renamed to --color-brand-gold.
-     Phase 4 will re-wire --color-footer-bg and --color-header-bg through Liquid
-     so admin's footer_background / a new mobile_header_background flow through. */
+     Phase 2 token prep: renamed --color-brand-yellow → --color-brand-gold.
+     --color-body-text now chains through Flex's --element-text-color--body (fed
+     by admin settings.regular_color). Phase 4 will re-wire --color-footer-bg
+     and --color-header-bg through Liquid so admin's footer_background and a new
+     mobile_header_background flow through. */
 
   /* Brand colour */
   --color-brand-gold:   #ebac20;
   --color-dark:         #1a1a1a;
-  --color-body-text:    #6f6f6f;
+  /* Chains through admin regular_color via Flex's --element-text-color--body.
+     Fallback matches current admin value if Flex's var emission fails. */
+  --color-body-text:    var(--element-text-color--body, #6f6f6f);
   --color-footer-bg:    #4d4d4d;
 
   /* LC surface tokens — neutral fills used across custom components */
