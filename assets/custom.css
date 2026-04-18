@@ -115,8 +115,10 @@
 
   /* Spacing scale — use these instead of hardcoded px values */
 
-  /* Primary action colour alias (used for hover/focus states) */
-  --color-primary: var(--color-brand-gold);
+  /* Phase 4 A1 (2026-04-18): --color-primary override deleted. Flex's
+     theme.css.liquid now drives --color-primary from settings.button_primary_bg_color.
+     Admin value set to #EBAC20 in the pre-flight commit (Phase 4 T2a) so the
+     rendered colour is unchanged at the moment of deletion. */
 }
 
 
@@ -1154,14 +1156,16 @@ html body .button--secondary {
 }
 
 /* Consistent button--primary styling across the site.
-   Overrides admin-set button color to match our dark+gold primary action standard.
+   Phase 4 A1 (2026-04-18): now tracks admin settings.button_primary_bg_color via
+   --color-primary and settings.button_primary_text_color via --button-primary-text-color.
+   Previously hardcoded var(--color-dark) + var(--color-brand-gold) which stomped admin.
    Specificity matches styles.css.liquid's ".button--primary, a.button--primary.button" (0,2,0). */
 .button.button--primary,
 a.button.button--primary,
 html body button.button--primary {
-  background-color: var(--color-dark);
-  color: var(--color-brand-gold);
-  border-color: var(--color-dark);
+  background-color: var(--color-primary);
+  color: var(--button-primary-text-color);
+  border-color: var(--color-primary);
   border-radius: var(--radius-pill);
   font-weight: 700;
   white-space: nowrap; /* overrides styles.css.liquid line 6142 which sets normal */
@@ -1170,9 +1174,9 @@ html body button.button--primary {
 .button.button--primary:hover,
 a.button.button--primary:hover,
 html body button.button--primary:hover {
-  background-color: var(--color-body-text);
-  color: var(--color-brand-gold);
-  border-color: var(--color-body-text);
+  background-color: var(--button-primary-bg-color-highlight, var(--color-body-text));
+  color: var(--button-primary-text-color-highlight, var(--color-brand-gold));
+  border-color: var(--button-primary-bg-color-highlight, var(--color-body-text));
 }
 
 /* Button containers — gap between body copy and CTA
