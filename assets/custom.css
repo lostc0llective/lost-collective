@@ -4276,3 +4276,38 @@ html body .lc-slide-mobile-img .image-element__wrap {
     padding-bottom: 0;
   }
 }
+
+
+/* ================================
+   43. Keyboard focus indicators (Phase 5 T4 — WCAG 2.4.7 Focus Visible)
+   ================================ */
+
+/* Flex's base theme + several LC rules set outline:none on :focus — the
+   historical pattern to suppress outlines on mouse click. But that same
+   suppression also hides keyboard focus indicators, failing WCAG 2.4.7.
+   Fix: restore visible outline on :focus-visible specifically. This pseudo-class
+   only fires for keyboard navigation (Tab, Arrow keys), not pointer clicks,
+   so mouse users don't see rings. Browser support: 94%+ (all modern browsers). */
+html body a:focus-visible,
+html body button:focus-visible,
+html body input:focus-visible,
+html body select:focus-visible,
+html body textarea:focus-visible,
+html body [role="button"]:focus-visible,
+html body [tabindex]:focus-visible {
+  outline: 2px solid var(--color-brand-gold);
+  outline-offset: 2px;
+  /* WHY: beats Flex {% style %} block scoped to #shopify-section-{id} +
+     multiple outline:none resets in theme.css. Genuine C-4 override for a11y. */
+  border-radius: var(--radius-sm);
+}
+
+/* Elements on dark backgrounds (announcement bar, header over hero, footer)
+   need a light ring — gold on dark bg still passes but white on dark has
+   higher contrast for low-vision keyboard users. */
+html body .announcement-bar a:focus-visible,
+html body .header a:focus-visible,
+html body .mobile-header a:focus-visible,
+html body .footer a:focus-visible {
+  outline-color: #ffffff;
+}
