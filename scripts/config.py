@@ -3,8 +3,9 @@ Environment configuration — Lost Collective
 Shared by all scripts. Import this instead of reading env vars directly.
 
 Environments:
-  staging    → theme #141183910054 "Lost Collective Live" (unpublished)
-  production → theme #143356625062 "Copy of Lost Collective Live" (live)
+  staging    → theme #193920860326 "LC Flex Staging 2026-04-18" (unpublished)
+  production → theme #193859780774 "Lost Collective Live - 2026-04-15" (live, Flex v5.5.1)
+  backup     → theme #191393464486 "Lost Collective Backup 05/01/2026" (unpublished)
   dev        → theme created dynamically by `shopify theme dev`
 
 Default is staging. To target production, set SHOPIFY_ENV=production in your
@@ -24,15 +25,15 @@ API_VERSION   = "2025-01"
 ENV = os.environ.get("SHOPIFY_ENV", "staging").lower()
 
 THEME_IDS = {
-    "production": os.environ.get("SHOPIFY_THEME_ID_PRODUCTION", "143356625062"),
-    "staging":    os.environ.get("SHOPIFY_THEME_ID_STAGING",    "141183910054"),
+    "production": os.environ.get("SHOPIFY_THEME_ID_PRODUCTION", "193859780774"),
+    "staging":    os.environ.get("SHOPIFY_THEME_ID_STAGING",    "193920860326"),
     "backup":     os.environ.get("SHOPIFY_THEME_ID_BACKUP",     "191393464486"),
 }
 
 THEME_NAMES = {
-    "production": "Copy of Lost Collective Live (LIVE)",
-    "staging":    "Lost Collective Live (unpublished)",
-    "backup":     "Lost Collective Backup 05/01/2026",
+    "production": "Lost Collective Live - 2026-04-15 (LIVE, Flex v5.5.1)",
+    "staging":    "LC Flex Staging 2026-04-18 (unpublished)",
+    "backup":     "Lost Collective Backup 05/01/2026 (unpublished)",
 }
 
 def theme_id() -> str:
