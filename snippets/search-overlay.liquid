@@ -18,7 +18,7 @@
             <label for="q" class="visually-hidden">{{ settings.search_placeholder }}</label>
             <div class="field">
               <div class="control has-icons-left search-overlay__control">
-                <input class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
+                <input class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" aria-label="{{ settings.search_placeholder }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
                 <button type="submit" name="search">
                   {%
                     render 'icon',

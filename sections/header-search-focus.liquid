@@ -122,7 +122,7 @@
           <form class="header__search-form search-form" action="{{ routes.search_url }}">
             <div class="field has-addons">
               <div class="control header__search-bar is-relative">
-                <input class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
+                <input class="input" type="text" name="q" placeholder="{{ settings.search_placeholder }}" value="{{ search.terms }}" aria-label="{{ settings.search_placeholder }}" x-webkit-speech autocapitalize="off" autocomplete="off" autocorrect="off" data-q/>
               </div>
               <div class="control">
                 <button class="button header__search-button">

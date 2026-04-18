@@ -99,7 +99,7 @@ newsletter_class: <string>
           {{ 'general.newsletter_form.email' | t }}<span class="required">*</span>
         </label>
         <div class="control {% if settings.show_form_icons %} has-icons-left has-icons-left--responsive-form{% endif %}">
-          <input class="input is-{{ field_input_style }} is-{{ field_input_size }}" type="email" name="contact[email]" placeholder="{% if settings.use_placeholders %}{{ 'general.newsletter_form.email' | t }}*{% endif %}" required>
+          <input class="input is-{{ field_input_style }} is-{{ field_input_size }}" type="email" name="contact[email]" placeholder="{% if settings.use_placeholders %}{{ 'general.newsletter_form.email' | t }}*{% endif %}" aria-label="{{ 'general.newsletter_form.email' | t }}" required>
           {% if settings.show_form_icons %}
             {% render 'icon', name: 'email' %}
           {% endif %}
