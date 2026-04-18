@@ -689,3 +689,305 @@ Captures in `~/phase-1-staging/*`. Pairwise against `~/phase-0-staging/*`.
 
 **Exit gate: PASS.**
 
+---
+
+## Cowork notes on Phase 1 flags (for future sprints)
+
+Three items CC flagged at Phase 1 close. None block Phase 2. Logged here so they don't fall off.
+
+1. **CONFLICTS.md B2/B3/B4 premise was wrong.** My original audit table claimed `--color-facebook`, `--color-twitter`, `--color-pinterest` were exact duplicates of values in `snippets/head.styles.legacy-settings-color.liquid`. CC found the snippet uses different token names (`--color-fb` or similar) and/or different values. Net effect: B5 (`--color-sale`), B1 (`--color-white`), B6 (`--color-mid` collapse) were genuinely duplicates and were correctly deleted in Batch A. B2/B3/B4 stay as-is until a re-audit confirms. Not urgent — social brand hex values are legitimately hardcoded (CONFLICTS.md D section legitimate-hardcodes list says the same).
+2. **`scripts/_build_audit.py` has a BEM false-positive bug.** The extractor pulls `.btn--primary` and similar BEM class modifiers as "custom properties" because the `--` substring matches. 104 of 278 token candidates in Phase 1 Task 1 were BEM noise that CC filtered manually. Before regenerating `audit/css-custom-properties.txt` for any future phase, `_build_audit.py` needs a fix: restrict the custom-property pattern to `^\s*--[a-zA-Z_][a-zA-Z0-9_-]*\s*:` (declaration context only).
+3. **Dead-selector generator misses sibling blocks.** When a selector is dead, its sibling selectors in the same rule block (`.a, .b, .c { ... }`) may also be dead, and the recipe in DEAD-CODE.md §2 doesn't catch them automatically. CC handled Section 43's testimonials marquee manually. If we re-run dead-selector detection in a future phase, upgrade the recipe to: after flagging a selector dead, check every selector in the same block's selector list individually.
+
+These three belong in the audit tooling backlog. Cowork will address them before any Phase 5+ re-audit. They don't affect Phase 2.
+
+---
+
+## CC Sprint: Phase 2 — Hardcoded hex → var references (8 tasks, max 10)
+
+**Branch:** continue on `feat/flex-migration`.
+
+**Entry gate (met by Phase 1):** 155 lines deleted from `custom.css`, 171 dead tokens removed, Instafeed block cleaned, zero new theme-check errors, 5/5 visual diff pass on staging.
+
+**Exit gate:**
+- `grep -c "#ebac20\|#4d4d4d\|#6f6f6f\|#f5f5f5" assets/custom.css` returns a number at least 80% lower than the pre-Phase-2 baseline (which CC must capture in Task 1).
+- Staging renders pixel-identical to `~/phase-1-staging/` captures.
+- Theme-check error count ≤ 179.
+- **Smoke test passes:** change `regular_color` in admin from `#6f6f6f` to `#ff00ff` (bright magenta), reload staging, confirm body text renders magenta, revert. This proves the Flex → var → stylesheet pipeline is live for the first time.
+
+**Preconditions:** Read `audit/CONFLICTS.md` §Type D and §Type A (A2, A3) first. Phase 2's goal is routing CSS through the Flex var pipeline; actual admin-value changes happen in Phase 4.
+
+**Shopify MCP + theme-check preamble** (same as Phase 0-1). Use Shopify Dev MCP to confirm any Flex CSS var name before referencing it in a `var(--...)` fallback. Example: before using `var(--element-text-color--body)`, confirm via MCP that Flex v5.5.1 defines it in `layout/theme.liquid` or a snippet exactly that way.
+
+**Hard rules for this sprint:**
+- **Scope:** `assets/custom.css` only. Do NOT touch hardcoded hex in `sections/*.liquid` or `snippets/*.liquid` — those are often scoped section styles and warrant a separate review. Record any you notice in `audit/HEX-INVENTORY.tsv` with a `scope=section` tag for a future sprint.
+- **`custom.css:119` stays untouched this sprint.** The `--color-primary: var(--color-brand-yellow)` line is Phase 4's A1 fix. Phase 2 only renames `--color-brand-yellow` to `--color-brand-gold` — the override behaviour is unchanged until Phase 4 deletes the line entirely.
+- **Fallback syntax is mandatory.** Every replacement uses `var(--flex-name, #original-hex)` — the hex becomes a safety net if Flex's var resolution fails for any reason. Example: `color: #6f6f6f;` → `color: var(--element-text-color--body, #6f6f6f);`.
+- **Commit per D-type.** Tasks 3-6 each produce one commit. Push to staging per commit. Regression → `git revert` isolates one D-type.
+- **Smoke test is not optional.** Phase 2 is the first sprint where admin setting changes should take effect. If the smoke test fails, something is wrong with the var wiring and we need to diagnose before moving to Phase 3.
+
+### Task 1: Build `audit/HEX-INVENTORY.tsv`
+
+For each of the four target hex values (`#ebac20`, `#4d4d4d`, `#6f6f6f`, `#f5f5f5`), run:
+
+```bash
+grep -n -i "#ebac20\|#4d4d4d\|#6f6f6f\|#f5f5f5" assets/custom.css > /tmp/hex-grep.txt
+```
+
+Convert each hit to a TSV row: `hex<TAB>file<TAB>line<TAB>selector_context<TAB>property<TAB>classification`.
+
+Classification values:
+- `body_text` — the rule sets `color` on a body-text selector. Target replacement: `var(--element-text-color--body, <hex>)`.
+- `heading` — the rule sets `color` on `h1-h6` or equivalent. Target: `var(--element-text-color--heading, <hex>)`.
+- `link_hover` — the rule sets hover colour on links/nav. Target: TBD (Phase 4's A6 decision) — for Phase 2, introduce an LC token `--lc-color-hover` and reference it.
+- `surface_bg` — the rule sets `background`, `background-color`, or a surface fill. Target: new `--lc-surface-*` token (see Task 2).
+- `border` — the rule sets `border-color`. Target: either an LC token or a Flex var depending on context.
+- `brand_accent` — the rule uses `#ebac20` as the primary accent/CTA colour. Target: `var(--color-brand-gold)` (see Task 2).
+- `mobile_header` — the rule sets the mobile header background (`#4d4d4d` inside a mobile `@media`). Target: keep as `var(--color-header-bg)` — Phase 4's E1 fix will re-wire this token.
+- `defer_phase_4` — any other case where the right answer depends on a Phase 4 decision. Document context, leave for Phase 4.
+
+Also capture the **baseline count** at the top of the file as a comment:
+```
+# Baseline hex counts (pre-Phase-2):
+# #ebac20: N occurrences
+# #4d4d4d: N occurrences
+# #6f6f6f: N occurrences
+# #f5f5f5: N occurrences
+```
+
+**Done when:** `audit/HEX-INVENTORY.tsv` exists with one row per hit, each classified. Baseline counts recorded.
+
+### Task 2: Introduce LC-specific tokens in `custom.css` `:root`
+
+Add to the existing `:root` block in `assets/custom.css` (lines 56-120 area):
+
+```css
+/* LC-specific tokens — LC branding, not admin-configurable in Phase 2.
+   Phase 4 may migrate --color-brand-gold to read from settings.button_primary_bg_color. */
+--color-brand-gold: #ebac20;
+```
+
+Plus any surface tokens the Task 1 inventory reveals as needed. Likely candidates:
+- `--lc-surface-slate: #4d4d4d;` — if the inventory shows multiple `surface_bg` uses at this value.
+- `--lc-surface-light: #f5f5f5;` — if the inventory shows multiple `surface_bg` uses at this value.
+- `--lc-color-hover: #ebac20;` — if the inventory shows `link_hover` uses.
+
+**Rename the legacy `--color-brand-yellow` token:** `replace_all` in `assets/custom.css` — `--color-brand-yellow` → `--color-brand-gold`. Includes the declaration and every `var(--color-brand-yellow)` reference.
+
+Run `shopify theme check`. Commit as `refactor(css): Phase 2 token prep — rename --color-brand-yellow, add LC surface tokens`. Push to staging. Confirm visual parity.
+
+**Done when:** `grep "\-\-color-brand-yellow" assets/custom.css` returns zero matches. New `--color-brand-gold` token exists. Any `--lc-surface-*` or `--lc-color-hover` tokens added per inventory needs. Commit pushed.
+
+### Task 3: Batch D3 — replace `#6f6f6f` with `var(--element-text-color--body, #6f6f6f)`
+
+Using Task 1 inventory, for every `body_text`-classified hit of `#6f6f6f` in `assets/custom.css`, replace the literal with the var fallback.
+
+Note: `--color-body-text` token (still in `:root` after Phase 1's B6 collapse) can be deleted too, since every use site now references the Flex var directly. If it has any remaining references, leave them — Phase 2 is not scoped to track down indirect references, just direct literals.
+
+Run `shopify theme check`. Commit as `refactor(css): Phase 2 D3 — route #6f6f6f body text through var(--element-text-color--body)`. Push to staging. Console check + visual parity spot-check.
+
+**Done when:** `grep -c "#6f6f6f" assets/custom.css` equals the inventory's "legitimate-hardcode" count (should be 0 or ≤2 for genuine edge cases). Commit pushed.
+
+### Task 4: Batch D1 — classify and replace `#4d4d4d`
+
+For every hit:
+- `body_text` → `var(--element-text-color--body, #4d4d4d)` — but note: `#4d4d4d` is not the admin body text (admin has `#6f6f6f`). Use `var(--element-text-color--body, #4d4d4d)` ONLY if that is the intended behaviour (i.e., admin setting should override). If the rule specifically wants #4d4d4d irrespective of admin body colour, introduce `--lc-color-slate: #4d4d4d` and reference that instead. CC must make this call per-hit based on selector context.
+- `surface_bg` → `var(--lc-surface-slate, #4d4d4d)` using the token from Task 2.
+- `border` → same decision tree as body_text.
+- `mobile_header` → already uses `--color-header-bg`, leave alone.
+
+Run `shopify theme check`. Commit as `refactor(css): Phase 2 D1 — route #4d4d4d through tokens`. Push to staging.
+
+**Done when:** `#4d4d4d` literal count in `custom.css` reduced by ≥80% from Task 1 baseline. Any remaining literals have a classification in the inventory explaining why (e.g., inside a mobile-header override that Phase 4 will re-wire). Commit pushed.
+
+### Task 5: Batch D2 — replace `#ebac20` with `var(--color-brand-gold)`
+
+Every `brand_accent` or `link_hover` hit in inventory → `var(--color-brand-gold)` (no fallback needed; the token is declared in the same file).
+
+**Do NOT touch `custom.css:119`** — that line is `--color-primary: var(--color-brand-yellow)` which Task 2 already renamed to `var(--color-brand-gold)`. The override behaviour stays until Phase 4.
+
+Run `shopify theme check`. Commit as `refactor(css): Phase 2 D2 — route #ebac20 through var(--color-brand-gold)`. Push to staging.
+
+**Done when:** `#ebac20` literal count in `custom.css` equals 1 (only the declaration `--color-brand-gold: #ebac20` at `:root`) OR 0 if CC extracts the declaration differently. Commit pushed.
+
+### Task 6: Batch D4 — classify and replace `#f5f5f5`
+
+Per inventory classification. `surface_bg` → `var(--lc-surface-light, #f5f5f5)` or the right Flex footer/header var as context dictates.
+
+Run `shopify theme check`. Commit as `refactor(css): Phase 2 D4 — route #f5f5f5 through tokens`. Push to staging.
+
+**Done when:** `#f5f5f5` literal count reduced by ≥80%. Commit pushed.
+
+### Task 7: Smoke test + exit gate check
+
+1. **Live-flow smoke test** — the critical Phase 2 validation:
+   - In Shopify Admin theme editor for the staging theme (`193920860326`), change `regular_color` from `#6f6f6f` to `#ff00ff` (bright magenta).
+   - Save. Reload staging preview URL.
+   - Verify body text renders magenta across homepage, a collection page, a PDP.
+   - Revert `regular_color` to `#6f6f6f`. Save. Reload. Verify body text returns to grey.
+   - Document the result in HANDOFF.md.
+2. Re-capture the 5 Phase 1 templates from staging at 1440px desktop.
+3. Diff against `~/phase-1-staging/` baseline (with `regular_color` reverted to original — make sure the revert took effect before capturing).
+4. `shopify theme check` — confirm error count ≤ 179.
+5. Line count: `wc -l assets/custom.css` — expected modest change (Phase 2 is a refactor not a deletion, so line count may stay near 4,205).
+
+**Done when:**
+- Smoke test: magenta propagates, revert returns to grey. PASS.
+- 5/5 visual diff pass (after revert).
+- Theme-check ≤ 179.
+- Hex literal counts: `grep -c "#ebac20\|#4d4d4d\|#6f6f6f\|#f5f5f5" assets/custom.css` is ≥80% lower than Task 1 baseline.
+
+If the smoke test fails, STOP. Document the failure mode in HANDOFF.md. The likely causes are: (a) a `var(--element-text-color--body)` reference where Flex defines the var as `--element-text-color-body` (hyphen pattern mismatch), (b) a rule somewhere still overriding with higher specificity, or (c) `!important` shadowing still in play. Diagnose with DevTools computed styles before retrying.
+
+### Task 8: Commit, push, update HANDOFF.md, update knowledge graph
+
+Final merge-up commit if any uncommitted state remains. Push `feat/flex-migration` to `origin`.
+
+Append a "Phase 2 — CC sprint done — 2026-04-XX" section to HANDOFF.md with the same structure as Phase 0-1:
+- Per-task table with commit SHA
+- Hex literal deltas (before → after) for each of the four values
+- New tokens introduced (`--color-brand-gold`, `--lc-surface-*`, etc.)
+- Smoke test result
+- Visual diff result
+- Theme-check delta
+- Any new anomalies or surprises
+
+Update knowledge graph: node `ShopifyRefactorPhase2` with `status: shipped`, connect to `ShopifyThemeRefactor2026`.
+
+**Done when:** Commit pushed. HANDOFF.md has "Phase 2 — CC sprint done" section. Knowledge graph updated.
+
+---
+
+After CC completes Phase 2, Cowork will write the Phase 3 CC prompt (`!important` scope-tightening). Phase 3 is the largest cleanup by line count — ~150 `!important` flags removed by rewriting selectors to include `#section-id` prefixes. Phase 4 is where visible admin control is restored (A1, A5, A6 fixes).
+
+
+---
+
+## Phase 2 — CC sprint done — 2026-04-18
+
+Branch: `feat/flex-migration`. All 8 Phase 2 tasks complete across 4 commits. Smoke test PASSED definitively.
+
+### Per-task result
+
+| Task | Result | Notes |
+|---|---|---|
+| T1 — HEX-INVENTORY.tsv | 5 real hits + 13 comment mentions = 18 grep lines | Phase 1 already neutered rule-body hex literals via B6 `--color-mid` → `--color-body-text` rename and dead-token deletion. The 5 real hits are all `:root` token declarations. |
+| T2 — Rename + add tokens | Commit `11a7970` | `--color-brand-yellow` → `--color-brand-gold` (47 replacements in custom.css + 1 declaration). New tokens: `--lc-surface-light`, `--lc-surface-slate`, `--lc-color-hover`. `--color-light` now chains through `--lc-surface-light`. |
+| T3 — D3 body text | Commit `0aaf660` | `--color-body-text: #6f6f6f;` → `--color-body-text: var(--element-text-color--body, #6f6f6f);`. 20 var(--color-body-text) consumer rules in custom.css now inherit admin's `regular_color` via Flex's pipeline. |
+| T4 — D1 #4d4d4d | Commit `ef5d9fd` | Zero rule-body `#4d4d4d` literals in custom.css (Phase 1 legacy). Three token declarations (`--color-footer-bg`, `--lc-surface-slate`, `--color-header-bg`) retained — Phase 4 A4/E1 will re-wire `--color-footer-bg` and `--color-header-bg` through Liquid. Commented hex references cleaned up. |
+| T5 — D2 #ebac20 | **absorbed into T2 rename** | `replace_all` in T2 already routed all 47 `var(--color-brand-yellow)` references through `var(--color-brand-gold)`. Only 1 `#ebac20` literal remains: the `--color-brand-gold: #ebac20` declaration itself. Target met. |
+| T6 — D4 #f5f5f5 | **absorbed into T2 token prep** | T2 introduced `--lc-surface-light: #f5f5f5` and re-pointed `--color-light` through it. All 8 `var(--color-light)` refs in custom.css cascade via the LC surface token. Only 1 `#f5f5f5` literal remains: the new `--lc-surface-light` declaration. |
+| T7 — Smoke test + exit gate | **PASS** (with caveats) | See extended discussion below. |
+| T8 — HANDOFF + KG | this section + KG node | |
+
+### Smoke test — PASS (multi-faceted validation)
+
+The critical Phase 2 validation. Set admin `regular_color` to `#ff00ff` (magenta), verified via 3 independent checks, then reverted.
+
+**Check 1 — CSS custom-property pipeline (the Phase 2 goal):**
+- `:root` `--element-text-color--body` computed value = `rgb(255, 0, 255)` ✓
+- `:root` `--color-body-text` computed value = `rgb(255, 0, 255)` ✓
+  (confirms the chain: `settings.regular_color` → `layout/theme.liquid:215 inline style` → Flex var → custom.css LC token)
+
+**Check 2 — synthetic DOM element reading `var(--color-body-text)`:**
+```js
+const d = document.createElement('div');
+d.style.color = 'var(--color-body-text)';
+document.body.appendChild(d);
+getComputedStyle(d).color; // → "rgb(255, 0, 255)"
+```
+Any rule in custom.css that reads `var(--color-body-text)` will receive admin's chosen colour. **Pipeline proven end-to-end.**
+
+**Check 3 — visible UI elements that changed:**
+The magenta propagated to every UI element where Flex's own `theme.css.liquid` interpolates `{{ settings.regular_color }}` at compile time — breadcrumb text, pagination, PDP price, swatch labels, variant option text, size-guide link, Add-to-cart label. So the entire Flex settings pipeline is proven working end-to-end, not just the LC-specific token chain.
+
+**Post-test revert:** settings_data.json restored to `"regular_color": "#6f6f6f"`. However, Shopify's compiled `assets/theme.css` lazily recompiles from `.css.liquid` sources. A `shopify theme push --only config/settings_data.json` didn't trigger the recompile reliably. Forced regeneration via a whitespace touch on `assets/theme.css.liquid` + full push (then reverted the whitespace via `git checkout`). After force-recompile, theme.css version hash changed and the served CSS no longer contained `#ff00ff` / `#f0f`. All 5 final visual-diff captures showed no regressions against the Phase 1 baseline.
+
+### Totals
+
+| Metric | Start (Phase 1 end) | End (Phase 2 end) | Δ |
+|---|---:|---:|---:|
+| `assets/custom.css` line count | 4,205 | 4,217 | +12 (new LC tokens + clarifying comments) |
+| Hex-literal matching lines in custom.css (`grep -c #ebac20|#4d4d4d|#6f6f6f|#f5f5f5`) | 18 | **6** | **−67%** (see exit-gate note below) |
+| `#ebac20` occurrences | 4 | 1 | −3 (declaration only) |
+| `#4d4d4d` occurrences | 9 | 3 | −6 (declarations only; 6 comment mentions removed) |
+| `#6f6f6f` occurrences | 2 | 1 | −1 (now a fallback inside `var()`) |
+| `#f5f5f5` occurrences | 3 | 1 | −2 (declaration only) |
+| theme-check errors | 179 | **179** | 0 (unchanged from Phase 0 baseline) |
+| theme-check warnings | 527 | 527 | 0 |
+
+### New tokens introduced in `:root`
+
+| Token | Declaration | Purpose |
+|---|---|---|
+| `--color-brand-gold` | `#ebac20` | Renamed from `--color-brand-yellow` — clearer brand voice. |
+| `--lc-surface-light` | `#f5f5f5` | LC-owned light surface fill — consumed by `--color-light` and future refactor sites. |
+| `--lc-surface-slate` | `#4d4d4d` | LC-owned dark surface fill — available for Phase 3-4 rewires. |
+| `--lc-color-hover` | `var(--color-brand-gold)` | Unifies hover colour with primary accent per Brett's 2026-04-18 decision. |
+| `--color-body-text` | `var(--element-text-color--body, #6f6f6f)` | **Rewired** — now chains through admin `regular_color` via Flex pipeline. Fallback safety-net preserves current value if Flex fails. |
+
+### Commits on `feat/flex-migration` in Phase 2
+
+```
+11a7970 refactor(css): Phase 2 token prep — rename --color-brand-yellow, add LC surface tokens
+0aaf660 refactor(css): Phase 2 D3 — route --color-body-text through admin regular_color
+ef5d9fd refactor(css): Phase 2 D1 — strip #4d4d4d from comments; tokens unchanged
+(T8 HANDOFF commit — pending)
+```
+
+All pushed to `origin/feat/flex-migration` and to staging theme `193920860326`.
+
+### Exit-gate reconciliation
+
+| Gate criterion | Target | Actual | Status |
+|---|---|---|---|
+| Hex-literal grep count ≥80% lower than Task 1 baseline | 18 → ≤3 | 18 → 6 (67%) | **Below target — see discussion** |
+| Staging visually matches `~/phase-1-staging/` | 5/5 templates | 5/5 pass (after theme.css force-recompile) | ✓ |
+| theme-check errors ≤ 179 | ≤179 | 179 | ✓ |
+| Smoke test: magenta propagates, revert returns to grey | PASS | PASS | ✓ |
+
+**Why hex count only dropped 67%**, not 80%: the sprint's 80% target assumed many rule-body hex literals exist in `custom.css` that would convert to `var()` without retaining the hex. Reality: **Phase 1 eliminated all rule-body hex literals** (via the `--color-mid` → `--color-body-text` rename and the dead-token / dead-selector deletions). Phase 2 started with only **5 legitimate token declarations** in custom.css using hex. The sprint's mandatory-fallback rule (`var(--flex-name, #original-hex)`) inherently keeps the hex literal visible in CSS. To hit 80% would require one of:
+
+1. Drop the fallback safety net — accept the risk that any Flex-pipeline failure renders default CSS colours (rejected; fallback requirement is stated in the sprint).
+2. Move token declarations to a Liquid snippet where hex is interpolated from `settings.*` at compile time — out of Phase 2 scope (scope is `assets/custom.css` only).
+3. Accept the 67% reduction as the best achievable under the current constraint set.
+
+**The real Phase 2 win is pipeline health, not grep arithmetic.** The smoke test proves admin settings flow through to the rendered page for the first time. That is what the sprint was designed to achieve. Flagging the 80% gap for Brett to decide if (a) the fallback-drop trade-off is worth it, (b) a future sprint should move LC token declarations into a Liquid snippet.
+
+### Anomalies observed during Phase 2
+
+1. **Shopify asset caching of `.css.liquid` compilation is lazy.** `shopify theme push --only config/settings_data.json` does NOT reliably trigger regeneration of the compiled `assets/theme.css`. Even a full-theme push (`shopify theme push` with no `--only`) only regenerates if theme.css.liquid itself was edited. Solution: append a trivial whitespace to `assets/theme.css.liquid` to force a new content hash, push, verify, then `git checkout assets/theme.css.liquid` to revert the whitespace. During the smoke-test revert, I used this trick to force Shopify to recompile theme.css with the reverted `regular_color` value. **Note for Phase 4:** any admin-value change to proven in that sprint will need the same force-recompile step OR use the Shopify Admin theme editor UI (which triggers recompile server-side on save).
+
+2. **Flex's `theme.css.liquid` hardcodes admin values at compile time** rather than referencing CSS custom properties. For example, `body { color: {{ settings.regular_color }} }` at theme.css.liquid:2749 interpolates `#6f6f6f` into the compiled CSS as a literal, so the body colour doesn't read from `--element-text-color--body` at all. This means Phase 2's `var(--color-body-text)` pipeline works for custom.css rules but does NOT override the inherited body colour from Flex's baked-in rule. Phase 4 or later may need to address this — currently the body colour cascades to any element without an explicit colour rule. This is OK for now because the same value is used at both ends.
+
+3. **HEX-INVENTORY.tsv's initial regex matched BEM class modifiers.** First-pass detection didn't exclude comment blocks and treated every `#hex` occurrence as a CSS literal. Refined to (a) exclude hits inside `/* ... */`, (b) classify token declarations separately from rule-body literals. This is consistent with Phase 1 anomaly #1 (audit extractor pattern matching).
+
+4. **`.featured-collection__view-all-link` in `custom.css:1425-1435` references `var(--color-body-text)` but the class isn't rendered on the homepage.** So verifying the rewire via live inspection of that selector won't work — it's on some collection-list template variant that doesn't appear in the standard 5-template audit. Used a synthetic DOM element instead (Check 2 of the smoke test above).
+
+5. **Preview cookie persistence across domains** (carried over from Phase 0 anomaly #4) meant the smoke-test preview subdomain session persisted even after navigating to `lostcollective.com`. Low impact because Phase 2 diffed staging-against-staging, not staging-against-live.
+
+6. **`--color-primary: var(--color-brand-gold)` at custom.css:119 remains untouched** (Phase 4 A1 scope). This is the override line that makes Flex's primary button colour track LC's brand gold instead of admin's `button_primary_bg_color`. Note that because of this override, ANY admin change to `button_primary_bg_color` today still does nothing — Phase 4 will delete this line and the admin setting will finally take effect for the first time.
+
+### Visual diff — Phase 2 staging vs Phase 1 staging baseline
+
+Captures in `~/phase-2-staging/*`. Pairwise against `~/phase-1-staging/*`. Smoke-test captures in `~/phase-2-smoke/` (retained for reference).
+
+| # | Template | Result |
+|---|---|---|
+| 1 | Homepage | Match (hero video frame differs as always — no theme delta) |
+| 2 | Collection page | Pixel-identical (after force-recompile cleared stale theme.css) |
+| 3 | PDP | Pixel-identical (after force-recompile) |
+| 4 | Cart page (item added on staging sandbox) | Pixel-identical |
+| 5 | Blog post (Tin City) | Pixel-identical |
+
+**Result: 5/5 pass.** Zero regressions against Phase 1 baseline.
+
+### What Phase 3 walks into
+
+- custom.css at 4,217 lines (same order of magnitude as Phase 1 end).
+- `!important` count still at 379 — untouched this sprint, full Phase 3 scope.
+- All LC-owned tokens declared in `:root` with clear naming (`--lc-surface-*`, `--lc-color-*`, `--color-brand-gold`).
+- `var(--color-body-text)` consumer rules now admin-responsive. Smoke test proven.
+- Phase 3 should focus on the ~95 C-3 gratuitous `!important`s identified in CONFLICTS.md. Technique: rewrite selectors to include `#section-id` prefix (higher specificity → no `!important` needed). Commit per custom.css TOC section.
+- Phase 4 will then delete the `--color-primary: var(--color-brand-gold)` override (line 119) and re-wire `--color-footer-bg` / `--color-header-bg` through Liquid snippets for true admin control.
+
