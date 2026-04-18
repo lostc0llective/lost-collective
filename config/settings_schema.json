@@ -120,6 +120,13 @@
       },
       {
         "type": "color",
+        "id": "mobile_header_background",
+        "label": "Mobile header background",
+        "info": "Sets the header colour on mobile. Desktop header uses the Background above.",
+        "default": "#4d4d4d"
+      },
+      {
+        "type": "color",
         "id": "header_link_color",
         "label": "Links",
         "default": "#FFFFFF"

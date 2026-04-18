@@ -17,6 +17,7 @@
     "divider_color": "#b3b3b3",
     "logo_text": "#1a1a1a",
     "header_background": "#f5f5f5",
+    "mobile_header_background": "#4d4d4d",
     "header_link_color": "#4d4d4d",
     "header_link_hover_color": "#ebac20",
     "header_cart_badge_color": "#d32f2f",

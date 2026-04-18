@@ -1,0 +1,21 @@
+{%- comment -%}
+  LC design-token emission — Phase 4 A5/A6 + MISSING-MOBILE-HEADER-BG wiring.
+
+  Rendered inside layout/theme.liquid <head>. Emits LC-owned CSS custom
+  properties that interpolate from admin settings at compile time. Pattern
+  mirrors Flex's theme.css.liquid (compile-time Liquid interpolation, not
+  var() chains at runtime), so admin changes propagate when settings_data
+  updates trigger a theme.css recompile.
+
+  Previously these tokens were static hex literals in assets/custom.css :root.
+  Moving them here makes admin control real for the first time.
+{%- endcomment -%}
+{% style %}
+  :root {
+    /* Header — mobile */
+    --color-header-bg: {{ settings.mobile_header_background | default: '#4d4d4d' }};
+
+    /* Footer — desktop + mobile */
+    --color-footer-bg: {{ settings.footer_background | default: '#4d4d4d' }};
+  }
+{% endstyle %}

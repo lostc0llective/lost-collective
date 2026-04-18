@@ -70,7 +70,8 @@
   /* Chains through admin regular_color via Flex's --element-text-color--body.
      Fallback matches current admin value if Flex's var emission fails. */
   --color-body-text:    var(--element-text-color--body, #6f6f6f);
-  --color-footer-bg:    #4d4d4d;
+  /* --color-footer-bg moved to snippets/lc.css-tokens.liquid (Phase 4 T4)
+     so it interpolates from settings.footer_background at compile time. */
 
   /* LC surface tokens — neutral fills used across custom components */
   --lc-surface-light:   #f5f5f5;
@@ -109,9 +110,8 @@
   --transition-slide: 0.25s ease-in-out;
   --transition-base: 0.3s ease;
 
-  /* Dark grey for announcement bar and mobile header — matches footer colour.
-     Phase 4 E1 will expose mobile_header_background as an admin setting. */
-  --color-header-bg: #4d4d4d;
+  /* --color-header-bg moved to snippets/lc.css-tokens.liquid (Phase 4 T3)
+     so it interpolates from settings.mobile_header_background at compile time. */
 
   /* Spacing scale — use these instead of hardcoded px values */
 
