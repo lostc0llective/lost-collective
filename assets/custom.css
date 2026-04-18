@@ -1673,17 +1673,22 @@ html body .section--about-brett .caption-content .image-with-text-overlay__subhe
   padding-right: 20px;
 }
 
+/* Footer newsletter Sign Up — Phase 4 A1 follow-up (2026-04-18): background
+   now tracks admin button_primary_bg_color via --color-primary instead of
+   hardcoded var(--color-dark). Text colour falls back to brand gold because
+   the footer sits on dark ground and admin's text-color default may not
+   contrast enough. */
 .footer__block.block__newsletter .newsletter-form button[type="submit"] {
   border-radius: var(--radius-pill);
-  background-color: var(--color-dark);
-  color: var(--color-brand-gold);
+  background-color: var(--color-primary);
+  color: var(--button-primary-text-color, var(--color-brand-gold));
   border-color: transparent;
   width: 100%;
 }
 
 .footer__block.block__newsletter .newsletter-form button[type="submit"]:hover {
-  background-color: var(--color-brand-gold);
-  color: var(--color-dark);
+  background-color: var(--button-primary-bg-color-highlight, var(--color-brand-gold));
+  color: var(--button-primary-text-color-highlight, var(--color-dark));
 }
 
 
