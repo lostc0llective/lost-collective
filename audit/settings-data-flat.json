@@ -1,0 +1,561 @@
+[
+  {
+    "id": "regular_color",
+    "current_value": "#6f6f6f"
+  },
+  {
+    "id": "link_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "link_hover_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "heading_color",
+    "current_value": "#2a2a2a"
+  },
+  {
+    "id": "banner_heading_color",
+    "current_value": "#1a1a1a"
+  },
+  {
+    "id": "divider_color",
+    "current_value": "#b3b3b3"
+  },
+  {
+    "id": "logo_text",
+    "current_value": "#1a1a1a"
+  },
+  {
+    "id": "header_background",
+    "current_value": "#f5f5f5"
+  },
+  {
+    "id": "header_link_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "header_link_hover_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "header_cart_badge_color",
+    "current_value": "#d32f2f"
+  },
+  {
+    "id": "cart_background_color",
+    "current_value": "#f5f5f5"
+  },
+  {
+    "id": "show_dropdown_shadow",
+    "current_value": false
+  },
+  {
+    "id": "dropdown_background",
+    "current_value": "#f5f5f5"
+  },
+  {
+    "id": "dropdown_link_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "dropdown_link_hover_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "footer_background",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "footer_link_color",
+    "current_value": "#f5f5f5"
+  },
+  {
+    "id": "footer_link_hover_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "footer_text_color",
+    "current_value": "#FFFFFF"
+  },
+  {
+    "id": "review_star",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "sale_color",
+    "current_value": "#d32f2f"
+  },
+  {
+    "id": "was_price_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "product_hover_text_color",
+    "current_value": "#1a1a1a"
+  },
+  {
+    "id": "banner_bestseller",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "banner_comingsoon",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "banner_new",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "banner_preorder",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "banner_sale",
+    "current_value": "#d32f2f"
+  },
+  {
+    "id": "banner_staffpick",
+    "current_value": "#1a1a1a"
+  },
+  {
+    "id": "qty_background_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "qty_background_hover_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "regular__font",
+    "current_value": "lato_n5"
+  },
+  {
+    "id": "regular_font_size",
+    "current_value": 17
+  },
+  {
+    "id": "logo__font",
+    "current_value": "montserrat_n4"
+  },
+  {
+    "id": "logo_font_size",
+    "current_value": 24
+  },
+  {
+    "id": "nav__font",
+    "current_value": "montserrat_n6"
+  },
+  {
+    "id": "nav_font_size",
+    "current_value": 19
+  },
+  {
+    "id": "nav_letter_spacing",
+    "current_value": 1
+  },
+  {
+    "id": "nav_font_style",
+    "current_value": "none"
+  },
+  {
+    "id": "dropdown_heading_font_size",
+    "current_value": 24
+  },
+  {
+    "id": "dropdown_font_size",
+    "current_value": 13
+  },
+  {
+    "id": "dropdown_letter_spacing",
+    "current_value": 1
+  },
+  {
+    "id": "button__font",
+    "current_value": "montserrat_n6"
+  },
+  {
+    "id": "heading__font",
+    "current_value": "montserrat_n8"
+  },
+  {
+    "id": "heading_size",
+    "current_value": 27
+  },
+  {
+    "id": "heading_letter_spacing",
+    "current_value": 2
+  },
+  {
+    "id": "heading_font_style",
+    "current_value": "uppercase"
+  },
+  {
+    "id": "preheading_font",
+    "current_value": "montserrat_n5"
+  },
+  {
+    "id": "preheading_size",
+    "current_value": 17
+  },
+  {
+    "id": "subheading_font",
+    "current_value": "lato_n5"
+  },
+  {
+    "id": "subheading_size",
+    "current_value": 17
+  },
+  {
+    "id": "banner_heading__font",
+    "current_value": "montserrat_n6"
+  },
+  {
+    "id": "banner_heading_size",
+    "current_value": 40
+  },
+  {
+    "id": "banner_heading_style",
+    "current_value": "none"
+  },
+  {
+    "id": "banner_text__font",
+    "current_value": "lato_n5"
+  },
+  {
+    "id": "banner_text_size",
+    "current_value": 17
+  },
+  {
+    "id": "show_announcement_bar",
+    "current_value": false
+  },
+  {
+    "id": "image_loading_style",
+    "current_value": "none"
+  },
+  {
+    "id": "mobile_logo_width",
+    "current_value": 80
+  },
+  {
+    "id": "logo_menu_position",
+    "current_value": "left"
+  },
+  {
+    "id": "show_search_icon_mobile",
+    "current_value": true
+  },
+  {
+    "id": "show_locale_selector",
+    "current_value": false
+  },
+  {
+    "id": "show_currency_selector",
+    "current_value": false
+  },
+  {
+    "id": "mobile_sidebar_position",
+    "current_value": "below"
+  },
+  {
+    "id": "mobile_menu_opacity",
+    "current_value": 100
+  },
+  {
+    "id": "mobile_menu_link_color",
+    "current_value": "#4d4d4d"
+  },
+  {
+    "id": "mobile_menu_link_hover_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_primary_padding",
+    "current_value": "regular"
+  },
+  {
+    "id": "button_primary_bg_color",
+    "current_value": "#2a2a2a"
+  },
+  {
+    "id": "button_primary_text_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_primary_bg_color--highlight",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_primary_text_color--highlight",
+    "current_value": "#2a2a2a"
+  },
+  {
+    "id": "button_primary_border_radius",
+    "current_value": 35
+  },
+  {
+    "id": "button_secondary_bg_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_secondary_bg_color_transparency",
+    "current_value": 100
+  },
+  {
+    "id": "button_secondary_border_color",
+    "current_value": "rgba(0,0,0,0)"
+  },
+  {
+    "id": "button_secondary_text_color",
+    "current_value": "#2a2a2a"
+  },
+  {
+    "id": "button_secondary_bg_color--highlight",
+    "current_value": "#2a2a2a"
+  },
+  {
+    "id": "button_secondary_bg_color_transparency--highlight",
+    "current_value": 100
+  },
+  {
+    "id": "button_secondary_border_color--highlight",
+    "current_value": "rgba(0,0,0,0)"
+  },
+  {
+    "id": "button_secondary_text_color--highlight",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_secondary_border_radius",
+    "current_value": 35
+  },
+  {
+    "id": "button_link_text_color",
+    "current_value": "#2a2a2a"
+  },
+  {
+    "id": "button_link_text_color--highlight",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_cart_padding",
+    "current_value": "regular"
+  },
+  {
+    "id": "button_cart_bg_color",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_cart_bg_color--highlight",
+    "current_value": "#1a1a1a"
+  },
+  {
+    "id": "button_cart_text_color",
+    "current_value": "#1a1a1a"
+  },
+  {
+    "id": "button_cart_text_color--highlight",
+    "current_value": "#ebac20"
+  },
+  {
+    "id": "button_cart_icon",
+    "current_value": "cart"
+  },
+  {
+    "id": "button_cart_icon_position",
+    "current_value": "right"
+  },
+  {
+    "id": "button_cart_border_radius",
+    "current_value": 35
+  },
+  {
+    "id": "icon_library",
+    "current_value": "icon_solid"
+  },
+  {
+    "id": "breadcrumb_separator",
+    "current_value": "caret"
+  },
+  {
+    "id": "dropdown_position",
+    "current_value": "below-header"
+  },
+  {
+    "id": "use_placeholders",
+    "current_value": true
+  },
+  {
+    "id": "display_heading_divider",
+    "current_value": false
+  },
+  {
+    "id": "heading_divider_width",
+    "current_value": 3
+  },
+  {
+    "id": "enable_shopify_collection_badges",
+    "current_value": false
+  },
+  {
+    "id": "show_secondary_image",
+    "current_value": false
+  },
+  {
+    "id": "thumbnail_hover_enabled",
+    "current_value": false
+  },
+  {
+    "id": "stickers_enabled",
+    "current_value": false
+  },
+  {
+    "id": "sticker_shape",
+    "current_value": "round"
+  },
+  {
+    "id": "collection_swatches",
+    "current_value": false
+  },
+  {
+    "id": "collection_swatches_shape",
+    "current_value": "square"
+  },
+  {
+    "id": "select_first_available_variant",
+    "current_value": true
+  },
+  {
+    "id": "display_inventory_left",
+    "current_value": true
+  },
+  {
+    "id": "product_form_style",
+    "current_value": "radio"
+  },
+  {
+    "id": "enable_swatches",
+    "current_value": true
+  },
+  {
+    "id": "swatch_style",
+    "current_value": "rounded"
+  },
+  {
+    "id": "swatches_option_style",
+    "current_value": "variant_image"
+  },
+  {
+    "id": "notify_me_form",
+    "current_value": true
+  },
+  {
+    "id": "size_chart",
+    "current_value": "size-guide"
+  },
+  {
+    "id": "enable_quickshop",
+    "current_value": false
+  },
+  {
+    "id": "quickshop_button_style",
+    "current_value": "button--primary"
+  },
+  {
+    "id": "qs_popup_color",
+    "current_value": "#ffffff"
+  },
+  {
+    "id": "search_placeholder",
+    "current_value": "Search by location, building, or theme"
+  },
+  {
+    "id": "search_display_style",
+    "current_value": "popup"
+  },
+  {
+    "id": "email_link",
+    "current_value": "info@lostcollective.com"
+  },
+  {
+    "id": "facebook_link",
+    "current_value": "https://facebook.com/lostc0llective"
+  },
+  {
+    "id": "instagram_link",
+    "current_value": "https://www.instagram.com/lostc0llective/"
+  },
+  {
+    "id": "x_link",
+    "current_value": "https://x.com/lostc0llective"
+  },
+  {
+    "id": "youtube_link",
+    "current_value": "https://www.youtube.com/@Lostcollective"
+  },
+  {
+    "id": "favicon",
+    "current_value": "shopify://shop_images/favicon-64x64.png"
+  },
+  {
+    "id": "cart_action",
+    "current_value": "drawer"
+  },
+  {
+    "id": "show_lock_icon",
+    "current_value": true
+  },
+  {
+    "id": "cart_icon",
+    "current_value": "cart"
+  },
+  {
+    "id": "free_shipping_threshold",
+    "current_value": 150
+  },
+  {
+    "id": "klaviyo_public_key",
+    "current_value": "UDmkb3"
+  },
+  {
+    "id": "klaviyo_list_id",
+    "current_value": "VFqauD"
+  },
+  {
+    "id": "klaviyo_popup_enabled",
+    "current_value": true
+  },
+  {
+    "id": "klaviyo_popup_delay",
+    "current_value": 8
+  },
+  {
+    "id": "klaviyo_popup_heading",
+    "current_value": "Before the next series goes live"
+  },
+  {
+    "id": "klaviyo_popup_body",
+    "current_value": "New work goes to subscribers first \u2014 the series story, the location, the images. Before anyone else sees them."
+  },
+  {
+    "id": "klaviyo_popup_button",
+    "current_value": "Get early access"
+  },
+  {
+    "id": "blocks",
+    "current_value": {
+      "1232542678405107163": {
+        "type": "shopify://apps/instafeed/blocks/head-block/c447db20-095d-4a10-9725-b5977662c9d5",
+        "disabled": false,
+        "settings": {}
+      },
+      "6251270934270006384": {
+        "type": "shopify://apps/stape-server-gtm/blocks/gtm/7e13c847-7971-409d-8fe0-29ec14d5f048",
+        "disabled": false,
+        "settings": {}
+      }
+    }
+  }
+]
