@@ -2139,3 +2139,56 @@ Everything else is logged and deferred.
 
 After Phase 6 closes cleanly, the refactor is complete. The next Shopify theme sprint is a clean-slate planning exercise against `docs/design-tokens.md` as the new source of truth — not a continuation of this refactor's backlog.
 
+
+---
+
+## Phase 6 — CC sprint — production push + 24-hour monitor (in progress)
+
+**Published 2026-04-18 ~20:12 AEST.** Candidate theme `193925775526` is now live. Rollback target `193859780774` unpublished and healthy. Monitor window open until ~20:15 AEST 2026-04-19.
+
+### Commits on feat/flex-migration in Phase 6
+
+```
+daf0bf6 audit: Phase 6 T4 + T5 verification report
+b303134 chore(theme-css): trigger recompile (add trailing newline)
+fadedb2 fix(header): restore overlay positioning for classic header layout
+5bc691f chore(phase-6): ignore local-only dirs during theme push
+1a87804 chore(backup): snapshot live theme 193859780774 before Phase 6 publish
+0026884 chore(phase-6): sync audit snapshots + append Phase 6 sprint doc
+```
+
+### What shipped
+
+- `sections/header-classic.liquid` gained a defensive `[data-enable_overlay="true"] .header { position: absolute }` block inside the existing `section.settings.enable_overlay` conditional. This guards against Shopify's asset pipeline compiling `theme.css` from `theme.css.liquid` with empty settings (a known cache quirk that stripped the overlay rules from the fresh candidate compile, causing the header to render 804px tall and push the video hero below the fold).
+- `.shopifyignore` added `backups/`, `audit/`, `scripts/`, `docs/`, `HANDOFF.md`, `CLAUDE.md` so bulk theme pushes only upload real theme assets.
+- `backups/live-pre-phase-6-2026-04-18/` — 402-file git-tracked snapshot of the pre-Phase-6 live theme. Disaster-recovery fallback if Shopify admin access is lost.
+- `audit/PHASE6-BASELINE.md`, `audit/PHASE6-T3-VERIFICATION.md`, `audit/PHASE6-T4-T5-VERIFICATION.md`, `audit/PHASE6-T6-MONITOR-PLAN.md` — full paper trail.
+
+### Task-by-task outcome
+
+- **T1** ✓ Backup theme `193925644454` created in admin + local git-tracked snapshot committed
+- **T2** ✓ Candidate `193925775526` pushed and verified
+- **T3** ✓ 7-check preview verification. One blocker caught and fixed: header overlay positioning was absent on the fresh compile (see "What shipped" above)
+- **T4** ✓ Atomic publish. Server-timing confirms new theme serving across all paths. Homepage HTML body held briefly in Shopify's `page_cache` with stale `Shopify.theme.id` JS metadata (asset URLs + rendering are correct)
+- **T5** ✓ 13-check critical-path walk all green. Checkout button `#EBAC20` gold bg + `#1a1a1a` dark text confirmed (Phase 4 admin + Phase 5 contrast both holding)
+- **T6** Open (24-hour monitor window). Rollback triggers documented in `audit/PHASE6-T6-MONITOR-PLAN.md`. Rollback command memorised and verified
+- **T7** Deferred to monitor-close. At close: merge to main, update `CLAUDE.md` production theme ID to `193925775526`, archive `audit/`, retrospective
+
+### Pre-existing issue noted (not a rollback trigger)
+
+Brett flagged during T3 preview that the logo-list section renders as a static 4-wide grid instead of the infinite horizontal marquee it used to be. Confirmed: live theme `193859780774` and candidate `193925775526` render this section identically. The regression predates Phase 0-5 (introduced during the Flex v5.5.1 upstream pull earlier in April). Post-Phase-6 backlog: rebuild the section as an infinite CSS marquee using the same pattern as the Phase-earlier testimonials rebuild (`@keyframes translateX(0) → translateX(-50%)`, `overflow-x: hidden; overflow-y: visible`, `width: 100vw` breakout). ~30 min task once this monitor window closes.
+
+### At monitor close
+
+If no rollback triggers fire in the 24-hour window:
+
+1. Merge `feat/flex-migration` → `main` via GitHub PR (squash is fine; commits are already detailed)
+2. Update `~/lost-collective/CLAUDE.md` and `~/lost-collective/shopify/CLAUDE.md` production theme ID from `193859780774` to `193925775526`
+3. Archive `audit/` → `audit-archive/phase-0-through-6-2026-04-18/` (keeps the historical paper trail out of daily working tree)
+4. Knowledge graph: mark `ShopifyRefactorPhase6` shipped, `ShopifyThemeRefactor2026` shipped
+5. Retrospective (~200 words) in `docs/retro-shopify-refactor-2026.md`:
+   - What worked: incremental 6-phase structure, explicit readiness gates between phases, audit/ paper trail, Brett's scope discipline on "while we're in here" requests
+   - What surprised: Shopify compile cache resisting settings changes (Phase 3 + Phase 6), stale-compile keeping broken themes looking fine until a fresh push exposed them, header overlay rule living in the wrong liquid conditional
+   - Keep for next time: full-theme push → section-only update → force-recompile pattern documented in `scripts/_force_theme_recompile.py`, backups directory committed to git, defensive rules in section files rather than only in `theme.css.liquid`
+
+If rollback fires, HANDOFF gets a new section "Phase 6 — rolled back" with trigger details and a decision log for the next attempt.
