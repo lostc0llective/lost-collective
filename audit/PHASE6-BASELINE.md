@@ -17,8 +17,10 @@
 |---|---|---|
 | Live (pre-Phase-6) | `193859780774` | Lost Collective Live - 2026-04-15 |
 | Staging | `193920860326` | LC Flex Staging 2026-04-18 |
-| Pre-Phase-6 backup | (pending T1) | LC BACKUP Pre-Phase-6 2026-04-18 |
-| Production candidate | (pending T2) | LC Flex Production Candidate 2026-04-18 |
+| Pre-Phase-6 backup | `193925644454` | LC BACKUP Pre-Phase-6 2026-04-18 |
+| Production candidate | `193925775526` | LC Flex Production Candidate 2026-04-18 |
+
+Candidate preview URL: https://lost-collective.myshopify.com?preview_theme_id=193925775526
 
 ## Order volume (Shopify Admin GraphQL)
 

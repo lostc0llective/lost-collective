@@ -37,8 +37,26 @@
   }
 
   {%- if section.settings.enable_overlay -%}
+    /* Phase 6 T3 fix: overlay positioning (was only compiled via theme.css.liquid
+       centered block; restored here so classic+overlay renders correctly). */
+    [data-enable_overlay="true"] {
+      position: absolute;
+      width: 100%;
+      z-index: 10;
+    }
     [data-enable_overlay="true"] .header {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 10;
       background-color: {%- if overlay_alpha != 0 -%}{{ section.settings.overlay_background | color_modify: 'alpha', overlay_background_alpha }}{%- else -%}{{ settings.header_background | color_modify: 'alpha', overlay_background_alpha }}{%- endif -%};
+    }
+    [data-enable_overlay="true"] .overlay-logo {
+      display: block;
+    }
+    [data-enable_overlay="true"] .overlay-logo + .primary-logo,
+    [data-enable_overlay="true"] .overlay-logo + .header__logo-text {
+      display: none;
     }
 
     [data-enable_overlay="true"] .header__logo,
