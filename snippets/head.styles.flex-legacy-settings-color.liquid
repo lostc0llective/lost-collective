@@ -1,0 +1,41 @@
+{%- comment -%}
+  Renders a flex-colors component.
+
+  Usage:
+  {% render 'flex-colors' %}
+{%- endcomment -%}
+
+{% liquid
+  # These CSS properties are pre-calculated as variables because they don't refresh reliably in Theme editor when calculated directly in the style block
+  assign settings_color_links = settings.link_color | default: '#007ACE'
+  assign settings_color_link_hover = settings.link_hover_color | default: '#51B2F5'
+
+  assign btn_primary_alpha = settings.button_primary_bg_color_transparency | default: 100 | divided_by: 100.00
+  assign btn_primary_hover_alpha = settings['button_primary_bg_color_transparency--highlight'] | default: 100 | divided_by: 100.00
+  assign btn_secondary_alpha = settings.button_secondary_bg_color_transparency | default: 0 | divided_by: 100.00
+  assign btn_secondary_hover_alpha = settings['button_secondary_bg_color_transparency--highlight'] | default: 100 | divided_by: 100.00
+%}
+
+{%- style -%}
+  :root {
+    --color-links: {{ settings_color_links }};
+    --color-link-hover: {{ settings_color_link_hover }};
+
+    --button-primary-text-color: {{ settings.button_primary_text_color | default: '#ffffff' }};
+    --button-primary-text-color-highlight: {{ settings.button_primary_text_color--highlight | default: '#ffffff' }};
+    --button-primary-bg-color: {{ settings.button_primary_bg_color | color_modify: 'alpha', btn_primary_alpha | default: '#000000' }};
+    --button-primary-bg-color-highlight: {{ settings.button_primary_bg_color--highlight | color_modify: 'alpha', btn_primary_hover_alpha | default: '#606060' }};
+    --button-primary-border-color: {{ settings.button_primary_border_color | default: 'rgba(0,0,0,0)' }};
+    --button-primary-border-color-highlight: {{ settings.button_primary_border_color--highlight | default: 'rgba(0,0,0,0)' }};
+
+    --button-secondary-text-color: {{ settings.button_secondary_text_color | default: '#000000' }};
+    --button-secondary-text-color-highlight: {{ settings.button_secondary_text_color--highlight | default: '#ffffff' }};
+    --button-secondary-bg-color: {{ settings.button_secondary_bg_color | color_modify: 'alpha', btn_secondary_alpha | default: 'rgba(0,0,0,0)' }};
+    --button-secondary-bg-color-highlight: {{ settings.button_secondary_bg_color--highlight | color_modify: 'alpha', btn_secondary_hover_alpha | default: '#000000' }};
+    --button-secondary-border-color: {{ settings.button_secondary_border_color | default: '#000000' }};
+    --button-secondary-border-color-highlight: {{ settings.button_secondary_border_color--highlight | default: '#000000' }};
+
+    --button-link-text-color: {{ settings.button_link_text_color | default: '#000000' }};
+    --button-link-text-color-highlight: {{ settings.button_link_text_color--highlight | default: '#ccc' }};
+  }
+{%- endstyle -%}

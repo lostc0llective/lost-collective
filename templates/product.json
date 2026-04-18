@@ -52,10 +52,6 @@
           "type": "rating",
           "settings": {}
         },
-        "art_details": {
-          "type": "art-details",
-          "settings": {}
-        },
         "form": {
           "type": "form",
           "settings": {
@@ -76,7 +72,6 @@
       "block_order": [
         "title",
         "price",
-        "art_details",
         "size_chart_REA3TC",
         "form",
         "description",
@@ -122,17 +117,6 @@
     },
     "17387432297024309f": {
       "type": "apps",
-      "blocks": {
-        "yotpo_product_reviews_reviews_FiKnYt": {
-          "type": "shopify://apps/yotpo-product-reviews/blocks/reviews/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
-          "settings": {
-            "product": "{{product}}"
-          }
-        }
-      },
-      "block_order": [
-        "yotpo_product_reviews_reviews_FiKnYt"
-      ],
       "settings": {
         "width": "standard",
         "padding_top": 0,

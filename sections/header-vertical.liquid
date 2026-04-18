@@ -68,7 +68,7 @@
             <p>{{ 'layout.general.designer_credits_html' | t }}</p>
           {% endif %}
           {% if block.settings.display_shopify %}
-            <p>{{ powered_by_link }}</p>
+            <p>{{ 'layout.general.powered_by_shopify_html' | t }}</p>
           {% endif %}
         </div>
 
@@ -104,7 +104,7 @@
               {%
                 render 'image-element',
                 image: block.settings.logo,
-                alt: block.settings.logo.alt | default: shop.name,
+                alt: block.settings.logo.alt,
                 back_to_basics: true,
                 focal_point: block.settings.logo.presentation.focal_point,
               %}
@@ -171,7 +171,7 @@
             {% if link.links == blank %}
               <div class="navbar-item vertical-header__first-level {% if link.active or link.child_active %}is-active{% endif %}" data-navlink-handle="{{ link.title | handleize }}">
                 <label for="mega-{{ link.title | handleize }}">
-                  <a href="{{ link.url }}" class="navbar-link vertical-header__first-level-link header__link {% if link.active %}is-active{% endif %} is-arrowless"{% if link.active %} aria-current="page"{% endif %}>
+                  <a href="{{ link.url }}" class="navbar-link vertical-header__first-level-link header__link {% if link.active %}is-active{% endif %} is-arrowless">
                     {{ link.title }}
                   </a>
                 </label>
@@ -261,7 +261,7 @@
           %}
         {% endstyle %}
         {% comment %} Text {% endcomment %}
-        {% render 'sidebar__text' %}
+        {% include 'sidebar__text' %}
 
       {%- endif -%}
 
@@ -287,7 +287,7 @@
     "dropdown_click": {{ section.settings.dropdown_click | json }}
   }
 </script>
-<script data-theme-editor-load-script src="{{ 'z__jsHeader.js' | asset_url }}"></script>
+<script src="{{ 'z__jsHeader.js' | asset_url }}"></script>
 
 {% schema %}
   {

@@ -19,7 +19,7 @@
 
 {%- capture section_css -%}
   {% if background_image != blank %}
-    .has-background .newsletter__wrapper {
+    section.has-background {
       background-image: url({{ background_image | img_url: '2000x' }});
       background-position: {{ background_image.presentation.focal_point }};
     }

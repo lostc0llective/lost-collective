@@ -9,7 +9,6 @@
  */
 {
   "current": {
-    "free_shipping_threshold": 150,
     "regular_color": "#6f6f6f",
     "link_color": "#4d4d4d",
     "link_hover_color": "#ebac20",
@@ -103,6 +102,7 @@
     "button_cart_icon": "cart",
     "button_cart_icon_position": "right",
     "button_cart_border_radius": 35,
+    "icon_library": "icon_solid",
     "breadcrumb_separator": "caret",
     "dropdown_position": "below-header",
     "use_placeholders": true,
@@ -116,12 +116,12 @@
     "collection_swatches": false,
     "collection_swatches_shape": "square",
     "select_first_available_variant": true,
+    "display_inventory_left": true,
     "product_form_style": "radio",
     "enable_swatches": true,
     "swatch_style": "rounded",
     "swatches_option_style": "variant_image",
     "notify_me_form": true,
-    "display_inventory_left": true,
     "size_chart": "size-guide",
     "enable_quickshop": false,
     "quickshop_button_style": "button--primary",
@@ -137,15 +137,14 @@
     "cart_action": "drawer",
     "show_lock_icon": true,
     "cart_icon": "cart",
-    "icon": "icon_solid",
+    "free_shipping_threshold": 150,
     "klaviyo_public_key": "UDmkb3",
     "klaviyo_list_id": "VFqauD",
     "klaviyo_popup_enabled": true,
     "klaviyo_popup_delay": 8,
-    "klaviyo_popup_heading": "The places nobody photographs",
-    "klaviyo_popup_body": "Occasional notes from the abandoned, forgotten, and overlooked. No spam. Unsubscribe any time.",
-    "klaviyo_popup_button": "Stay in the loop",
-    "content_for_index": [],
+    "klaviyo_popup_heading": "Before the next series goes live",
+    "klaviyo_popup_body": "New work goes to subscribers first — the series story, the location, the images. Before anyone else sees them.",
+    "klaviyo_popup_button": "Get early access",
     "blocks": {
       "1232542678405107163": {
         "type": "shopify://apps/instafeed/blocks/head-block/c447db20-095d-4a10-9725-b5977662c9d5",
@@ -154,11 +153,6 @@
       },
       "6251270934270006384": {
         "type": "shopify://apps/stape-server-gtm/blocks/gtm/7e13c847-7971-409d-8fe0-29ec14d5f048",
-        "disabled": false,
-        "settings": {}
-      },
-      "7570552984445421165": {
-        "type": "shopify://apps/yotpo-product-reviews/blocks/settings/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
         "disabled": false,
         "settings": {}
       }

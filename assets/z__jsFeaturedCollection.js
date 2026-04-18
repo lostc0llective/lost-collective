@@ -28,7 +28,6 @@ window.PXUTheme.jsFeaturedCollection = {
       prevNextButtons: this.products_limit > this.products_per ? true : false,
       initialIndex: 0,
       arrowShape: arrowShape,
-      autoPlay: false,
     });
 
     $(slider).on('settle.flickity', () => $(slider).flickity('resize'));

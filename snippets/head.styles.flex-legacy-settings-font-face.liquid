@@ -1,0 +1,110 @@
+{%- comment -%}
+  Renders the flex legacy font settings as CSS variables.
+
+  Usage:
+  {% render 'head.styles.flex-legacy-settings-font-face' %}
+{%- endcomment -%}
+
+{% liquid
+  assign heading_font_family = settings.heading__font.family | default: 'Open Sans, sans-serif'
+  if settings.heading__font.fallback_families != blank
+    assign heading_font_family = heading_font_family | append: ',' | append: settings.heading__font.fallback_families
+  endif
+
+  assign subheading_font_family = settings.subheading_font.family | default: 'Open Sans, sans-serif'
+  if settings.subheading_font.fallback_families != blank
+    assign subheading_font_family = subheading_font_family | append: ',' | append: settings.subheading_font.fallback_families
+  endif
+
+  assign button_font_family = settings.button__font.family | default: 'Open Sans, sans-serif'
+  if settings.button__font.fallback_families != blank
+    assign button_font_family = button_font_family | append: ',' | append: settings.button__font.fallback_families
+  endif
+
+  assign regular_font_family = settings.regular__font.family | default: 'Open Sans, sans-serif'
+  if settings.regular__font.fallback_families != blank
+    assign regular_font_family = regular_font_family | append: ',' | append: settings.regular__font.fallback_families
+  endif
+
+  # Button size settings
+  if settings.button_primary_padding == 'small'
+    assign btn_primary_font_size = '0.75rem'
+    assign btn_primary_line_height = 'inherit'
+  elsif settings.button_primary_padding == 'regular'
+    assign btn_primary_font_size = '1rem'
+    assign btn_primary_line_height = 'inherit'
+  else
+    assign btn_primary_font_size = '1.25rem'
+    assign btn_primary_line_height = '1.25'
+  endif
+
+  if settings.button_secondary_padding == 'small'
+    assign btn_secondary_font_size = '0.75rem'
+    assign btn_secondary_line_height = 'inherit'
+  elsif settings.button_secondary_padding == 'regular'
+    assign btn_secondary_font_size = '1rem'
+    assign btn_secondary_line_height = 'inherit'
+  else
+    assign btn_secondary_font_size = '1.25rem'
+    assign btn_secondary_line_height = '1.25'
+  endif
+
+  if settings.button_link_padding == 'small'
+    assign btn_link_style_font_size = '0.75rem'
+    assign btn_link_style_line_height = 'inherit'
+  elsif settings.button_link_padding == 'regular'
+    assign btn_link_style_font_size = '1rem'
+    assign btn_link_style_line_height = 'inherit'
+  else
+    assign btn_link_style_font_size = '1.25rem'
+    assign btn_link_style_line_height = '1.25'
+  endif
+
+  assign primary_border_radius = settings.button_primary_border_radius | default: 0 | append: 'px'
+  assign secondary_border_radius = settings.button_secondary_border_radius | default: 0 | append: 'px'
+  assign link_underline_thickness = settings.button_link_underline_thickness | default: 1 | append: 'px'
+  assign link_underline_style = settings.button_link_underline_style | default: 'solid'
+%}
+
+{%- style -%}
+  :root {
+    /* Override heading font stack with flex legacy settings */
+    --heading-font-family: {{ heading_font_family }};
+    --heading-font-weight: {{ settings.heading__font.weight | default: 400 | times: 1 }};
+    --heading-letter-spacing: {{ settings.heading_letter_spacing | default: 0 }}px;
+    --body-font-family: {{ regular_font_family }};
+    /* Specific to flex and not included in Devkit tokens */
+    --heading-font-style: {{ settings.heading__font.style | default: 'normal' }};
+    --subheading-font-family: {{ subheading_font_family }};
+    --button-font-family: {{ button_font_family }};
+
+    /* Font sizes */
+    --heading-xl-font-size: {{ settings.banner_heading_size | default: 40 }}px;
+    --heading-lg-font-size: calc({{ settings.banner_heading_size | default: 40 }}px / 2);
+    --body-md-font-size: {{ settings.banner_text_size | default: 15 }}px;
+
+    --button-primary-font-size: {{ btn_primary_font_size }};
+    --button-primary-line-height: {{ btn_primary_line_height }};
+
+    --button-secondary-font-size: {{ btn_secondary_font_size }};
+    --button-secondary-line-height: {{ btn_secondary_line_height }};
+
+    --button-link-style-font-size: {{ btn_link_style_font_size }};
+    --button-link-style-line-height: {{ btn_link_style_line_height }};
+
+    --heading-responsive: 1;
+    --subheading-responsive: 0;
+
+    /* Button styles */
+    --button-font-weight: {{ settings.button__font.weight | default: '700' }};
+    --button-font-style: {{ settings.button__font.style | default: 'normal' }};
+    --button-letter-spacing: {{ settings.button_letter_spacing | default: '0' | append: 'px' }};
+    --button-transition-speed: 0.3s;
+    --button-font-capitalization: {{ settings.button_font_style | default: 'none' }};
+
+    --button-primary-border-radius: {{ primary_border_radius }};
+    --button-secondary-border-radius: {{ secondary_border_radius }};
+    --button-link-underline-thickness: {{ link_underline_thickness }};
+    --button-link-underline-style: {{ link_underline_style }};
+  }
+{%- endstyle -%}

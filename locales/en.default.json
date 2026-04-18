@@ -12,7 +12,8 @@
     "variants": {
       "choose_variant": "Choose a variant",
       "choose_option": "Choose a {{ option }}",
-      "chosen_option_html": "{{ option }}: <span>{{ value }}</span>"
+      "chosen_option_html": "{{ option }}: <span>{{ value }}</span>",
+      "unavailable": "Unavailable"
     },
     "price": {
       "range_html": "{{ price_min }} - {{ price_max }}",
@@ -453,20 +454,23 @@
   },
   "homepage": {
     "onboarding": {
-      "product_title": "Your product's name",
-      "product_description": "This area is used to describe your product’s details. Tell customers about the look, feel, and style of your product. Add details on color, materials used, sizing, and where it was made.",
-      "caption_headline": "Your headline",
-      "caption_subtitle": "Subtitle",
-      "caption_button": "Linked button",
-      "menu_title": "Menu title",
-      "promotion_name": "Your promotion headline",
-      "promotion_description": "Promotion description appears here.",
-      "collection_title": "Collection title",
+      "blog_author": "Author name",
+      "blog_excerpt": "Your store hasn’t published any blog posts yet. A blog can be used to talk about new product launches, tips, or other news you want to share with your customers. You can check out Shopify’s ecommerce blog for inspiration and advice for your own store and blog.",
       "blog_title": "News",
       "blogpost_title": "Your post's title",
-      "blog_excerpt": "Your store hasn’t published any blog posts yet. A blog can be used to talk about new product launches, tips, or other news you want to share with your customers. You can check out Shopify’s ecommerce blog for inspiration and advice for your own store and blog.",
-      "blog_author": "Author name",
-      "no_content": "This section doesn’t currently include any content. Add content to this section using the sidebar."
+      "caption_button": "Linked button",
+      "caption_headline": "Your headline",
+      "caption_subtitle": "Subtitle",
+      "collection_title": "Collection title",
+      "menu_title": "Menu title",
+      "no_content": "This section doesn’t currently include any content. Add content to this section using the sidebar.",
+      "price": "$49.00",
+      "product_description": "This area is used to describe your product’s details. Tell customers about the look, feel, and style of your product. Add details on color, materials used, sizing, and where it was made.",
+      "product_title": "Your product's name",
+      "promotion_description": "Promotion description appears here.",
+      "promotion_name": "Your promotion headline",
+      "sku": "1234567890",
+      "vendor_name": "Vendor name"
     }
   },
   "gift_cards": {
@@ -535,6 +539,29 @@
       "rate_value": "{{ rate_title }} at {{ rate }}"
     }
   },
+  "labels": {
+    "one_product": "1 product",
+    "n_products": "{{ count }} products",
+    "one_result": "1 result",
+    "n_results": "{{ count }} results",
+    "filter_count_label": "Filters ({{ filter_count }})",
+    "to": "to"
+  },
+  "actions": {
+    "sort_by": "Sort by",
+    "filter_and_sort": "Filter & sort",
+    "sort": "Sort",
+    "filter": "Filter",
+    "reset_filters": "Clear all",
+    "apply_filters": "Apply",
+    "view_standard": "Standard view",
+    "view_compact": "Compact view",
+    "view_list": "List view"
+  },
+  "info": {
+    "no_results_found": "No results found",
+    "try_different_filters": "Please try again with different filters."
+  },
   "layout": {
     "general": {
       "menu": "Menu",
@@ -550,7 +577,8 @@
       "pick_a_currency": "Pick a currency",
       "social": "Follow",
       "close_window": "Close",
-      "designer_credits_html": "<a href=\"https://outofthesandbox.com/\" target=\"_blank\" title=\"Flex Shopify Theme by Out of the Sandbox\">Designed by Out of the Sandbox</a>."
+      "designer_credits_html": "<a href=\"https://outofthesandbox.com/\" target=\"_blank\" title=\"Flex Shopify Theme by Out of the Sandbox\">Designed by Out of the Sandbox</a>.",
+      "powered_by_shopify_html": "<a href=\"https://shopify.pxf.io/pixel-union\" target=\"_blank\" rel=\"nofollow\">Powered by Shopify</a>."
     },
     "social_sharing": {
       "title": "Share",

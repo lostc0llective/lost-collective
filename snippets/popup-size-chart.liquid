@@ -18,16 +18,16 @@
         {% for tag in product.tags %}
           {% if tag contains 'meta-size-chart-' %}
             {% assign size_chart = tag | handle | remove: 'meta-size-chart-' %}
-            <h2 class="center">{{ pages[size_chart].title }}</h2>
+            <h5 class="center">{{ pages[size_chart].title }}</h5>
             <div class="feature_divider"></div>
             {{ pages[size_chart].content }}
           {% endif %}
         {% endfor %}
 
       {% elsif block.settings.size_chart != blank %}
-        <h2 class="center">
+        <h5 class="center">
           {{ pages[block.settings.size_chart].title }}
-        </h2>
+        </h5>
         <div class="feature_divider"></div>
         {{ pages[block.settings.size_chart].content }}
 

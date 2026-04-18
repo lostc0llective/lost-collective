@@ -70,7 +70,7 @@
       </div>
 
       <div
-        class="
+        class="     
           product__information
           has-product-sticker
           one-half
@@ -99,6 +99,12 @@
               {{ block.shopify_attributes }}
             >
               {% case block.type %}
+                {%- when 'collapsible-row' -%}
+                  {%
+                    render 'collapsible-row',
+                    block: block,
+                  %}
+                  
                 {% when 'complementary_products' %}
                   {%
                     render 'complementary-products',
@@ -273,7 +279,7 @@
                   </div>
 
                 {% when 'product-links' %}
-                  {% if block.settings.show_collections or block.settings.show_tags or block.settings.show_type %}
+                  {% if block.settings.show_collections or block.settings.show_tags or block.settings.show_types %}
                     <div class="product__classification-links has-padding-top">
                       {% if block.settings.show_collections %}
                         <p class="product__collections-list tags">
@@ -291,7 +297,7 @@
                         </p>
                       {% endif %}
 
-                      {% if block.settings.show_type %}
+                      {% if block.settings.show_types %}
                         <p class="product__type-list tags">
                           <span class="product__classification-title">
                             {{ 'products.product.product_types' | t }}:
@@ -323,7 +329,32 @@
                   {% endif %}
 
                 {% when 'rating' %}
-                  {% render 'product-rating', product: product %}
+                  {% if product.metafields.reviews.rating.value != blank %}
+                    <div class="product__rating rating">
+                      {%
+                        render 'rating-stars',
+                        value: product.metafields.reviews.rating.value.rating,
+                        scale_max: product.metafields.reviews.rating.value.scale_max,
+                      %}
+
+                      <p class="rating__text">
+                        <span aria-hidden="true">
+                          {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+                        </span>
+                      </p>
+
+                      <p class="rating__count">
+                        <span aria-hidden="true">
+                          {{ product.metafields.reviews.rating_count }}
+                          {% if product.metafields.reviews.rating_count > 1 %}
+                            {{ "general.accessibility.star_reviews_text" | t }}
+                          {% else %}
+                            {{ "general.accessibility.star_review_text" | t }}
+                          {% endif %}
+                        </span>
+                      </p>
+                    </div>
+                  {% endif %}
 
                 {% when 'share' %}
                   <div class="product__social-share has-padding-top">
@@ -348,7 +379,14 @@
   </div>
 </section>
 
-{% render 'shopify-xr', product: product %}
+{% comment %} Shopify-XR {% endcomment %}
+{% if product.media %}
+  <script>
+    window.ShopifyXR=window.ShopifyXR||function(){(ShopifyXR.q=ShopifyXR.q||[]).push(arguments)}
+      {% assign models = product.media | where: 'media_type', 'model' | json %}
+      ShopifyXR('addModels', {{ models }});
+  </script>
+{% endif %}
 
 {% liquid
   for block in section.blocks
@@ -380,6 +418,7 @@
   }
 </script>
 <script src="{{ 'z__jsProduct.js' | asset_url }}"></script>
+<script src="{{ 'z__jsFAQ.js' | asset_url }}"></script>
 
 {% schema %}
   {
@@ -583,6 +622,24 @@
         "type": "title",
         "name": "Title",
         "limit": 1
+      },
+      {
+        "type": "collapsible-row",
+        "name": "Collapsible row",
+        "settings": [
+          {
+            "type": "text",
+            "id": "question",
+            "label": "Question",
+            "default": "What is your question?"
+          },
+          {
+            "type": "richtext",
+            "id": "answer",
+            "label": "Answer",
+            "default": "<p>Provide the answer to the question here.</p>"
+          },
+        ]
       },
       {
         "type": "vendor",

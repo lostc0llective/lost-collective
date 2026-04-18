@@ -22,141 +22,90 @@ window.PXUTheme.jsVideo = {
 
   },
   loadVideo: function($videoElement, $playIcon, $playButton, $videoTextContainer, $imageElement) {
-    const self = this;
-    const shouldAutoplay = this.autoplay;
-    const hasPoster = this.poster;
-
-    // Activate facade: move data-src → src on iframe, then init Plyr
-    const activatePlayer = () => {
-      const $iframe = $videoElement.find('iframe[data-src]');
-      if ($iframe.length) {
-        $iframe.attr('src', $iframe.data('src')).removeAttr('data-src');
+    const player = new Plyr(`.video-${this.id}`, {
+      controls: videoControls,
+      loop: {
+        active: this.autoloop
+      },
+      fullscreen: {
+        enabled: true,
+        fallback: true,
+        iosNative: true
+      },
+      storage: {
+        enabled: false
       }
-      initPlyr();
-    };
+    });
 
-    const initPlyr = () => {
-      const player = new Plyr(`.video-${self.id}`, {
-        controls: videoControls,
-        loop: {
-          active: self.autoloop
-        },
-        fullscreen: {
-          enabled: true,
-          fallback: true,
-          iosNative: true
-        },
-        storage: {
-          enabled: false
-        }
-      });
+    player.muted = this.mute;
+    player.ratio = this.aspect_ratio;
 
-      player.muted = self.mute;
-      player.ratio = self.aspect_ratio;
-
-      // Capture the Plyr-generated wrapper (.plyr) so we can hide it independently
-      // of $videoElement — Plyr wraps the original element in its own container which
-      // remains visible (and shows black) even when $videoElement is hidden.
-      const $plyrWrapper = $(player.elements.container);
-
-      if (shouldAutoplay) {
-        player.autoplay = true;
-        if ($imageElement.length && $imageElement.is(':visible')) {
-          $videoElement.hide();
-          $plyrWrapper.hide();
-        }
-      }
-
-      // If button exists, clicking button will play video
-      if (self.button) {
-        $playButton.on('click', () => {
-          player.play();
-        });
-      }
-
-      // Clicking anywhere on video should play the video
-      if (!self.button) {
-        $videoTextContainer.on('click', () => {
-          player.play();
-        });
-      }
-
-      // If on mobile and text is below image, clicking the image wrapper should play the video
-      if (!isScreenSizeLarge() && $videoElement.parents('.mobile-text--below-media')) {
-        $imageElement.on('click', () => {
-          player.play();
-        });
-      }
-
-      // On player ready, hide play icon if play button visible; trigger autoplay
-      player.on('ready', function(index, player) {
-        if ($playButton && !isScreenSizeLarge() && $videoElement.parents('.mobile-text--below-media')) {
-          $playIcon.show();
-        } else if ($playButton) {
-          $playIcon.hide();
-        } else {
-          $playIcon.show();
-        }
-        if (shouldAutoplay) {
-          player.play();
-        }
-      });
-
-      // On play, cross-fade poster out and video in (300ms opacity transition).
-      // $plyrWrapper must be shown alongside $videoElement because Plyr wraps
-      // $videoElement inside it — showing $videoElement alone has no effect if
-      // the outer .plyr container is still display:none.
-      player.on('play', function(index, player) {
-        $videoTextContainer.hide();
-        $imageElement.fadeOut(300);
-        $videoElement.show();
-        $plyrWrapper.css('opacity', 0).show().animate({ opacity: 1 }, 300);
-      });
-
-      // On player pause, show play icon if play button hidden
-      player.on('pause', function(index, player) {
-        if (!$playButton) {
-          $playIcon.show();
-        }
-      });
-
-      if (shouldAutoplay) {
-        player.play();
-      }
-    };
-
-    // Facade pattern: defer iframe + Plyr load until user interaction when a
-    // poster image is set and autoplay is off. Autoplay bypasses the facade.
-    if (shouldAutoplay) {
-      activatePlayer();
-      if ($imageElement.length && $imageElement.is(':visible')) {
-        $videoElement.hide();
-      }
-    } else if (hasPoster) {
-      // Show poster; activate player only when user interacts
-      $imageElement.show();
-      $videoTextContainer.show();
-
-      const onUserInteract = () => {
-        $imageElement.off('click', onUserInteract);
-        $videoTextContainer.off('click', onUserInteract);
-        $playButton.off('click', onUserInteract);
-        activatePlayer();
-      };
-
-      $imageElement.one('click', onUserInteract);
-      if (self.button) {
-        $playButton.one('click', onUserInteract);
-      } else {
-        $videoTextContainer.one('click', onUserInteract);
-      }
-    } else {
-      // No poster — activate immediately, show video element
-      activatePlayer();
+    // If autoplay enabled, hide image and text
+    if (this.autoplay) {
+      player.autoplay = true;
       $imageElement.hide();
+      $videoTextContainer.hide();
       $videoElement.show();
-      $videoTextContainer.show();
+      player.play();
+    } else {
+      // If autoplay disabled, check if poster image added
+      if (this.poster) {
+        $videoElement.hide();
+        $imageElement.show();
+        $videoTextContainer.show();
+      } else {
+        // If autoplay disabled and no poster image
+        $imageElement.hide();
+        $videoElement.show();
+        $videoTextContainer.show();
+      }
     }
+
+    // If button exists, clicking button will play video
+    if (this.button) {
+      $playButton.on('click', () =>  {
+        player.play();
+      })
+    }
+
+    // Clicking anywhere on video should play the video
+    if (!this.button) {
+      $videoTextContainer.on('click', () => {
+        player.play();
+      })
+    }
+
+    // If on mobile and text is below image, clicking the image wrapper should play the video
+    if (!isScreenSizeLarge() && $videoElement.parents('.mobile-text--below-media')) {
+      $imageElement.on('click', () => {
+        player.play();
+      })
+    }
+
+    // On player ready, hide play icon if play button visible
+    player.on('ready', function(index, player) {
+      if ($playButton && !isScreenSizeLarge() && $videoElement.parents('.mobile-text--below-media')) {
+        $playIcon.show();
+      } else if ($playButton) {
+        $playIcon.hide();
+      } else {
+        $playIcon.show();
+      }
+    })
+
+    // On play, hide image/text and show video element
+    player.on('play', function(index, player) {
+      $videoElement.show();
+      $imageElement.hide();
+      $videoTextContainer.hide();
+    })
+
+    // On player pause, show play icon if play button hidden
+    player.on('pause', function(index, player) {
+      if (!$playButton) {
+        $playIcon.show();
+      }
+    })
 
   },
   unload: function($section) {

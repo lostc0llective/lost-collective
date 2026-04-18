@@ -4,9 +4,6 @@
   assign animation = section.settings.animation | default: 'none'
 %}
 
-{% comment %}D13: Article structured data{% endcomment %}
-{% render 'article-schema' %}
-
 {% style %}
   #shopify-section-{{ id }} {
     padding-top: {{ section.settings.padding_top }}px;
@@ -186,7 +183,15 @@
       "
     >
       {% paginate article.comments by 100 %}
-
+        <div class="container hide-when-banner-enabled">
+          {%
+            render 'heading',
+            title: article.title,
+            heading_tag: 'h1',
+            context: 'article',
+            text_alignment: 'left',
+          %}
+        </div>
 
         <div class="container blog-meta">
           <div
@@ -255,9 +260,6 @@
             {% endif %}
 
             {{ article.content }}
-
-            {% comment %}D11: Blog-to-shop CTA{% endcomment %}
-            {% render 'blog-cta' %}
           </div>
         </div>
 
@@ -284,7 +286,7 @@
               <div class="media">
                 <div class="media-left">
                   <figure class="image">
-                    <img src="//1.gravatar.com/avatar/{{ article.user.email | md5 }}?s=160&r=G" alt="{{ article.author }}" loading="lazy" width="80" height="80" />
+                    <img src="//1.gravatar.com/avatar/{{ article.user.email | md5 }}?s=160&r=G" alt="{{ article.author }}" />
                   </figure>
                 </div>
 
@@ -364,7 +366,7 @@
                     <div class="media">
                       <div class="media-left">
                         <figure class="image">
-                          <img src="//1.gravatar.com/avatar/{{ comment.email | md5 }}?s=160&r=G" alt="{{ comment.author }}" loading="lazy" width="80" height="80" />
+                          <img src="//1.gravatar.com/avatar/{{ comment.email | md5 }}?s=160&r=G" alt="{{ comment.author }}" />
                         </figure>
                       </div>
 

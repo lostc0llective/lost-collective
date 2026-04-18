@@ -1,0 +1,62 @@
+{% doc %}
+  Renders a grid of basic product cards.
+  @param {object} context - The collection or search object
+  @param {number} [items_per_page] - The number of items to show per page, default: 21
+  @param {number} [columns_mobile] - The number of columns on mobile, default: 1
+  @param {number} [columns_desktop] - The number of columns on desktop, default: 3
+  @param {number} [horizontal_gap_md] - If set, overrides the horizontal grid gap on md and up
+  @param {number} [vertical_gap_md] - If set, overrides the vertical grid gap on md and up
+  @example
+  {% render 'list.product-card-basic', context: collection %}
+{% enddoc %}
+
+{% liquid
+  assign context = context | default: collection
+  assign items_per_page = items_per_page | default: 21
+  assign columns_mobile = columns_mobile | default: 1
+  assign columns_desktop = columns_desktop | default: 3
+  assign horizontal_gap_md = horizontal_gap_md | default: null
+  assign vertical_gap_md = vertical_gap_md | default: null
+
+  if horizontal_gap_md
+    assign grid_style = '--layout-grid-gap-size-lg: ' | append: horizontal_gap_md | append: 'px;'
+    assign gap_col_md = 'lg'
+  endif
+
+  if vertical_gap_md
+    assign grid_style = grid_style | append: '--layout-grid-gap-size-xl: ' | append: vertical_gap_md | append: 'px;'
+    assign gap_row_md = 'xl'
+  endif
+%}
+
+{% paginate context.products by items_per_page %}
+  {% capture grid_slot %}
+    {% for product in context.products %}
+      {% render 'product-thumbnail',
+        product: product,
+        products_per_row: columns_desktop,
+        mobile_products_per_row: columns_mobile,
+        align_height: section.settings.align_height,
+        height: section.settings.collection_height
+      %}
+    {% endfor %}
+  {% endcapture %}
+
+  {% if horizontal_gap_md or vertical_gap_md %}
+    {% capture style %}
+      --layout-grid-gap-size-lg: {{ vertical_gap_md }}px;
+      --layout-grid-gap-size-xl: {{ horizontal_gap_md }}px;
+    {% endcapture %}
+  {% endif %}
+
+  {% render 'layout.grid',
+    slot: grid_slot,
+    columns: columns_mobile,
+    columns_md: columns_desktop,
+    gap_row: 'md',
+    gap_row_md: gap_row_md,
+    gap_col: 'sm',
+    gap_col_md: gap_col_md,
+    style: style
+  %}
+{% endpaginate %}

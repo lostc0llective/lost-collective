@@ -66,14 +66,7 @@ product_recommendations: <boolean>
     {%- assign collection_handles = product.collections | map: 'handle' -%}
 
     {% if product.id != skip_product.id %}
-      {%- liquid
-        assign media_alt = product.featured_media.preview_image.alt
-        if media_alt == blank or media_alt contains 'youtube' or media_alt contains 'vimeo'
-          assign alt_text = product.title
-        else
-          assign alt_text = media_alt
-        endif
-      -%}
+      {%- assign feature_image = product.featured_image -%}
       <div class="gallery-cell thumbnail visible-{{ visible_products }}
           {%
             render 'column-width',
@@ -84,7 +77,7 @@ product_recommendations: <boolean>
         <div class="product-wrap">
           <div class="product-image__wrapper">
             <div class="image__container product__imageContainer">
-              <a href="{{ product.url | default: "#" | split: "?" | first }}">
+              <a href="{{ product.url | within: collection }}">
 
                 {% if settings.stickers_enabled == true %}
                   {%
@@ -98,7 +91,7 @@ product_recommendations: <boolean>
                 {% comment %} Primary image {% endcomment %}
                 {%
                   render 'image-element',
-                  image: product.media[6],
+                  image: product.featured_media.preview_image,
                   alt: alt_text,
                   object_fit: align_height,
                   max_height: height,
@@ -119,7 +112,7 @@ product_recommendations: <boolean>
             </div>
 
             {% if hover_enabled or settings.enable_quickshop %}
-              <a href="{{ product.url | default: "#" | split: "?" | first }}">
+              <a href="{{ product.url | within: collection }}">
                 <div class="thumbnail-overlay__container">
                   {% if hover_enabled %}
                     <div class="quick-shop__info animated fadeInDown">
@@ -144,8 +137,31 @@ product_recommendations: <boolean>
                   {% endif %}
 
                   {% if hover_enabled %}
-                    {% if settings.enable_shopify_collection_badges %}
-                      {% render 'product-rating', product: product %}
+                    {% if settings.enable_shopify_collection_badges and product.metafields.reviews.rating.value != blank %}
+                      <div class="product__rating rating">
+                        {%
+                          render 'rating-stars',
+                          value: product.metafields.reviews.rating.value.rating,
+                          scale_max: product.metafields.reviews.rating.value.scale_max,
+                        %}
+
+                        <p class="rating__text">
+                          <span aria-hidden="true">
+                            {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+                          </span>
+                        </p>
+
+                        <p class="rating__count">
+                          <span aria-hidden="true">
+                            {{ product.metafields.reviews.rating_count }}
+                            {% if product.metafields.reviews.rating_count > 1 %}
+                              {{ "general.accessibility.star_reviews_text" | t }}
+                            {% else %}
+                              {{ "general.accessibility.star_review_text" | t }}
+                            {% endif %}
+                          </span>
+                        </p>
+                      </div>
                     {% endif %}
                   {% endif %}
                 </div>

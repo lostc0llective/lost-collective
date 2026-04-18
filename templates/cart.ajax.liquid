@@ -50,7 +50,6 @@
 
   <form action="{{ routes.cart_url }}" method="post"
           class="ajax-cart__form {% if cart.item_count == 0 %}is-hidden{% endif %}">
-
     <div class="ajax-cart__list">
       {% assign total_saving = 0 %}
 
@@ -67,7 +66,7 @@
             {% if item.product.media %}
               {% if item.product.featured_media.preview_image %}
                 <a href="{{ item.url }}">
-                  <img src="{{ item.image | image_url: width: 320 }}" alt="{{ item.title | escape }}" width="320" height="320" loading="lazy" />
+                  <img src="{{ item.image | img_url: '320x' }}" alt="{{ item.title | escape }}" />
                 </a>
               {% endif %}
             {% else %}
@@ -265,22 +264,6 @@
         <p class="ajax-cart__taxes-shipping-message has-padding-top">{{ taxes_shipping_checkout }}</p>
       </div>
 
-      {% comment %} Trust signals {% endcomment %}
-      <div class="ajax-cart__trust-bar">
-        <div class="ajax-cart__trust-item">
-          <span aria-hidden="true">{%- render 'icon', name: 'lock' -%}</span>
-          <span>Secure checkout</span>
-        </div>
-        <div class="ajax-cart__trust-item">
-          <span aria-hidden="true">{%- render 'icon', name: 'shield' -%}</span>
-          <span>Authenticity guaranteed</span>
-        </div>
-        <div class="ajax-cart__trust-item">
-          <span aria-hidden="true">{%- render 'icon', name: 'truck' -%}</span>
-          <span>Worldwide shipping</span>
-        </div>
-      </div>
-
       {% comment %} Terms of service checkbox {% endcomment %}
       {% if settings.display_tos_checkbox and settings.go_to_checkout %}
         <div class="ajax-cart__tos-checkbox text-align-center">
@@ -301,28 +284,6 @@
       {% if settings.cart_message != blank %}
         <div class="ajax-cart__cart-message text-align-center">
           {{ settings.cart_message }}
-        </div>
-      {% endif %}
-
-      {% comment %} Free shipping progress bar {% endcomment %}
-      {% if settings.free_shipping_threshold > 0 %}
-        {% assign threshold_cents = settings.free_shipping_threshold | times: 100 %}
-        <div class="ajax-cart__shipping-progress{% if cart.total_price >= threshold_cents %} ajax-cart__shipping-progress--achieved{% endif %}">
-          {% if cart.total_price >= threshold_cents %}
-            <p class="ajax-cart__shipping-message ajax-cart__shipping-message--achieved">
-              {%- render 'icon', name: 'checkmark' -%}
-              Complimentary shipping applied
-            </p>
-          {% else %}
-            {% assign remaining_cents = threshold_cents | minus: cart.total_price %}
-            {% assign progress_pct = cart.total_price | times: 100 | divided_by: threshold_cents %}
-            <div class="ajax-cart__shipping-bar-track">
-              <div class="ajax-cart__shipping-bar-fill" style="width: {{ progress_pct }}%"></div>
-            </div>
-            <p class="ajax-cart__shipping-message">
-              <span class="money">{{ remaining_cents | money_without_trailing_zeros }}</span> away from complimentary shipping
-            </p>
-          {% endif %}
         </div>
       {% endif %}
 

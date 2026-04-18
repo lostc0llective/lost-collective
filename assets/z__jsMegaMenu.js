@@ -2,12 +2,18 @@
 var __webpack_exports__ = {};
 window.PXUTheme.jsMegaMenu = {
   init: function($section) {
+    this.enableMobileMegaMenu = document.body.dataset.enableMobileMegaMenu === 'true';
+
     // Add settings from schema to current object
     window.PXUTheme.jsMegaMenu = $.extend(this, window.PXUTheme.getSectionData($section));
-
+    
     // Selectors
     const parentLink = this.parent_link;
     const sectionId = this.section_id;
+
+    // Skip if parent already has mega menu
+    if ($(`[data-navlink-handle="${parentLink}"]`).hasClass('has-mega-menu')) return;
+
     const $megaMenu = $section.find('.mega-menu__' + sectionId);
     const $parentElement = $('.header__menu [data-navlink-handle="' + parentLink + '"], .sticky-header__menu [data-navlink-handle="' + parentLink + '"]');
     const $parentElementLink = $parentElement.find('.header__link');
@@ -15,42 +21,43 @@ window.PXUTheme.jsMegaMenu = {
     $parentElement.find('.mega-menu__section').remove();
 
     // Mobile Selectors
-    const $parentMobileElement = $(`[data-mobile-menu-navlink-handle="${parentLink}"]`);
+    if (this.enableMobileMegaMenu) {
+      const $parentMobileElement = $(`[data-mobile-menu-navlink-handle="${parentLink}"]`);
 
-    /* No submenu is present - add mega menu elements and caret */
-    if ($parentMobileElement.find('.has-no-submenu').length) {
+      /* No submenu is present - add mega menu elements and caret */
+      if ($parentMobileElement.find('.has-no-submenu').length) {
 
-      // Assign class to display dropdown arrow
-      $parentMobileElement.find('a.mobile-menu__item').addClass('mobile-menu-link');
+        // Assign class to display dropdown arrow
+        $parentMobileElement.find('a.mobile-menu__item').addClass('mobile-menu-link');
 
-      // Insert close icon after menu item
-      $parentMobileElement.find('a').after('<span class="close-dropdown"></span>');
+        // Insert close icon after menu item
+        $parentMobileElement.find('a').after('<span class="close-dropdown" aria-expanded="false"></span>');
 
-      // Insert placeholder ul for megamenu
-      $parentMobileElement.find('.submenu__label').after('<ul class="mobile-submenu__list mobile-menu__submenu has-mega-menu" data-mobile-submenu-first-level-list></ul>')
+        // Insert placeholder ul for megamenu
+        $parentMobileElement.find('.submenu__label').after('<ul class="mobile-submenu__list mobile-menu__submenu has-mega-menu" data-mobile-submenu-first-level-list></ul>')
 
-      // Find data attribute for toggle and assign it true
-      let $mobileMenuToggle = $parentMobileElement.find('[data-mobile-menu-has-toggle]');
-      $($mobileMenuToggle).attr('data-mobile-menu-has-toggle', true);
+        // Find data attribute for toggle and assign it true
+        let $mobileMenuToggle = $parentMobileElement.find('[data-mobile-menu-has-toggle]');
+        $($mobileMenuToggle).attr('data-mobile-menu-has-toggle', true);
 
 
-      // Insert mega menu
-      let $parentList = $parentMobileElement.find('.has-mega-menu');
-      $megaMenu.clone().appendTo($parentList);
+        // Insert mega menu
+        let $parentList = $parentMobileElement.find('.has-mega-menu');
+        $megaMenu.clone().appendTo($parentList);
 
-    } else {
-      /* Submenu is present - add mega menu elements and remove current sub-menu */
-      let $parentList = $parentMobileElement.find('[data-mobile-submenu-first-level-list]');
+      } else {
+        /* Submenu is present - add mega menu elements and remove current sub-menu */
+        let $parentList = $parentMobileElement.find('[data-mobile-submenu-first-level-list]');
 
-      $parentList
-        .empty()
-        .addClass('has-mega-menu')
-        .removeClass('has-dropdown');
+        $parentList
+          .empty()
+          .addClass('has-mega-menu')
+          .removeClass('has-dropdown');
 
-      // Insert mega menu
-      $megaMenu.clone().appendTo($parentList);
+        // Insert mega menu
+        $megaMenu.clone().appendTo($parentList);
+      }
     }
-
 
     // Desktop
     if ($parentElement.hasClass('header__item') || $parentElement.hasClass('vertical-header__first-level')) {

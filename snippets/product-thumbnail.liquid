@@ -1,25 +1,3 @@
-{%- comment -%}
-  Parameters:
-    product:                {Object}  Required. The product object to render.
-    products_per_row:       {Number}  Required. Column count for the grid; passed to column-width snippet.
-    mobile_products_per_row:{String}  Required. '1' or '2' — controls small-screen column width.
-    align_height:           {Boolean} Optional. Crop images to a fixed height. Default: false.
-    height:                 {Number}  Optional. Max image height in px when align_height is true.
-    related_products:       {Boolean} Optional. When true, reads hover setting from `block` rather than
-                                      global settings. `block` is only populated when called from within
-                                      a {% for block in section.blocks %} loop — it will be nil in all
-                                      other contexts, causing hover_enabled to fall back to false (safe).
-                                      Default: false.
-    collection:             {Object}  Optional. Used in `product.url | within: collection` links.
-    collection_group_thumb: {String}  Optional. CSS class for thumbnail group scoping.
-    collection_group_mobile:{String}  Optional. CSS class for mobile group scoping.
-
-  Implicit globals used:
-    section.settings.pagination_type — controls data-load-more attribute on the grid item div.
-      `section` is always available in Shopify render contexts. Calling sections must have a
-      `pagination_type` setting or this attribute will be omitted (safe — treated as basic pagination).
-    settings.* — various global theme settings (quickshop, stickers, secondary image, etc.)
-{%- endcomment -%}
 {% if related_products == true %}
   {% assign hover_enabled = block.settings.show_related_products_title_on_hover %}
 {% else %}
@@ -35,14 +13,11 @@
 {% assign secondaryImage = product.media[1] %}
 
 {% assign collection_handles = product.collections | map: 'handle' %}
-{% liquid
-  assign media_alt = product.featured_media.preview_image.alt
-  if media_alt == blank or media_alt contains 'youtube' or media_alt contains 'vimeo'
-    assign alt_text = product.title
-  else
-    assign alt_text = media_alt
-  endif
-%}
+{% if product.featured_media.preview_image.alt contains 'youtube' or image.alt contains 'vimeo' %}
+  {% assign alt_text = product.title %}
+{% else %}
+  {% assign alt_text = product.featured_media.preview_image.alt %}
+{% endif %}
 
 {% if type == 'block' %}
   {% assign image_crop = block.settings.image_crop %}
@@ -107,7 +82,7 @@
             {% comment %} Primary image {% endcomment %}
             {%
               render 'image-element',
-              image: product.featured_media,
+              image: product.featured_media.preview_image,
               alt: alt_text,
               object_fit: align_height,
               max_height: height,
@@ -215,8 +190,31 @@
             {% endif %}
 
             {% if hover_enabled %}
-              {% if settings.enable_shopify_collection_badges %}
-                {% render 'product-rating', product: product %}
+              {% if settings.enable_shopify_collection_badges and product.metafields.reviews.rating.value != blank %}
+                <div class="product__rating rating">
+                  {%
+                    render 'rating-stars',
+                    value: product.metafields.reviews.rating.value.rating,
+                    scale_max: product.metafields.reviews.rating.value.scale_max,
+                  %}
+
+                  <p class="rating__text">
+                    <span aria-hidden="true">
+                      {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+                    </span>
+                  </p>
+
+                  <p class="rating__count">
+                    <span aria-hidden="true">
+                      {{ product.metafields.reviews.rating_count }}
+                      {% if product.metafields.reviews.rating_count > 1 %}
+                        {{ "general.accessibility.star_reviews_text" | t }}
+                      {% else %}
+                        {{ "general.accessibility.star_review_text" | t }}
+                      {% endif %}
+                    </span>
+                  </p>
+                </div>
               {% endif %}
             {% endif %}
           </div>
@@ -238,8 +236,37 @@
   %}
 
   {% if hover_enabled == false %}
-    {% if settings.enable_shopify_collection_badges %}
-      {% render 'product-rating', product: product, align: settings.thumbnail_text_alignment %}
+    {% if settings.enable_shopify_collection_badges and product.metafields.reviews.rating.value != blank %}
+      <div
+        class="
+          product__rating
+          rating
+          is-justify-{{ settings.thumbnail_text_alignment }}
+        "
+      >
+        {%
+          render 'rating-stars',
+          value: product.metafields.reviews.rating.value.rating,
+          scale_max: product.metafields.reviews.rating.value.scale_max,
+        %}
+
+        <p class="rating__text">
+          <span aria-hidden="true">
+            {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+          </span>
+        </p>
+
+        <p class="rating__count">
+          <span aria-hidden="true">
+            {{ product.metafields.reviews.rating_count }}
+            {% if product.metafields.reviews.rating_count > 1 %}
+              {{ "general.accessibility.star_reviews_text" | t }}
+            {% else %}
+              {{ "general.accessibility.star_review_text" | t }}
+            {% endif %}
+          </span>
+        </p>
+      </div>
     {% endif %}
   {% endif %}
 </div>

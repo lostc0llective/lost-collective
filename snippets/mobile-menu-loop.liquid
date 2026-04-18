@@ -5,7 +5,7 @@
       <div class="mobile-menu__first-level has-no-submenu" data-mobile-menu-has-toggle="false">
         <input class="visually-hidden submenu__input" type="checkbox" id="mobile-submenu-{{ link.title | handleize }}">
         <label class="submenu__label {% if link.url == 'http://' or link.url == '' or link.url == '/' or link.url == 'https://' or link.url == '#' %}has-no-link{% endif %}" for="mobile-submenu-{{ link.title | handleize }}">
-          <a class="mobile-menu__item {% if link.active %}is-active{% endif %}" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>
+          <a class="mobile-menu__item {% if link.active %}is-active{% endif %}" href="{{ link.url }}" >
             {{ link.title }}
           </a>
         </label>
@@ -24,7 +24,7 @@
           {% for sub_link in link.links %}
             <li class="mobile-menu__submenu-list-item">
               {% if sub_link.links == blank %}
-                <a class="mobile-menu__item {% if sub_link.active %}is-active{% endif %}" href="{{ sub_link.url }}"{% if sub_link.active %} aria-current="page"{% endif %}>{{ sub_link.title }}</a>
+                <a class="mobile-menu__item" href="{{ sub_link.url }}">{{ sub_link.title }}</a>
               {% else %}
                 <div class="mobile-menu__second-level">
                   <input class="visually-hidden submenu__input" type="checkbox" id="mobile-sub-submenu-{{ forloop.index }}-{{ currentIndex }}">

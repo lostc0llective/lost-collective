@@ -128,7 +128,7 @@
         {% endif %}
 
         {% if section.settings.title != blank or section.settings.mobile_title != blank %}
-          <h2 class="{{ heading_classes }} is-hidden-desktop-only" aria-hidden="true">
+          <h2 class="{{ heading_classes }} is-hidden-desktop-only">
             {{- section.settings.mobile_title | default: section.settings.title -}}
           </h2>
         {% endif %}
@@ -140,7 +140,7 @@
         {% endif %}
 
         {% if section.settings.text != blank or section.settings.mobile_text != blank %}
-          <div class="{{ text_classes }} is-hidden-desktop-only" aria-hidden="true">
+          <div class="{{ text_classes }} is-hidden-desktop-only">
             {{- section.settings.mobile_text | default: section.settings.text -}}
           </div>
         {% endif %}

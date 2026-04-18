@@ -1,5 +1,5 @@
 /******/ (() => { // webpackBootstrap
-/******/  var __webpack_modules__ = ({
+/******/ 	var __webpack_modules__ = ({
 
 /***/ 766:
 /***/ ((__unused_webpack_module, exports) => {
@@ -148,6 +148,10 @@ class VariantSelection extends HTMLElement {
 
 }
 
+const unselectedValue = 'not-selected';
+const unavailableValue = 'unavailable';
+const inputTypeDropdown = 'select';
+const inputTypeRadio = 'radio';
 const valueElementType = {
   select: 'option',
   radio: 'input[type="radio"]'
@@ -167,25 +171,49 @@ function setSelectedOptions(selectOptions, radioOptions, selectedOptions) {
     });
   });
 }
+/*
+ * @param optionsEls [Element list] : Input elements for variant options
+ *
+ */
+
 
 function getOptions(optionsEls) {
   const select = [];
   const radio = [];
 
   for (let i = 0; i < optionsEls.length; i++) {
-    const optionEl = optionsEls[i];
+    const optionEl = optionsEls[i]; // Options within select inputs or radio groups
+
+    const variantOptionIndex = parseInt(optionEl.dataset.variantOptionIndex, 10);
+    const valueMap = {};
     const wrappers = optionEl.matches('[data-variant-option-value-wrapper]') ? [optionEl] : Array.prototype.slice.call(optionEl.querySelectorAll('[data-variant-option-value-wrapper]'));
-    const values = optionEl.matches('[data-variant-option-value]') ? [optionEl] : Array.prototype.slice.call(optionEl.querySelectorAll('[data-variant-option-value]'));
-    if (!values.length) break;
+    const optionValueEls = optionEl.matches('[data-variant-option-value]') ? [optionEl] : Array.prototype.slice.call(optionEl.querySelectorAll('[data-variant-option-value]'));
+    if (!optionValueEls.length) break;
+    let current = unselectedValue;
+    optionValueEls.forEach(el => {
+      valueMap[el.value] = {
+        available: false,
+        accessible: false
+      };
+
+      if (el.hasAttribute('checked') || el.hasAttribute('selected')) {
+        current = el.value;
+      }
+    });
     const option = {
       option: optionEl,
+      variantOptionIndex,
+      current,
       wrappers,
-      values
+      optionValueEls,
+      valueMap
     };
 
-    if (values[0].matches(valueElementType.select)) {
+    if (optionValueEls[0].matches(valueElementType.select)) {
+      option.type = inputTypeDropdown;
       select.push(option);
-    } else if (values[0].matches(valueElementType.radio)) {
+    } else if (optionValueEls[0].matches(valueElementType.radio)) {
+      option.type = inputTypeRadio;
       radio.push(option);
     }
   }
@@ -197,18 +225,18 @@ function getOptions(optionsEls) {
 }
 
 function getSelectedOptions(product, selectOptions, radioOptions) {
-  const options = product.options.map(() => 'not-selected');
+  const options = product.options.map(() => unselectedValue);
   selectOptions.forEach(({
     option
   }) => {
-    if (option.value !== 'not-selected') {
+    if (option.value !== unselectedValue) {
       options[parseInt(option.dataset.variantOptionIndex, 10)] = option.value;
     }
   });
   radioOptions.forEach(({
-    values
+    optionValueEls
   }) => {
-    values.forEach(value => {
+    optionValueEls.forEach(value => {
       if (value.checked) {
         options[parseInt(value.dataset.variantOptionValueIndex, 10)] = value.value;
       }
@@ -227,126 +255,136 @@ function getVariantFromSelectedOptions(variants, selectedOptions) {
   return false;
 }
 
-function _getVariant(variants, options) {
-  return variants.find(variant => variant.options.every((option, index) => option === options[index]));
-}
+function getOptionsAccessibility(variants, option) {
+  const optionValues = Object.keys(option.valueMap);
 
-function _setOptionsMap(product, selectedOptions, optionsMap, option1, option2 = null, option3 = null) {
-  const updatedOptionsMap = { ...optionsMap
-  };
-  const options = [option1, option2, option3].filter(option => !!option);
+  if (optionValues.includes(unselectedValue)) {
+    option.valueMap[unselectedValue].accessible = true;
+  }
 
-  const variant = _getVariant(product.variants, options);
-
-  const variantOptionMatches = options.filter((option, index) => option === selectedOptions[index]).length;
-  const isCurrentVariant = variantOptionMatches === product.options.length;
-  const isNeighbor = variantOptionMatches === product.options.length - 1;
-
-  for (let i = 0; i < options.length; i++) {
-    const option = options[i];
-
-    if (option) {
-      let {
-        setByCurrentVariant,
-        setByNeighbor,
-        accessible,
-        available
-      } = optionsMap[i][option];
-
-      if (variant) {
-        accessible = variant.available || accessible; // The current variant is always
-        // the priority for option availability
-
-        if (isCurrentVariant) {
-          setByCurrentVariant = true;
-          ({
-            available
-          } = variant);
-        } else if (!setByCurrentVariant && isNeighbor) {
-          // If the variant is a neighbor
-          // And the option doesn't belong to the variant
-          // Use its availability information for the option
-          // If multiple neighbors exist, prefer true
-          available = setByNeighbor ? available || variant.available : variant.available;
-          setByNeighbor = true;
+  variants.forEach(variant => {
+    if (variant.available) {
+      variant.options.forEach(variantOption => {
+        if (optionValues.includes(variantOption)) {
+          option.valueMap[variantOption].accessible = true;
         }
-      } else if (isCurrentVariant) {
-        // Catch case where current variant doesn't exist
-        // Ensure availability is false
-        setByCurrentVariant = true;
-        available = false;
-      } else if (!setByCurrentVariant && isNeighbor) {
-        // Catch case where neighbor doesn't exist
-        // Ensure availability is false
-        // If multiple neighbors exist, prefer true
-        available = setByNeighbor ? available : false;
-        setByNeighbor = true;
-      } // If the option isn't set by either
-      // the current variant or a neighbor
-      // default to general accessibility
-
-
-      if (!setByCurrentVariant && !setByNeighbor) {
-        available = accessible;
-      }
-
-      updatedOptionsMap[i][option] = {
-        setByCurrentVariant,
-        setByNeighbor,
-        accessible,
-        available
-      };
-    }
-  }
-
-  return updatedOptionsMap;
-}
-
-function getOptionsAccessibility(product, selectedOptions) {
-  let optionsMap = product.options.map(() => ({}));
-
-  for (let i = 0; i < product.options.length; i++) {
-    for (let j = 0; j < product.variants.length; j++) {
-      const variant = product.variants[j];
-      const option = variant.options[i];
-      optionsMap[i][option] = {
-        setByCurrentVariant: false,
-        setByNeighbor: false,
-        accessible: false,
-        available: false
-      };
-    }
-  }
-
-  const option1Values = optionsMap.length >= 1 ? Object.keys(optionsMap[0]) : [];
-  const option2Values = optionsMap.length >= 2 ? Object.keys(optionsMap[1]) : [];
-  const option3Values = optionsMap.length >= 3 ? Object.keys(optionsMap[2]) : [];
-  option1Values.forEach(option1Value => {
-    option2Values.forEach(option2Value => {
-      option3Values.forEach(option3Value => {
-        optionsMap = _setOptionsMap(product, selectedOptions, optionsMap, option1Value, option2Value, option3Value);
       });
-
-      if (!option3Values.length) {
-        optionsMap = _setOptionsMap(product, selectedOptions, optionsMap, option1Value, option2Value);
-      }
-    });
-
-    if (!option2Values.length) {
-      optionsMap = _setOptionsMap(product, selectedOptions, optionsMap, option1Value);
     }
   });
-  return optionsMap;
+  return option;
+} // Returns whether the variant matches the selection filter prefix.
+// // E.g. ["small", "red", "cotton"] matches ["small", "red"] but not ["small", "green"].
+// // It also matches prefixes like [] and ["*", "red", "*"].
+
+
+function matchesPrefix(variant, prefix) {
+  if (prefix.every((v, i) => v === unselectedValue || variant.options[i] === v)) {
+    // has to match unless it's 'not-selected', 'not-selected' matches everything
+    return variant.available;
+  }
 }
 
-function updateOptions(product, selectOptions, radioOptions, selectedOptions, disableUnavailableOptions, removeUnavailableOptions) {
-  const options = [...selectOptions, ...radioOptions];
+function getVariantFromPartialSelection(variants, selection) {
+  return variants.find(variant => {
+    if (variant.available) {
+      return selection.every((s, i) => s === unselectedValue || variant.options[i] === s);
+    }
+
+    return false;
+  });
+}
+
+function updateOptions(product, selectOptions, radioOptions, selection, disableUnavailableOptions, removeUnavailableOptions, selectFirstAvailable) {
+  let options = [...selectOptions, ...radioOptions];
+  const {
+    variants
+  } = product;
+  let nextAvailableVariant = null;
+  options = options.map(option => getOptionsAccessibility(variants, option));
+  options.sort((a, b) => a.variantOptionIndex - b.variantOptionIndex);
 
   if (options.length === 0) {
     return;
   }
 
-  const optionsAccessibility = getOptionsAccessibility(product, selectedOptions); // Iterate over each option type
+  if (disableUnavailableOptions || removeUnavailableOptions) {
+    // Only do this if we're disabling/hiding unavailable
+    // Ensure the current selection has a match by unsetting options if necessary.
+    // Does the selection match a variant? If not, unselect options starting at the last one
+    while (!variants.some(v => matchesPrefix(v, selection))) {
+      // Find the last set option and unset it.
+      let i = selection.length - 1;
+
+      while (i >= 0 && selection[i] === unselectedValue) {
+        --i;
+      }
+
+      if (i === -1) {
+        break;
+      }
+
+      if (options[i].option.value) {
+        if (!selectFirstAvailable) {
+          options[i].option.value = unselectedValue;
+          options[i].current = unselectedValue;
+        }
+      }
+
+      selection[i] = unselectedValue;
+    }
+  } // Determine which values in each option are selectable given the current selection.
+
+
+  for (let i = 0; i < options.length; ++i) {
+    const values = Object.keys(options[i].valueMap);
+
+    for (let j = 0; j < values.length; ++j) {
+      // input options
+      const prefix = [...selection.slice(0, i), values[j]]; // given the current selection (ie. green/small), do any variants match?
+      // If no variants match, it disables the option value in this iteration
+      // disabling 'dead end' option values
+
+      const selectable = variants.some(v => matchesPrefix(v, prefix));
+      options[i].valueMap[values[j]].available = selectable;
+    }
+  } // If 'select first available variant' is enabled and we have some 'not-selected' values,
+  // we should select options that match a variant
+
+
+  if (selectFirstAvailable && selection.includes(unselectedValue)) {
+    nextAvailableVariant = getVariantFromPartialSelection(variants, selection);
+
+    if (nextAvailableVariant) {
+      selection = nextAvailableVariant.options;
+    }
+
+    options.forEach(optionData => {
+      const currentSelection = selection[optionData.variantOptionIndex];
+      optionData.current = currentSelection;
+
+      if (optionData.type === inputTypeDropdown) {
+        optionData.option.value = currentSelection;
+        optionData.optionValueEls.forEach(e => {
+          e.selected = e.value === currentSelection;
+        });
+      } else {
+        optionData.optionValueEls.forEach(e => {
+          e.checked = e.value === currentSelection;
+        });
+      }
+    });
+  } else if (!selectFirstAvailable && selection.includes(unselectedValue)) {
+    options.forEach(optionData => {
+      // When selectFirstAvailableVariant is false, 
+      // we need to manually set the 'checked' value to false for radio selections
+      // because they don't have a default 'not-selected' option
+      if (selection[optionData.variantOptionIndex] === unselectedValue && optionData.type !== inputTypeDropdown) {
+        optionData.optionValueEls.forEach(e => {
+          e.checked = false;
+        });
+      }
+    });
+  }
 
   for (let i = 0; i < product.options.length; i++) {
     // Corresponding select dropdown, if it exists
@@ -365,39 +403,39 @@ function updateOptions(product, selectOptions, radioOptions, selectedOptions, di
       const {
         option,
         wrappers,
-        values
+        optionValueEls
       } = optionValues;
 
-      for (let j = values.length - 1; j >= 0; j--) {
+      for (let j = optionValueEls.length - 1; j >= 0; j--) {
         const wrapper = wrappers[j];
-        const optionValue = values[j];
+        const optionValue = optionValueEls[j];
         const {
           value
         } = optionValue;
         const {
-          available
-        } = value in optionsAccessibility[i] ? optionsAccessibility[i][value] : false;
-        const {
+          available,
           accessible
-        } = value in optionsAccessibility[i] ? optionsAccessibility[i][value] : false;
-        const isChooseOption = value === 'not-selected'; // Option element to indicate unchosen option
-        // Disable unavailable options
+        } = optionValues.valueMap[value];
 
-        optionValue.disabled = isChooseOption || disableUnavailableOptions && !accessible;
-        optionValue.dataset.variantOptionAccessible = accessible;
-        optionValue.dataset.variantOptionAvailable = available;
+        if (optionValue !== unselectedValue) {
+          optionValue.disabled = disableUnavailableOptions && !available;
+          optionValue.dataset.variantOptionAccessible = accessible;
+          optionValue.dataset.variantOptionAvailable = available;
 
-        if (!removeUnavailableOptions || accessible || isChooseOption) {
-          fragment.insertBefore(wrapper, fragment.firstElementChild);
+          if (!removeUnavailableOptions || accessible) {
+            fragment.insertBefore(wrapper, fragment.firstElementChild);
+          }
         }
       }
 
       option.innerHTML = '';
       option.appendChild(fragment);
-      const chosenValue = values.find(value => value.selected || value.checked);
-      option.dataset.variantOptionChosenValue = chosenValue && chosenValue.value !== 'not-selected' ? chosenValue.value : false;
+      const chosenValue = optionValueEls.find(value => value.selected || value.checked);
+      option.dataset.variantOptionChosenValue = chosenValue && chosenValue.value !== unselectedValue ? chosenValue.value : false;
     }
   }
+
+  return selection;
 }
 
 class OptionsSelection extends HTMLElement {
@@ -426,10 +464,9 @@ class OptionsSelection extends HTMLElement {
     this._events = [];
     this._onChangeFn = this._onOptionChange.bind(this);
     this._optionsEls = this.querySelectorAll('[data-variant-option]');
-    ({
-      select: this._selectOptions,
-      radio: this._radioOptions
-    } = getOptions(this._optionsEls));
+    const options = getOptions(this._optionsEls);
+    this._selectOptions = options.select;
+    this._radioOptions = options.radio;
 
     this._associateVariantSelection(this.getAttribute('variant-selection'));
   }
@@ -448,10 +485,9 @@ class OptionsSelection extends HTMLElement {
 
   connectedCallback() {
     this._optionsEls = this.querySelectorAll('[data-variant-option]');
-    ({
-      select: this._selectOptions,
-      radio: this._radioOptions
-    } = getOptions(this._optionsEls));
+    const options = getOptions(this._optionsEls);
+    this._selectOptions = options.select;
+    this._radioOptions = options.radio;
 
     this._associateVariantSelection(this.getAttribute('variant-selection'));
 
@@ -467,9 +503,9 @@ class OptionsSelection extends HTMLElement {
     });
 
     this._radioOptions.forEach(({
-      values
+      optionValueEls
     }) => {
-      values.forEach(value => {
+      optionValueEls.forEach(value => {
         value.addEventListener('change', this._onChangeFn);
 
         this._events.push({
@@ -502,7 +538,7 @@ class OptionsSelection extends HTMLElement {
 
       case 'disable-unavailable':
       case 'remove-unavailable':
-        this._updateOptions(this.hasAttribute('disable-unavailable'), this.hasAttribute('remove-unavailable'));
+        this._updateOptions(this.hasAttribute('disable-unavailable'), this.hasAttribute('remove-unavailable'), this.hasAttribute('select-first-available'));
 
         break;
     }
@@ -522,7 +558,7 @@ class OptionsSelection extends HTMLElement {
 
   setSelectedOptions(selectedOptions) {
     setSelectedOptions(this._selectOptions, this._radioOptions, selectedOptions);
-    return this._updateOptions(this.hasAttribute('disable-unavailable'), this.hasAttribute('remove-unavailable'), selectedOptions);
+    return this._updateOptions(this.hasAttribute('disable-unavailable'), this.hasAttribute('remove-unavailable'), this.hasAttribute('select-first-available'), selectedOptions);
   }
 
   _associateVariantSelection(id) {
@@ -531,6 +567,8 @@ class OptionsSelection extends HTMLElement {
 
   _updateLabels() {
     // Update any labels
+    const unavailableText = this.getAttribute('data-unavailable-text');
+
     for (let i = 0; i < this._optionsEls.length; i++) {
       const optionsEl = this._optionsEls[i];
       let optionsNameEl = null;
@@ -564,17 +602,32 @@ class OptionsSelection extends HTMLElement {
           optionsNameEl.innerHTML = optionsNameEl.dataset.variantOptionChooseName;
         }
       }
+
+      if (!this.hasAttribute('disable-unavailable')) {
+        const selectOptions = optionsEl.querySelectorAll('option');
+        selectOptions.forEach(option => {
+          let optionLabel = option.innerHTML.replace(`- ${unavailableText}`, '');
+
+          if (option.dataset.variantOptionAvailable === 'false' && option.value !== unselectedValue) {
+            optionLabel = `${optionLabel} - ${unavailableText}`;
+          }
+
+          option.innerHTML = optionLabel;
+        });
+      }
     }
   }
 
   _resetOptions() {
-    return this._updateOptions(false, false);
+    return this._updateOptions(false, false, this.hasAttribute('select-first-available'));
   }
 
-  _updateOptions(disableUnavailableOptions, removeUnavailableOptions, selectedOptions = null) {
+  _updateOptions(disableUnavailableOptions, removeUnavailableOptions, selectFirstAvailable, selectedOptions = null) {
     if (!this._variantSelection) return Promise.resolve(false);
     return this._variantSelection.getProduct().then(product => {
-      updateOptions(product, this._selectOptions, this._radioOptions, selectedOptions || getSelectedOptions(product, this._selectOptions, this._radioOptions), disableUnavailableOptions, removeUnavailableOptions);
+      const updatedSelection = updateOptions(product, this._selectOptions, this._radioOptions, selectedOptions || getSelectedOptions(product, this._selectOptions, this._radioOptions), disableUnavailableOptions, removeUnavailableOptions, selectFirstAvailable); // Use the 'updated' selection in case its changed due to disabled options
+
+      this._updateVariantSelection(product, updatedSelection);
 
       this._updateLabels();
     }).then(() => true);
@@ -583,12 +636,12 @@ class OptionsSelection extends HTMLElement {
   _updateVariantSelection(product, selectedOptions) {
     if (!this._variantSelection) return;
     const variant = getVariantFromSelectedOptions(product.variants, selectedOptions);
-    const isNotSelected = selectedOptions.some(option => option === 'not-selected'); // Update master select
+    const isNotSelected = selectedOptions.some(option => option === unselectedValue); // Update master select
 
     if (variant) {
       this._variantSelection.variant = variant.id;
     } else {
-      this._variantSelection.variant = isNotSelected ? 'not-selected' : 'unavailable';
+      this._variantSelection.variant = isNotSelected ? unselectedValue : unavailableValue;
     }
   }
 
@@ -597,11 +650,9 @@ class OptionsSelection extends HTMLElement {
 
     this._variantSelection.getProduct().then(product => {
       if (!product) return;
-      const selectedOptions = getSelectedOptions(product, this._selectOptions, this._radioOptions);
+      let selectedOptions = getSelectedOptions(product, this._selectOptions, this._radioOptions);
 
-      this._updateOptions(this.hasAttribute('disable-unavailable'), this.hasAttribute('remove-unavailable'), selectedOptions);
-
-      this._updateVariantSelection(product, selectedOptions);
+      this._updateOptions(this.hasAttribute('disable-unavailable'), this.hasAttribute('remove-unavailable'), this.hasAttribute('select-first-available'), selectedOptions);
 
       OptionsSelection.synchronize(this);
     });
@@ -624,94 +675,94 @@ if (!customElements.get('options-selection')) {
 /***/ (function(module) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
-  if(true)
-    module.exports = factory();
-  else {}
+	if(true)
+		module.exports = factory();
+	else {}
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
-/******/  // The module cache
-/******/  var installedModules = {};
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
 /******/
-/******/  // The require function
-/******/  function __nested_webpack_require_543__(moduleId) {
+/******/ 	// The require function
+/******/ 	function __nested_webpack_require_543__(moduleId) {
 /******/
-/******/    // Check if module is in cache
-/******/    if(installedModules[moduleId]) {
-/******/      return installedModules[moduleId].exports;
-/******/    }
-/******/    // Create a new module (and put it into the cache)
-/******/    var module = installedModules[moduleId] = {
-/******/      i: moduleId,
-/******/      l: false,
-/******/      exports: {}
-/******/    };
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
 /******/
-/******/    // Execute the module function
-/******/    modules[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_543__);
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_543__);
 /******/
-/******/    // Flag the module as loaded
-/******/    module.l = true;
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
 /******/
-/******/    // Return the exports of the module
-/******/    return module.exports;
-/******/  }
-/******/
-/******/
-/******/  // expose the modules object (__webpack_modules__)
-/******/  __nested_webpack_require_543__.m = modules;
-/******/
-/******/  // expose the module cache
-/******/  __nested_webpack_require_543__.c = installedModules;
-/******/
-/******/  // define getter function for harmony exports
-/******/  __nested_webpack_require_543__.d = function(exports, name, getter) {
-/******/    if(!__nested_webpack_require_543__.o(exports, name)) {
-/******/      Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/    }
-/******/  };
-/******/
-/******/  // define __esModule on exports
-/******/  __nested_webpack_require_543__.r = function(exports) {
-/******/    if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/      Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/    }
-/******/    Object.defineProperty(exports, '__esModule', { value: true });
-/******/  };
-/******/
-/******/  // create a fake namespace object
-/******/  // mode & 1: value is a module id, require it
-/******/  // mode & 2: merge all properties of value into the ns
-/******/  // mode & 4: return value when already ns object
-/******/  // mode & 8|1: behave like require
-/******/  __nested_webpack_require_543__.t = function(value, mode) {
-/******/    if(mode & 1) value = __nested_webpack_require_543__(value);
-/******/    if(mode & 8) return value;
-/******/    if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/    var ns = Object.create(null);
-/******/    __nested_webpack_require_543__.r(ns);
-/******/    Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/    if(mode & 2 && typeof value != 'string') for(var key in value) __nested_webpack_require_543__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/    return ns;
-/******/  };
-/******/
-/******/  // getDefaultExport function for compatibility with non-harmony modules
-/******/  __nested_webpack_require_543__.n = function(module) {
-/******/    var getter = module && module.__esModule ?
-/******/      function getDefault() { return module['default']; } :
-/******/      function getModuleExports() { return module; };
-/******/    __nested_webpack_require_543__.d(getter, 'a', getter);
-/******/    return getter;
-/******/  };
-/******/
-/******/  // Object.prototype.hasOwnProperty.call
-/******/  __nested_webpack_require_543__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/  // __webpack_public_path__
-/******/  __nested_webpack_require_543__.p = "";
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
 /******/
 /******/
-/******/  // Load entry module and return exports
-/******/  return __nested_webpack_require_543__(__nested_webpack_require_543__.s = 0);
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__nested_webpack_require_543__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__nested_webpack_require_543__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__nested_webpack_require_543__.d = function(exports, name, getter) {
+/******/ 		if(!__nested_webpack_require_543__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__nested_webpack_require_543__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__nested_webpack_require_543__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __nested_webpack_require_543__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__nested_webpack_require_543__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __nested_webpack_require_543__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__nested_webpack_require_543__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__nested_webpack_require_543__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__nested_webpack_require_543__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__nested_webpack_require_543__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __nested_webpack_require_543__(__nested_webpack_require_543__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1419,582 +1470,34 @@ var scrollLock = _objectSpread({
 /******/ ])["default"];
 });
 
-/***/ }),
-
-/***/ 616:
-/***/ ((module) => {
-
-function _iterableToArrayLimit(arr, i) {
-  var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
-  if (null != _i) {
-    var _s,
-      _e,
-      _x,
-      _r,
-      _arr = [],
-      _n = !0,
-      _d = !1;
-    try {
-      if (_x = (_i = _i.call(arr)).next, 0 === i) {
-        if (Object(_i) !== _i) return;
-        _n = !1;
-      } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0);
-    } catch (err) {
-      _d = !0, _e = err;
-    } finally {
-      try {
-        if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return;
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-    return _arr;
-  }
-}
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
-  }
-}
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-function _defineProperty(obj, key, value) {
-  key = _toPropertyKey(key);
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-  return arr2;
-}
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _toPrimitive(input, hint) {
-  if (typeof input !== "object" || input === null) return input;
-  var prim = input[Symbol.toPrimitive];
-  if (prim !== undefined) {
-    var res = prim.call(input, hint || "default");
-    if (typeof res !== "object") return res;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
-  }
-  return (hint === "string" ? String : Number)(input);
-}
-function _toPropertyKey(arg) {
-  var key = _toPrimitive(arg, "string");
-  return typeof key === "symbol" ? key : String(key);
-}
-function _classPrivateFieldGet(receiver, privateMap) {
-  var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get");
-  return _classApplyDescriptorGet(receiver, descriptor);
-}
-function _classPrivateFieldSet(receiver, privateMap, value) {
-  var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set");
-  _classApplyDescriptorSet(receiver, descriptor, value);
-  return value;
-}
-function _classExtractFieldDescriptor(receiver, privateMap, action) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to " + action + " private field on non-instance");
-  }
-  return privateMap.get(receiver);
-}
-function _classApplyDescriptorGet(receiver, descriptor) {
-  if (descriptor.get) {
-    return descriptor.get.call(receiver);
-  }
-  return descriptor.value;
-}
-function _classApplyDescriptorSet(receiver, descriptor, value) {
-  if (descriptor.set) {
-    descriptor.set.call(receiver, value);
-  } else {
-    if (!descriptor.writable) {
-      throw new TypeError("attempted to set read only private field");
-    }
-    descriptor.value = value;
-  }
-}
-function _classPrivateMethodGet(receiver, privateSet, fn) {
-  if (!privateSet.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-  return fn;
-}
-function _checkPrivateRedeclaration(obj, privateCollection) {
-  if (privateCollection.has(obj)) {
-    throw new TypeError("Cannot initialize the same private elements twice on an object");
-  }
-}
-function _classPrivateFieldInitSpec(obj, privateMap, value) {
-  _checkPrivateRedeclaration(obj, privateMap);
-  privateMap.set(obj, value);
-}
-function _classPrivateMethodInitSpec(obj, privateSet) {
-  _checkPrivateRedeclaration(obj, privateSet);
-  privateSet.add(obj);
-}
-
-var list = [
-  " daum[ /]",
-  " deusu/",
-  "(?:^| )site",
-  "@[a-z]",
-  "\\(at\\)[a-z]",
-  "\\(github\\.com/",
-  "\\[at\\][a-z]",
-  "^12345",
-  "^<",
-  "^[\\w \\.\\-\\(\\)]+(/v?\\d+(\\.\\d+)?(\\.\\d{1,10})?)?$",
-  "^[^ ]{50,}$",
-  "^active",
-  "^ad muncher",
-  "^anglesharp/",
-  "^anonymous",
-  "^avsdevicesdk/",
-  "^axios/",
-  "^bidtellect/",
-  "^biglotron",
-  "^castro",
-  "^clamav[ /]",
-  "^cobweb/",
-  "^coccoc",
-  "^custom",
-  "^ddg[_-]android",
-  "^discourse",
-  "^dispatch/\\d",
-  "^downcast/",
-  "^duckduckgo",
-  "^facebook",
-  "^fdm[ /]\\d",
-  "^getright/",
-  "^gozilla/",
-  "^hatena",
-  "^hobbit",
-  "^hotzonu",
-  "^hwcdn/",
-  "^jeode/",
-  "^jetty/",
-  "^jigsaw",
-  "^linkdex",
-  "^lwp[-: ]",
-  "^metauri",
-  "^microsoft bits",
-  "^movabletype",
-  "^mozilla/\\d\\.\\d \\(compatible;?\\)$",
-  "^mozilla/\\d\\.\\d \\w*$",
-  "^navermailapp",
-  "^netsurf",
-  "^offline explorer",
-  "^phantom",
-  "^php",
-  "^postman",
-  "^postrank",
-  "^python",
-  "^read",
-  "^reed",
-  "^restsharp/",
-  "^snapchat",
-  "^space bison",
-  "^svn",
-  "^swcd ",
-  "^taringa",
-  "^test certificate info",
-  "^thumbor/",
-  "^tumblr/",
-  "^user-agent:mozilla",
-  "^valid",
-  "^venus/fedoraplanet",
-  "^w3c",
-  "^webbandit/",
-  "^webcopier",
-  "^wget",
-  "^whatsapp",
-  "^xenu link sleuth",
-  "^yahoo",
-  "^yandex",
-  "^zdm/\\d",
-  "^zoom marketplace/",
-  "^{{.*}}$",
-  "adbeat\\.com",
-  "appinsights",
-  "archive",
-  "ask jeeves/teoma",
-  "bit\\.ly/",
-  "bluecoat drtr",
-  "bot",
-  "browsex",
-  "burpcollaborator",
-  "capture",
-  "catch",
-  "check",
-  "chrome-lighthouse",
-  "chromeframe",
-  "client",
-  "cloud",
-  "crawl",
-  "cryptoapi",
-  "dareboost",
-  "datanyze",
-  "dataprovider",
-  "dejaclick",
-  "dmbrowser",
-  "download",
-  "evc-batch/",
-  "feed",
-  "firephp",
-  "freesafeip",
-  "ghost",
-  "gomezagent",
-  "google",
-  "headlesschrome/",
-  "http",
-  "httrack",
-  "hubspot marketing grader",
-  "hydra",
-  "ibisbrowser",
-  "images",
-  "iplabel",
-  "ips-agent",
-  "java",
-  "library",
-  "mail\\.ru/",
-  "manager",
-  "monitor",
-  "morningscore/",
-  "neustar wpm",
-  "news",
-  "nutch",
-  "offbyone",
-  "optimize",
-  "pageburst",
-  "pagespeed",
-  "perl",
-  "pingdom",
-  "powermarks",
-  "preview",
-  "proxy",
-  "ptst[ /]\\d",
-  "reader",
-  "rexx;",
-  "rigor",
-  "rss",
-  "scan",
-  "scrape",
-  "search",
-  "serp ?reputation ?management",
-  "server",
-  "sogou",
-  "sparkler/",
-  "spider",
-  "statuscake",
-  "stumbleupon\\.com",
-  "supercleaner",
-  "synapse",
-  "synthetic",
-  "taginspector/",
-  "torrent",
-  "tracemyfile",
-  "transcoder",
-  "trendsmapresolver",
-  "twingly recon",
-  "url",
-  "virtuoso",
-  "wappalyzer",
-  "webglance",
-  "webkit2png",
-  "websitemetadataretriever",
-  "whatcms/",
-  "wordpress",
-  "zgrab"
-];
-
-/**
- * Mutate given list of patter strings
- * @param {string[]} list
- * @returns {string[]}
- */
-function amend(list) {
-  try {
-    // Risk: Uses lookbehind assertion, avoid breakage in parsing by using RegExp constructor
-    new RegExp('(?<! cu)bot').test('dangerbot'); // eslint-disable-line prefer-regex-literals
-  } catch (error) {
-    // Skip regex fixes
-    return list;
-  }
-  [
-  // Addresses: Cubot device
-  ['bot', '(?<! cu)bot'],
-  // Addresses: Android webview
-  ['google', '(?<! (?:channel/|google/))google(?!(app|/google| pixel))'],
-  // Addresses: libhttp browser
-  ['http', '(?<!(?:lib))http'],
-  // Addresses: java based browsers
-  ['java', 'java(?!;)'],
-  // Addresses: Yandex Search App
-  ['search', '(?<! ya(?:yandex)?)search']].forEach(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-      search = _ref2[0],
-      replace = _ref2[1];
-    var index = list.lastIndexOf(search);
-    if (~index) {
-      list.splice(index, 1, replace);
-    }
-  });
-  return list;
-}
-
-amend(list);
-var flags = 'i';
-
-/**
- * Test user agents for matching patterns
- */
-var _list = /*#__PURE__*/new WeakMap();
-var _pattern = /*#__PURE__*/new WeakMap();
-var _update = /*#__PURE__*/new WeakSet();
-var _index = /*#__PURE__*/new WeakSet();
-var Isbot = /*#__PURE__*/function () {
-  /**
-   * @type {string[]}
-   */
-
-  /**
-   * @type {RegExp}
-   */
-
-  function Isbot(patterns) {
-    var _this = this;
-    _classCallCheck(this, Isbot);
-    _classPrivateMethodInitSpec(this, _index);
-    _classPrivateMethodInitSpec(this, _update);
-    _classPrivateFieldInitSpec(this, _list, {
-      writable: true,
-      value: void 0
-    });
-    _classPrivateFieldInitSpec(this, _pattern, {
-      writable: true,
-      value: void 0
-    });
-    _classPrivateFieldSet(this, _list, patterns || list.slice());
-    _classPrivateMethodGet(this, _update, _update2).call(this);
-    var isbot = function isbot(ua) {
-      return _this.test(ua);
-    };
-    return Object.defineProperties(isbot, Object.entries(Object.getOwnPropertyDescriptors(Isbot.prototype)).reduce(function (accumulator, _ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-        prop = _ref2[0],
-        descriptor = _ref2[1];
-      if (typeof descriptor.value === 'function') {
-        Object.assign(accumulator, _defineProperty({}, prop, {
-          value: _this[prop].bind(_this)
-        }));
-      }
-      if (typeof descriptor.get === 'function') {
-        Object.assign(accumulator, _defineProperty({}, prop, {
-          get: function get() {
-            return _this[prop];
-          }
-        }));
-      }
-      return accumulator;
-    }, {}));
-  }
-
-  /**
-   * Recreate the pattern from rules list
-   */
-  _createClass(Isbot, [{
-    key: "pattern",
-    get:
-    /**
-     * Get a clone of the pattern
-     * @type RegExp
-     */
-    function get() {
-      return new RegExp(_classPrivateFieldGet(this, _pattern));
-    }
-
-    /**
-     * Match given string against out pattern
-     * @param  {string} ua User Agent string
-     * @returns {boolean}
-     */
-  }, {
-    key: "test",
-    value: function test(ua) {
-      return Boolean(ua) && _classPrivateFieldGet(this, _pattern).test(ua);
-    }
-
-    /**
-     * Get the match for strings' known crawler pattern
-     * @param  {string} ua User Agent string
-     * @returns {string|null}
-     */
-  }, {
-    key: "find",
-    value: function find() {
-      var ua = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      var match = ua.match(_classPrivateFieldGet(this, _pattern));
-      return match && match[0];
-    }
-
-    /**
-     * Get the patterns that match user agent string if any
-     * @param  {string} ua User Agent string
-     * @returns {string[]}
-     */
-  }, {
-    key: "matches",
-    value: function matches() {
-      var ua = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      return _classPrivateFieldGet(this, _list).filter(function (entry) {
-        return new RegExp(entry, flags).test(ua);
-      });
-    }
-
-    /**
-     * Clear all patterns that match user agent
-     * @param  {string} ua User Agent string
-     * @returns {void}
-     */
-  }, {
-    key: "clear",
-    value: function clear() {
-      var ua = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-      this.exclude(this.matches(ua));
-    }
-
-    /**
-     * Extent patterns for known crawlers
-     * @param  {string[]} filters
-     * @returns {void}
-     */
-  }, {
-    key: "extend",
-    value: function extend() {
-      var _this2 = this;
-      var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      [].push.apply(_classPrivateFieldGet(this, _list), filters.filter(function (rule) {
-        return _classPrivateMethodGet(_this2, _index, _index2).call(_this2, rule) === -1;
-      }).map(function (filter) {
-        return filter.toLowerCase();
-      }));
-      _classPrivateMethodGet(this, _update, _update2).call(this);
-    }
-
-    /**
-     * Exclude patterns from bot pattern rule
-     * @param  {string[]} filters
-     * @returns {void}
-     */
-  }, {
-    key: "exclude",
-    value: function exclude() {
-      var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var length = filters.length;
-      while (length--) {
-        var index = _classPrivateMethodGet(this, _index, _index2).call(this, filters[length]);
-        if (index > -1) {
-          _classPrivateFieldGet(this, _list).splice(index, 1);
-        }
-      }
-      _classPrivateMethodGet(this, _update, _update2).call(this);
-    }
-
-    /**
-     * Create a new Isbot instance using given list or self's list
-     * @param  {string[]} [list]
-     * @returns {Isbot}
-     */
-  }, {
-    key: "spawn",
-    value: function spawn(list) {
-      return new Isbot(list || _classPrivateFieldGet(this, _list));
-    }
-  }]);
-  return Isbot;
-}();
-function _update2() {
-  _classPrivateFieldSet(this, _pattern, new RegExp(_classPrivateFieldGet(this, _list).join('|'), flags));
-}
-function _index2(rule) {
-  return _classPrivateFieldGet(this, _list).indexOf(rule.toLowerCase());
-}
-
-var isbot = new Isbot();
-
-module.exports = isbot;
-//# sourceMappingURL=index.js.map
-
-
 /***/ })
 
-/******/  });
+/******/ 	});
 /************************************************************************/
-/******/  // The module cache
-/******/  var __webpack_module_cache__ = {};
-/******/  
-/******/  // The require function
-/******/  function __webpack_require__(moduleId) {
-/******/    // Check if module is in cache
-/******/    var cachedModule = __webpack_module_cache__[moduleId];
-/******/    if (cachedModule !== undefined) {
-/******/      return cachedModule.exports;
-/******/    }
-/******/    // Create a new module (and put it into the cache)
-/******/    var module = __webpack_module_cache__[moduleId] = {
-/******/      // no module.id needed
-/******/      // no module.loaded needed
-/******/      exports: {}
-/******/    };
-/******/  
-/******/    // Execute the module function
-/******/    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/  
-/******/    // Return the exports of the module
-/******/    return module.exports;
-/******/  }
-/******/  
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
@@ -3215,8 +2718,8 @@ var ShopifySectionsManager = /*#__PURE__*/function () {
 ;// CONCATENATED MODULE: ./node_modules/@pixelunion/age-gate/dist/index.es.js
 
 /*!
- * @pixelunion/age-gate v1.1.0
- * (c) 2023 Pixel Union
+ * @pixelunion/age-gate v1.2.0
+ * (c) 2025 Pixel Union
  */
 
 function index_es_classCallCheck(instance, Constructor) {
@@ -3243,7 +2746,18 @@ function index_es_createClass(Constructor, protoProps, staticProps) {
 }
 
 var scrollLock = __webpack_require__(265);
-var isbot = __webpack_require__(616);
+
+// Bot patterns from isbot v5.1.32's patterns.json (copied as JavaScript array)
+var botPatterns = [" daum[ /]", " deusu/", "(?:^|[^g])news(?!sapphire)", "(?<! (?:channel/|google/))google(?!(app|/google| pixel))", "(?<! cu)bots?(?:\\b|_)", "(?<!(?:lib))http", "(?<![hg]m)score", "(?<!cam)scan", "24x7", "@[a-z][\\w-]+\\.", "\\(\\)", "\\.com\\b", "\\bperl\\b", "\\btime/", "\\|", "^[\\w \\.\\-\\(?:\\):%]+(?:/v?\\d+(?:\\.\\d+)?(?:\\.\\d{1,10})*?)?(?:,|$)", "^[^ ]{50,}$", "^\\d+\\b", "^\\W", "^\\w*search\\b", "^\\w+/[\\w\\(\\)]*$", "^active", "^ad muncher", "^amaya", "^avsdevicesdk/", "^azure", "^biglotron", "^bot", "^bw/", "^clamav[ /]", "^client/", "^cobweb/", "^custom", "^ddg[_-]android", "^discourse", "^dispatch/\\d", "^downcast/", "^duckduckgo", "^email", "^facebook", "^getright/", "^gozilla/", "^hobbit", "^hotzonu", "^hwcdn/", "^igetter/", "^jeode/", "^jetty/", "^jigsaw", "^microsoft bits", "^movabletype", "^mozilla/\\d\\.\\d\\s[\\w\\.-]+$", "^mozilla/\\d\\.\\d\\s\\(compatible;?(?:\\s\\w+\\/\\d+\\.\\d+)?\\)$", "^navermailapp", "^netsurf", "^offline", "^openai/", "^owler", "^php", "^postman", "^python", "^rank", "^read", "^reed", "^rest", "^rss", "^snapchat", "^space bison", "^svn", "^swcd ", "^taringa", "^thumbor/", "^track", "^w3c", "^webbandit/", "^webcopier", "^wget", "^whatsapp", "^wordpress", "^xenu link sleuth", "^yahoo", "^yandex", "^zdm/\\d", "^zoom marketplace/", "agent\\b", "analyzer", "archive", "ask jeeves/teoma", "audit", "bit\\.ly/", "bluecoat drtr", "browsex", "burpcollaborator", "capture", "catch", "check\\b", "checker", "chrome-lighthouse", "chromeframe", "classifier", "cloudflare", "convertify", "crawl", "cypress/", "dareboost", "datanyze", "dejaclick", "detect", "dmbrowser", "download", "evc-batch/", "exaleadcloudview", "feed", "fetcher", "firephp", "functionize", "grab", "headless", "httrack", "hubspot marketing grader", "hydra", "ibisbrowser", "infrawatch", "insight", "inspect", "iplabel", "java(?!;)", "library", "linkcheck", "mail\\.ru/", "manager", "measure", "neustar wpm", "node\\b", "nutch", "offbyone", "onetrust", "optimize", "pageburst", "pagespeed", "parser", "phantomjs", "pingdom", "powermarks", "preview", "proxy", "ptst[ /]\\d", "retriever", "rexx;", "rigor", "rss\\b", "scrape", "server", "sogou", "sparkler/", "speedcurve", "spider", "splash", "statuscake", "supercleaner", "synapse", "synthetic", "tools", "torrent", "transcoder", "url", "validator", "virtuoso", "wappalyzer", "webglance", "webkit2png", "whatcms/", "xtate/"];
+
+//Check if the user agent is a bot/crawler
+function isBot(userAgent) {
+  if (!userAgent) return false;
+
+  // Create a single RegExp pattern from all patterns (same approach as isbot)
+  var pattern = new RegExp(botPatterns.join('|'), 'i');
+  return pattern.test(userAgent);
+}
 function getAge(birthdate) {
   var today = new Date();
   var age = today.getFullYear() - birthdate.getFullYear();
@@ -3263,7 +2777,7 @@ var SiteAgeGate = /*#__PURE__*/function () {
     this._el.addEventListener('age-gate:open', this._open.bind(this));
     this._el.addEventListener('age-gate:close', this._close.bind(this));
     this._ageGateForm.addEventListener('submit', this._onFormSubmit.bind(this));
-    if (isbot(navigator.userAgent)) {
+    if (isBot(navigator.userAgent)) {
       this._close();
     } else if (this._el.style.display === '') {
       this._open();
@@ -3312,19 +2826,25 @@ var PageAgeGate = /*#__PURE__*/function () {
     key: "onSectionLoad",
     value: function onSectionLoad() {
       var openEvent = new CustomEvent('age-gate:open');
-      this._ageGateEl.dispatchEvent(openEvent);
+      if (this._ageGateEl) {
+        this._ageGateEl.dispatchEvent(openEvent);
+      }
     }
   }, {
     key: "onSectionSelect",
     value: function onSectionSelect() {
       var openEvent = new CustomEvent('age-gate:open');
-      this._ageGateEl.dispatchEvent(openEvent);
+      if (this._ageGateEl) {
+        this._ageGateEl.dispatchEvent(openEvent);
+      }
     }
   }, {
     key: "onSectionDeselect",
     value: function onSectionDeselect() {
       var closeEvent = new CustomEvent('age-gate:close');
-      this._ageGateEl.dispatchEvent(closeEvent);
+      if (this._ageGateEl) {
+        this._ageGateEl.dispatchEvent(closeEvent);
+      }
     }
   }]);
   return PageAgeGate;
@@ -3591,7 +3111,6 @@ $(document)
 
 $(document)
 .on('shopify:section:load', function(e){
-
   // Shopify section as jQuery object
   var $section = $(e.target);
 
@@ -3668,8 +3187,6 @@ $(document)
 
   // Disclosure menus
   window.PXUTheme.disclosure.enable();
-
-  
 
   // Search
   if (window.PXUTheme.theme_settings.enable_autocomplete == true) {
@@ -3813,10 +3330,6 @@ $(document)
 
   if($('.jsSlideshowWithText').length > 0) {
     window.PXUTheme.jsSlideshowWithText.blockSelect($parentSection, blockId);
-  }
-
-  if ($('.jsSlideshowClassic').length > 0) {
-    window.PXUTheme.jsSlideshowClassic.blockSelect($parentSection, blockId);
   }
 
   if($('.jsTestimonials').length > 0) {
@@ -4008,7 +3521,7 @@ $(window).on('load', function() {
 Slideshow arrows
 ==============================================================================*/
 
-if (window.PXUTheme.theme_settings.icon_style == 'icon_solid') {
+if (window.PXUTheme.theme_settings.icon_library == 'icon_solid') {
   window.arrowShape = 'M95.04 46 21.68 46 48.18 22.8 42.91 16.78 4.96 50 42.91 83.22 48.18 77.2 21.68 54 95.04 54 95.04 46z';
 } else {
   window.arrowShape = 'M95,48H9.83L41,16.86A2,2,0,0,0,38.14,14L3.59,48.58a1.79,1.79,0,0,0-.25.31,1.19,1.19,0,0,0-.09.15l-.1.2-.06.2a.84.84,0,0,0,0,.17,2,2,0,0,0,0,.78.84.84,0,0,0,0,.17l.06.2.1.2a1.19,1.19,0,0,0,.09.15,1.79,1.79,0,0,0,.25.31L38.14,86A2,2,0,0,0,41,86a2,2,0,0,0,0-2.83L9.83,52H95a2,2,0,0,0,0-4Z';
@@ -4018,20 +3531,3 @@ if (window.PXUTheme.theme_settings.icon_style == 'icon_solid') {
 
 /******/ })()
 ;
-
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll(".collapsible-text").forEach(section => {
-        let text = section.querySelector(".history-text");
-        let button = section.querySelector(".toggle-text");
-
-        button.addEventListener("click", function() {
-            if (text.classList.contains("expanded")) {
-                text.classList.remove("expanded");
-                button.innerText = "Read More";
-            } else {
-                text.classList.add("expanded");
-                button.innerText = "Read Less";
-            }
-        });
-    });
-});

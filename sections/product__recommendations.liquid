@@ -74,7 +74,7 @@
         {%
           render 'heading',
           title: section.settings.product_recommendations_heading,
-          heading_tag: 'h2',
+          heading_tag: 'h4',
           context: 'recommended-products',
           text_alignment: 'center',
         %}
@@ -138,22 +138,6 @@
   }
 </script>
 <script data-theme-editor-load-script src="{{ 'z__jsRecommendedProducts.js' | asset_url }}"></script>
-<script>
-(function() {
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('.product-recommendations a[href]');
-    if (!link) return;
-    var href = link.getAttribute('href');
-    if (!href || href.indexOf('pr_') === -1) return;
-    try {
-      var url = new URL(link.href, window.location.origin);
-      var keys = Array.from(url.searchParams.keys()).filter(function(k) { return k.indexOf('pr_') === 0; });
-      keys.forEach(function(k) { url.searchParams.delete(k); });
-      link.href = url.pathname + (url.search ? url.search : '');
-    } catch(err) {}
-  }, true);
-})();
-</script>
 
 {% schema %}
   {

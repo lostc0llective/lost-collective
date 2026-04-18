@@ -6,7 +6,7 @@
   {% if hover_enabled %}
     <span class="product-thumbnail__title">{{ product.title }}</span>
   {% else %}
-    <a href="{{ product.url }}" class="product-thumbnail__title">{{ product.title }}</a>
+    <a href="{{ product.url | within: collection }}" class="product-thumbnail__title">{{ product.title }}</a>
   {% endif %}
 
   {% if collection_handles contains 'coming-soon' %}

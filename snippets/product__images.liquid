@@ -9,7 +9,7 @@ enable_product_lightbox: <boolean>
 {% endcomment %}
 
 {% comment %}Assign object as block or section{% endcomment %}
-{% if type == 'block' %}   
+{% if type == 'block' %}
   {% assign object = block %}
 {% else %}
   {% assign object = section %}
@@ -98,38 +98,9 @@ enable_product_lightbox: <boolean>
               {% endif %}
 
               <div class="image__container" style="max-width: {{ media.width }}px">
-                {% if forloop.first %}
-                <img id="{{ media.id }}"
-                class="lazyload--fade-in"
-                alt="{{ media.alt | default: product.title | escape }}"
-                fetchpriority="high"
-                loading="eager"
-                data-zoom-src="{{ image_5000x }}"
-                data-image-id="{{ product.media[forloop.index0].id }}"
-                data-index="{{ forloop.index0 }}"
-                data-src="{{ image_1200x }}"
-                data-srcset=" {{ image_200x }} 200w,
-                              {{ image_400x }} 400w,
-                              {{ image_600x }} 600w,
-                              {{ image_800x }} 800w,
-                              {{ image_1200x }} 1200w,
-                              {{ image_2000x }} 2000w"
-                data-aspectratio="{{ media.width }}/{{ media.height }}"
-                height="{{ media.height }}"
-                width="{{ media.width }}"
-                src="{{ image_1200x }}"
-                srcset="{{ image_200x }} 200w,
-                        {{ image_400x }} 400w,
-                        {{ image_600x }} 600w,
-                        {{ image_800x }} 800w,
-                        {{ image_1200x }} 1200w,
-                        {{ image_2000x }} 2000w"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 800px"
-                >
-                {% else %}
                 <img id="{{ media.id }}"
                 class="lazyload lazyload--fade-in"
-                alt="{{ media.alt | default: product.title | escape }}"
+                alt="{{ media.alt | escape }}"
                 data-zoom-src="{{ image_5000x }}"
                 data-image-id="{{ product.media[forloop.index0].id }}"
                 data-index="{{ forloop.index0 }}"
@@ -146,7 +117,6 @@ enable_product_lightbox: <boolean>
                 width="{{ media.width }}"
                 srcset="data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='{{ media.width }}'%20height='{{ media.height }}'></svg>"
                 >
-                {% endif %}
               </div>
 
               <noscript>
@@ -206,11 +176,8 @@ enable_product_lightbox: <boolean>
           {% endif %}
 
           <div class="product-gallery__thumbnail one-fifth column is-relative"
-                data-title="{{ media.alt | escape }}"
-                data-media-id="{{ media.id }}"
-                data-index="{{ forloop.index0 }}"
-                tabindex="0">
-            <img src="{{ media | img_url: '300x' }}" alt="{{ media.alt | default: product.title | escape }}" loading="lazy" width="{{ media.width | at_most: 300 }}" height="{{ media.height | times: 300 | divided_by: media.width | floor }}">
+                data-title="{{ media.alt | escape }}" tabindex="0">
+            <img src="{{ media | img_url: '300x' }}" alt="">
             {% if thumbnail_badge != blank %}
               {% render 'icon',
                       name: thumbnail_badge,
@@ -223,194 +190,3 @@ enable_product_lightbox: <boolean>
     {% endif %}
   {% endif %}
 </div>
-
-{% comment %}
-  D18: prevent lazysizes loading gallery images for non-selected slides (fade carousel bug).
-  Also filters thumbnail strip to show only the current variant's images.
-{% endcomment %}
-<script>
-{%- assign lc_type_opt_pos = -1 -%}
-{%- assign lc_colour_opt_pos = -1 -%}
-{%- assign lc_iv = product.selected_or_first_available_variant -%}
-{%- assign lc_iv_type = '' -%}
-{%- assign lc_iv_colour = '' -%}
-{%- for opt in product.options -%}
-  {%- if opt == 'Type' -%}
-    {%- assign lc_type_opt_pos = forloop.index -%}
-    {%- assign lc_iv_type = lc_iv.options[forloop.index0] -%}
-  {%- endif -%}
-  {%- if opt == 'Colour' -%}
-    {%- assign lc_colour_opt_pos = forloop.index -%}
-    {%- assign lc_iv_colour = lc_iv.options[forloop.index0] | downcase -%}
-  {%- endif -%}
-{%- endfor -%}
-{%- assign lc_initial_thumb_alt = 'unframed' -%}
-{%- if lc_iv_type == 'Framed' and lc_iv_colour != 'n/a' and lc_iv_colour != '' -%}
-  {%- assign lc_initial_thumb_alt = lc_iv_colour | append: ' frame' -%}
-{%- elsif lc_iv_type == 'Glass' -%}
-  {%- assign lc_initial_thumb_alt = 'glass' -%}
-{%- endif -%}
-window.lcTypeOptionPosition   = {{ lc_type_opt_pos }};   // 1-based
-window.lcColourOptionPosition = {{ lc_colour_opt_pos }}; // 1-based
-window.lcInitialThumbAlt      = {{ lc_initial_thumb_alt | json }};
-</script>
-<script>
-// All deferred scripts (jQuery, Flickity, theme JS) are guaranteed loaded by DOMContentLoaded.
-document.addEventListener('DOMContentLoaded', function() {
-  var $ = window.jQuery;
-
-  // Cancel lazysizes loading for images not in the currently selected slide
-  document.addEventListener('lazybeforeunveil', function(e) {
-    var img = e.target;
-    if (!img.closest) return;
-    var slide = img.closest('.product-gallery__main .product-gallery__image');
-    if (slide && !slide.classList.contains('is-selected')) {
-      e.preventDefault();
-    }
-  });
-
-  function loadSlideImages(slide) {
-    if (!slide) return;
-    slide.querySelectorAll('.lazyload[data-srcset], .lazyload[data-src]').forEach(function(img) {
-      if (img.dataset.lcDone) return;
-      img.dataset.lcDone = '1';
-      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
-      if (img.dataset.src)    img.src    = img.dataset.src;
-      if (img.dataset.sizes && img.dataset.sizes !== 'auto') img.sizes = img.dataset.sizes;
-      img.classList.remove('lazyload');
-      img.classList.add('lazyloaded');
-      img.dispatchEvent(new CustomEvent('lazyloaded', { bubbles: true }));
-    });
-  }
-
-  function getTargetAlt(variant) {
-    var typePos   = window.lcTypeOptionPosition;
-    var colourPos = window.lcColourOptionPosition;
-    if (!variant || typePos < 1) return 'unframed';
-    var type = variant['option' + typePos];
-    if (type === 'Framed' && colourPos >= 1) {
-      var colour = variant['option' + colourPos];
-      if (colour && colour !== 'N/A') return colour.toLowerCase() + ' frame';
-    }
-    if (type === 'Glass') return 'glass';
-    return 'unframed';
-  }
-
-  var lcThumbsInitialized = false;
-  var lcPrevTargetAlt = null;
-
-  function navigateMainGallery(targetAlt) {
-    var gallery = document.querySelector('.product-gallery__main');
-    if (!gallery) return;
-    var flkty = window.Flickity && window.Flickity.data(gallery);
-    if (!flkty) return;
-    var slides = Array.from(gallery.querySelectorAll('.product-gallery__image'));
-    // For unframed, go to slide 0 (reference image). Otherwise find first matching alt.
-    var idx = 0;
-    if (targetAlt !== 'unframed') {
-      for (var i = 0; i < slides.length; i++) {
-        var img = slides[i].querySelector('img');
-        if (img && img.alt.toLowerCase() === targetAlt) { idx = i; break; }
-      }
-    }
-    flkty.select(idx);
-  }
-
-  function applyThumbnailVisibility(targetAlt) {
-    var thumbsEl = document.querySelector('.product-gallery__thumbnails');
-    if (!thumbsEl) return;
-    var allThumbs = Array.from(thumbsEl.querySelectorAll('.product-gallery__thumbnail'));
-
-    function swap() {
-      allThumbs.forEach(function(t) {
-        var matches = (t.dataset.title || '').toLowerCase() === targetAlt;
-        t.style.display = matches ? '' : 'none';
-      });
-      thumbsEl.classList.add('lc-thumbs-active');
-      var flkty = window.Flickity && window.Flickity.data(thumbsEl);
-      if (flkty) flkty.resize();
-    }
-
-    if (!lcThumbsInitialized) {
-      lcThumbsInitialized = true;
-      lcPrevTargetAlt = targetAlt;
-      thumbsEl.style.transition = '';
-      thumbsEl.style.opacity    = '';
-      thumbsEl.style.transform  = '';
-      swap();
-      return;
-    }
-
-    // Navigate main gallery whenever the type/colour changes
-    if (targetAlt !== lcPrevTargetAlt) navigateMainGallery(targetAlt);
-
-    // Thumbnails only animate when the set actually changes (not on size change)
-    if (targetAlt === lcPrevTargetAlt) return;
-    lcPrevTargetAlt = targetAlt;
-
-    var outgoing = allThumbs.filter(function(t) { return t.style.display !== 'none'; });
-    var incoming = allThumbs.filter(function(t) {
-      return (t.dataset.title || '').toLowerCase() === targetAlt;
-    });
-
-    // 1. Old cells: fade out + drift up together
-    outgoing.forEach(function(t) {
-      t.style.transition = 'opacity 0.36s ease, transform 0.36s ease';
-      t.style.opacity    = '0';
-      t.style.transform  = 'translateY(-10px)';
-    });
-
-    setTimeout(function() {
-      // 2. Swap which cells are visible
-      swap();
-
-      // 3. New cells start below, invisible — no transition yet
-      incoming.forEach(function(t) {
-        t.style.transition = 'none';
-        t.style.opacity    = '0';
-        t.style.transform  = 'translateY(12px)';
-      });
-
-      // 4. Staggered drift-up + fade-in for each new cell
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          incoming.forEach(function(t, i) {
-            setTimeout(function() {
-              t.style.transition = 'opacity 0.48s ease, transform 0.48s ease';
-              t.style.opacity    = '1';
-              t.style.transform  = 'translateY(0)';
-            }, i * 70);
-          });
-        });
-      });
-    }, 360);
-  }
-
-  // Apply initial state
-  applyThumbnailVisibility(window.lcInitialThumbAlt);
-
-  // Flickity lazy-load events (require jQuery + Flickity jQuery plugin)
-  if ($) {
-    var $gallery = $('.product-gallery__main').first();
-    if ($gallery.length) {
-      $gallery.on('change.flickity', function() {
-        loadSlideImages($gallery.find('.is-selected')[0]);
-      });
-      $gallery.on('settle.flickity', function() {
-        var $all = $gallery.find('.product-gallery__image');
-        var idx  = $all.index($gallery.find('.is-selected'));
-        loadSlideImages($all[(idx + 1) % $all.length]);
-      });
-    }
-  }
-
-  // Variant-change: show thumbnails when Type is not Unframed
-  var variantSelEl = document.querySelector('[data-variant-selection]');
-  if (variantSelEl) {
-    variantSelEl.addEventListener('variant-change', function(e) {
-      var variant = e.detail && e.detail.variant;
-      applyThumbnailVisibility(getTargetAlt(variant));
-    });
-  }
-});
-</script>

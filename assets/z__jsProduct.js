@@ -5161,6 +5161,7 @@ class SurfacePickUp {
           }
         });
       }).catch(e => {
+        console.log(e);
         items.forEach(item => {
           const distanceEl = item.querySelector('[data-distance]');
           const distanceUnitEl = item.querySelector('[data-distance-unit]');
@@ -6307,7 +6308,11 @@ class Product {
     const surfacePickUpEl = $section[0].querySelector('[data-surface-pick-up]');
     const complementaryProductsEl = $section[0].querySelector('[data-complementary-products]');
     const recipientFormEl = this._section.querySelector('[data-recipient-form]');
+    const collapsibleRowEl = this._section.querySelector('[data-collapsible-row]');
 
+    if (collapsibleRowEl) {
+      window.PXUTheme.collapsibleRowUtil.init();
+    }
     if (recipientFormEl) {
       this.recipientForm = new pxs_gift_card_recipient_form_dist_index_es(this._section);
     }
@@ -6404,18 +6409,18 @@ class Product {
       this.priceUIBadge = new PriceUIBadge(priceUIBadgeEl);
     }
 
-    const $productGallery = $section.find('.product-gallery__main');
+    this.$productGallery = $section.find('.product-gallery__main');
     const $stickyElement = $section.find('.sticky-product-scroll');
 
-    if ($productGallery) {
-      this.enableSlideshow($productGallery);
+    if (this.$productGallery) {
+      this.enableSlideshow(this.$productGallery);
 
       if (this._data.enable_zoom) {
         document.addEventListener('lazyloaded', this.enableZoom);
       }
 
       if (this._data.enable_product_lightbox) {
-        this.enableLightbox($productGallery);
+        this.enableLightbox(this.$productGallery);
       }
     }
 
@@ -6432,7 +6437,7 @@ class Product {
     }
 
     if ($stickyElement && window.isScreenSizeLarge() && this._data.template === 'image-scroll') {
-      this.enableStickyScroll($stickyElement, $productGallery);
+      this.enableStickyScroll($stickyElement, this.$productGallery);
     }
 
     if (window.location.search === '?contact_posted=true') {
@@ -6520,7 +6525,7 @@ class Product {
       $slider = $(selector);
     }
 
-    $slider.flickity('destroy');
+    this.$productGallery.flickity('destroy');
   }
 
   enableSlideshow(selector, settings) {
@@ -6533,7 +6538,7 @@ class Product {
 
     function autoplayVideo(videoID, $slide) {
       // Compare id to player object and only play that video
-      $.each(window.videoPlayers, (_, player) => {
+      $.each(videoPlayers, (_, player) => {
         if (player.id === videoID) {
           player.play();
 
@@ -6545,7 +6550,7 @@ class Product {
 
     function autoplayYoutubeVideo(iframeID, $slide) {
       // compare id to player object and only play that video
-      $.each(window.videoPlayers, (_, player) => {
+      $.each(videoPlayers, (_, player) => {
         if (player.playing) {
           player.pause();
         }
@@ -6672,7 +6677,7 @@ class Product {
       });
     });
 
-    $productGallery.flickity({
+    this.$productGallery.flickity({
       wrapAround: true,
       adaptiveHeight: true,
       dragThreshold: 10,
@@ -6702,31 +6707,31 @@ class Product {
 
               if (window.isScreenSizeLarge()) {
                 // On mouseenter event, unbind flickity
-                $(slide).on('mouseenter', () => $productGallery.flickity('unbindDrag'));
+                $(slide).on('mouseenter', () => this.$productGallery.flickity('unbindDrag'));
 
                 // On mouseleave event, bind flickity
-                $(slide).on('mouseleave', () => $productGallery.flickity('bindDrag'));
+                $(slide).on('mouseleave', () => this.$productGallery.flickity('bindDrag'));
               }
 
               // Listen for model pause/play events
-              $(slide).find('model-viewer').on('shopify_model_viewer_ui_toggle_play', () => $productGallery.flickity('unbindDrag'));
-              $(slide).find('model-viewer').on('shopify_model_viewer_ui_toggle_pause', () => $productGallery.flickity('bindDrag'));
+              $(slide).find('model-viewer').on('shopify_model_viewer_ui_toggle_play', () => this.$productGallery.flickity('unbindDrag'));
+              $(slide).find('model-viewer').on('shopify_model_viewer_ui_toggle_pause', () => this.$productGallery.flickity('bindDrag'));
 
               break;
             default:
-              $productGallery.flickity('bindDrag');
+              this.$productGallery.flickity('bindDrag');
           }
         } else {
           // When inactive slide
           switch (mediaType) {
             case 'external_video':
               // Youtube video pausing
-              $.each(window.videoPlayers, (_, player) => player.pause());
+              $.each(videoPlayers, (_, player) => player.pause());
 
               break;
             case 'video':
               // HTML5 video pausing
-              $.each(window.videoPlayers, (_, player) => player.pause());
+              $.each(videoPlayers, (_, player) => player.pause());
 
               break;
             case 'model':
@@ -6787,7 +6792,7 @@ class Product {
 
       $thumbnails.on('click', event => {
         const index = $(event.currentTarget).index();
-        $productGallery.flickity('select', index);
+        this.$productGallery.flickity('select', index);
 
         $productGallery.on('settle.flickity', () => {
           // Find out media type of featured media slide
@@ -6828,7 +6833,7 @@ class Product {
       $thumbnails.keypress(event => {
         const index = $(event.currentTarget).index();
         if (event.which === 13) {
-          $productGallery.flickity('select', index);
+          this.$productGallery.flickity('select', index);
 
           const $selectedSlide = $productGallery.find('.product-gallery__image.is-selected');
           const pId = ($productGallery).data('product-id');
@@ -6872,20 +6877,20 @@ class Product {
       $thumbnailProductGallery.find('.product-gallery__thumbnail').on('click', event => {
         const $currentTarget = $(event.currentTarget);
         const index = $currentTarget.index();
-        $productGallery.flickity('selectCell', index);
+        this.$productGallery.flickity('selectCell', index);
       });
     }
 
     // Resize flickity when the slider is settled
-    $productGallery.on('settle.flickity', () => $productGallery.flickity('resize'));
+    $productGallery.on('settle.flickity', () => this.$productGallery.flickity('resize'));
 
-    $(window).on('load', () => $productGallery.flickity('resize'));
+    $(window).on('load', () => this.$productGallery.flickity('resize'));
 
     let resizeTimer;
 
     $(window).on('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => $productGallery.flickity('resize'), 250);
+      resizeTimer = setTimeout(() => this.$productGallery.flickity('resize'), 250);
     });
 
     if (thumbnailsEnabled === true && thumbnailsSliderEnabled === true && $slides.length > 1) {
@@ -6905,13 +6910,13 @@ class Product {
           });
 
           $(window).on('resize', () => {
-            $productGallery.flickity('resize');
+            this.$productGallery.flickity('resize');
             const $productGalleryHeight = $productGallery.height();
             $thumbnailProductGallery.css('max-height', $productGalleryHeight);
           });
 
           $productGallery.on('change.flickity', () => {
-            $productGallery.flickity('resize');
+            this.$productGallery.flickity('resize');
             const $productGalleryHeight = $productGallery.height();
             $thumbnailProductGallery.css('max-height', $productGalleryHeight);
           });
@@ -6996,8 +7001,13 @@ class Product {
     this.disableSlideshow($section);
     $('[data-variant-selector]').off();
     document.removeEventListener('lazyloaded', this.enableZoom);
-  }
 
+    const collapsibleRowEl = this._section.querySelector('[data-collapsible-row]');
+    if (collapsibleRowEl) {
+      window.PXUTheme.collapsibleRowUtil.unload();
+    }
+  }
+  
   _switchVariant(product, variant, state) {
     window.selectCallback(
       this._section.querySelector(`.product-${product.id}`),
@@ -7111,7 +7121,7 @@ class Product {
       this.surfacePickUp.load(variant ? variant.id : null);
     }
 
-    if (this._section.classList.contains('product-template') && product.variants.length > 1) {
+    if (this._section.classList.contains('product-template') && product.variants.length > 1 && !window.Shopify.designMode) {
       this._updateHistory(variant);
     }
 
@@ -7133,11 +7143,17 @@ class Product {
 window.PXUTheme.jsProductClass = Product;
 window.PXUTheme.jsProduct = {
   init($section) {
-    return new Product($section);
+    this.product = new Product($section);
+    return this.product;
+  },
+  unload($section) {
+    if (this.product) {
+      this.product.unload($section);
+      this.product = null;
+    }
   },
   relatedProducts() {
     $('.js-related-products-slider .products-slider').each((_, slider) => {
-
       const $relatedSlider = $(slider);
 
       const slideData = {

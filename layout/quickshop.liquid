@@ -31,7 +31,7 @@
   <!-- Preloads -->
   <!-- Preload CSS -->
   <link rel="preload" href="{{ 'fancybox.css' | asset_url }}" as="style">
-  <link rel="preload" href="{{ 'styles.css' | asset_url }}" as="style">
+  <link rel="preload" href="{{ 'theme.css' | asset_url }}" as="style">
 
   <!-- Preload JS -->
   <link rel="preload" href="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" as="script">
@@ -63,12 +63,12 @@
 
   <!-- CSS for Flex -->
   <link rel="stylesheet" href="{{ 'fancybox.css' | asset_url }}">
-  <link rel="stylesheet" href="{{ 'styles.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
 
   {% comment %}Inject theme-object begin{% endcomment %}
   <script>
     window.PXUTheme = window.PXUTheme || {};
-    window.PXUTheme.version = '5.2.1';
+    window.PXUTheme.version = '5.5.1';
     window.PXUTheme.name = 'Flex';
   </script>
   {% comment %}Inject theme-object end{% endcomment %}

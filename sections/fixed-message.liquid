@@ -40,50 +40,6 @@
   %}
 {% endstyle %}
 
-{% comment %} Brand-consistent overrides — inline so they win over the settings-driven CSS above {% endcomment %}
-{% style %}
-  #shopify-section-{{ id }} .fixed-message__container {
-    background-color: rgba(26, 26, 26, 0.96) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    color: #ffffff !important;
-    border-top: 2px solid #ebac20 !important;
-    border-bottom: none !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5) !important;
-  }
-  #shopify-section-{{ id }} .fixed-message__text,
-  #shopify-section-{{ id }} .fixed-message__text p {
-    color: rgba(255, 255, 255, 0.88) !important;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  #shopify-section-{{ id }} .fixed-message__text a {
-    color: #ebac20 !important;
-    text-decoration: underline;
-  }
-  #shopify-section-{{ id }} .fixed-message__button .button,
-  #shopify-section-{{ id }} .fixed-message__button .age-gate__confirm_btn {
-    background-color: #ebac20 !important;
-    color: #1a1a1a !important;
-    border-color: #ebac20 !important;
-    border-radius: 35px !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
-    padding: 10px 28px !important;
-    min-height: unset !important;
-    height: auto !important;
-    transform: none !important;
-  }
-  #shopify-section-{{ id }} .fixed-message__button .button:hover,
-  #shopify-section-{{ id }} .fixed-message__button .age-gate__confirm_btn:hover {
-    background-color: #1a1a1a !important;
-    color: #ebac20 !important;
-    border-color: #1a1a1a !important;
-  }
-{% endstyle %}
-
 {% comment %} HTML markup {% endcomment %}
 <section class="fixed-message__container
                 {{ css_class }}">

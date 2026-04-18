@@ -33,20 +33,18 @@
 
   {% if settings.email_link != '' %}
     <li>
-  <a href="mailto:{{ settings.email_link }}" title="Email {{ shop.name }}" target="_blank" rel="noopener" class="icon-email">
-    {% render 'icon', name: 'email' %}
-    <span class="social-text">Email</span>
-  </a>
-</li>
+      <a href="mailto:{{ settings.email_link }}" title="Email {{ shop.name }}" target="_blank"  rel="noopener" class="icon-email">
+        {% render 'icon', name: 'email' %}
+      </a>
+    </li>
   {% endif %}
 
   {% if settings.facebook_link != '' %}
     <li>
-  <a href="{{ settings.facebook_link }}" title="{{ shop.name }} on Facebook" rel="me" target="_blank" rel="noopener" class="icon-facebook">
-    {% render 'icon', name: 'facebook' %}
-    <span class="social-text">Facebook</span>
-  </a>
-</li>
+      <a href="{{ settings.facebook_link }}" title="{{ shop.name }} on Facebook" rel="me" target="_blank"  rel="noopener" class="icon-facebook">
+        {% render 'icon', name: 'facebook' %}
+      </a>
+    </li>
   {% endif %}
 
   {% if settings.flickr_link != '' %}
@@ -67,11 +65,10 @@
 
   {% if settings.instagram_link != '' %}
     <li>
-  <a href="{{ settings.instagram_link }}" title="{{ shop.name }} on Instagram" rel="me" target="_blank" rel="noopener" class="icon-instagram">
-    {% render 'icon', name: 'instagram' %}
-    <span class="social-text">Instagram</span>
-  </a>
-</li>
+      <a href="{{ settings.instagram_link }}" title="{{ shop.name }} on Instagram" rel="me" target="_blank"  rel="noopener" class="icon-instagram">
+        {% render 'icon', name: 'instagram' %}
+      </a>
+    </li>
   {% endif %}
 
   {% if settings.kickstarter_link != '' %}
@@ -180,11 +177,10 @@
 
   {% if settings.x_link != '' %}
     <li>
-  <a href="{{ settings.x_link }}" title="{{ shop.name }} on X" rel="me" target="_blank" rel="noopener" class="icon-x">
-    {% render 'icon', name: 'x-social' %}
-    <span class="social-text">X</span>
-  </a>
-</li>
+      <a href="{{ settings.x_link }}" title="{{ shop.name }} on X" rel="me" target="_blank"  rel="noopener" class="icon-x">
+        {% render 'icon', name: 'x-social' %}
+      </a>
+    </li>
   {% endif %}
 
   {% if settings.vimeo_link != '' %}
@@ -205,10 +201,9 @@
 
   {% if settings.youtube_link != '' %}
     <li>
-  <a href="{{ settings.youtube_link }}" title="{{ shop.name }} on YouTube" rel="me" target="_blank" rel="noopener" class="icon-youtube">
-    {% render 'icon', name: 'youtube' %}
-    <span class="social-text">YouTube</span>
-  </a>
-</li>
+      <a href="{{ settings.youtube_link }}" title="{{ shop.name }} on YouTube" rel="me" target="_blank"  rel="noopener" class="icon-youtube">
+        {% render 'icon', name: 'youtube' %}
+      </a>
+    </li>
   {% endif %}
 </ul>

@@ -46,14 +46,6 @@
 {% liquid
   assign inline_style = inline_style | default: blank
   assign focal_point = focal_point | default: blank
-  assign fetchpriority_attr = fetchpriority | default: blank
-  if fetchpriority_attr == 'high'
-    assign loading_attr = 'eager'
-    assign use_lazyload = false
-  else
-    assign loading_attr = loading | default: 'lazy'
-    assign use_lazyload = true
-  endif
 %}
 
 {% if focal_point != blank %}
@@ -149,8 +141,6 @@
     <img
       alt="{{ alt | escape }}"
       src="{{ image | img_url: '2000x' }}"
-      loading="{{ loading_attr }}"
-      {% if fetchpriority_attr != blank %}fetchpriority="{{ fetchpriority_attr }}"{% endif %}
       style="{{ inline_style }}"
       {% if additional_classes %}
         class="{{ additional_classes }}"
@@ -168,44 +158,25 @@
     "
     style="{{ image_background_color }}{{ height_style }} {% unless stretch_width == true or object_fit %}max-width: {{ image.width }}px;{% endunless %}"
   >
-    {% if use_lazyload %}
-      <img
-        alt="{{ alt | escape }}"
-        class="
-          lazyload
-          transition--{{ settings.image_loading_style }}
-          {{ additional_classes }}
-        "
-        loading="{{ loading_attr }}"
-        {% if low_quality_image %}
-          src="{{ low_quality_image }}"
-        {% endif %}
-        data-src="{{ image | img_url: '1600x' }}"
-        data-sizes="auto"
-        data-srcset="{{ srcset }}"
-        data-aspectratio="{{ image.width }}/{{ image.height }}"
-        height="{{ image.height }}"
-        width="{{ image.width }}"
-        srcset="data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='{{ image.width }}'%20height='{{ image.height }}'></svg>"
-        style="{{ inline_style }}{{ height_style }};"
-      />
-    {% else %}
-      <img
-        alt="{{ alt | escape }}"
-        class="
-          transition--{{ settings.image_loading_style }}
-          {{ additional_classes }}
-        "
-        loading="{{ loading_attr }}"
-        fetchpriority="{{ fetchpriority_attr }}"
-        src="{{ image | img_url: '1600x' }}"
-        srcset="{{ srcset }}"
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1600px"
-        height="{{ image.height }}"
-        width="{{ image.width }}"
-        style="{{ inline_style }}{{ height_style }};"
-      />
-    {% endif %}
+    <img
+      alt="{{ alt | escape }}"
+      class="
+        lazyload
+        transition--{{ settings.image_loading_style }}
+        {{ additional_classes }}
+      "
+      {% if low_quality_image %}
+        src="{{ low_quality_image }}"
+      {% endif %}
+      data-src="{{ image | img_url: '1600x' }}"
+      data-sizes="auto"
+      data-srcset="{{ srcset }}"
+      data-aspectratio="{{ image.width }}/{{ image.height }}"
+      height="{{ image.height }}"
+      width="{{ image.width }}"
+      srcset="data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='{{ image.width }}'%20height='{{ image.height }}'></svg>"
+      style="{{ inline_style }}{{ height_style }};"
+    />
   </div>
 {% endif %}
 

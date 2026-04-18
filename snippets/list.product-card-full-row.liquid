@@ -1,0 +1,26 @@
+{% doc %}
+  Renders a stack of full-row product cards.
+  @param {object} context - The collection or search object
+  @param {number} [items_per_page] - The number of items to show per page, default: 21
+  @example
+  {% render 'list.product-card-full-row', context: collection %}
+{% enddoc %}
+
+{% liquid
+  assign context = context | default: collection
+  assign items_per_page = items_per_page | default: 21
+%}
+
+{% paginate context.products by items_per_page %}
+  {% capture product_cards %}
+    {% for product in context.products %}
+      <div style="width: 100%; border: 1px solid #ccc; padding: 10px; height: 200px;">
+        <h2>{{ product.title }}</h2>
+        <p>Price: {{ product.price | money }}</p>
+        <a href="{{ product.url }}">View Product</a>
+      </div>
+    {% endfor %}
+  {% endcapture %}
+
+  {% render 'layout.stack', slot: product_cards, gap: 'lg' %}
+{% endpaginate %}

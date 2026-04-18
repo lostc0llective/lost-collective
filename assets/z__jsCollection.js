@@ -150,6 +150,9 @@ window.PXUTheme.jsCollection = {
       success: function(data) {
       },
       error: function(x, t, m) {
+        console.log(x);
+        console.log(t);
+        console.log(m);
         location.replace(location.protocol + '//' + location.host + filterURL);
 
       },

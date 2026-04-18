@@ -1,56 +1,39 @@
+{% capture content %}
 <!doctype html>
-<html lang="{{ shop.locale }}">
+<html class="no-js no-touch" lang="{{ shop.locale }}">
 <head>
   <meta charset="utf-8">
-
+  <meta http-equiv="cleartype" content="on">
+  <meta name="robots" content="index,follow">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="{{ settings.shop_bg_color }}">
-  {%- if settings.favicon != nil -%}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | img_url: '180x180' }}">
-    <link rel="apple-touch-icon" href="{{ settings.favicon | img_url: '180x180' }}"/>
-    <link rel="apple-touch-icon" sizes="57x57" href="{{ settings.favicon | img_url: '57x57' }}"/>
-    <link rel="apple-touch-icon" sizes="60x60" href="{{ settings.favicon | img_url: '60x60' }}"/>
-    <link rel="apple-touch-icon" sizes="72x72" href="{{ settings.favicon | img_url: '72x72' }}"/>
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ settings.favicon | img_url: '76x76' }}"/>
-    <link rel="apple-touch-icon" sizes="114x114" href="{{ settings.favicon | img_url: '114x114' }}"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | img_url: '180x180' }}"/>
-    <link rel="apple-touch-icon" sizes="228x228" href="{{ settings.favicon | img_url: '228x228' }}"/>
-  {%- else -%}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.png' | asset_url }}">
-  {%- endif -%}
-
-{%- if current_page == 1 and (template.name == 'collection' or template.name == 'blog') -%}
-  <link rel="canonical" href="{{ canonical_url | split: '?' | first }}">
-{%- else -%}
   <link rel="canonical" href="{{ canonical_url }}">
-{%- endif -%}
-{%- if template.name == 'collection' and current_tags -%}
-  <meta name="robots" content="noindex, follow">
-{%- elsif template.name == 'page' and page.handle == 'shipping-blurb-for-product-page' -%}
-  <meta name="robots" content="noindex, nofollow">
-{%- else -%}
-  <meta name="robots" content="index, follow">
-{%- endif -%}
-  
+
   {%- if current_tags -%}{%- assign meta_tags = current_tags | join: ', ' -%}{%- endif -%}
   <title>{%- if template.name == "index" -%}{{ page_title }}{%- else -%}{{ page_title }}{% if current_tags %} {{ 'general.meta.tagged_html' | t: tags: meta_tags }}{%- endif -%}{% if current_page != 1 %} {{ 'general.meta.page' | t: page_number: current_page }}{% endif %}{% unless page_title contains shop.name %} - {{ shop.name }}{% endunless %}{% endif %}</title>
 
-  {%- if page_description -%}
-    <meta name="description" content="{{ page_description | escape }}{% if current_tags %} {{ 'general.meta.tagged_html' | t: tags: meta_tags | escape }}.{% endif %}{% if current_page != 1 %} {{ 'general.meta.page' | t: page_number: current_page }}.{% endif %}" />
-  {%- elsif template.name == 'product' and product.description != blank -%}
-    {%- capture auto_description -%}{{ product.description | strip_html | truncatewords: 25 }}{%- endcapture -%}
-    <meta name="description" content="{{ auto_description | strip | truncate: 155 | escape }}" />
-  {%- elsif template.name == 'collection' and collection.description != blank -%}
-    {%- capture auto_description -%}{{ collection.description | strip_html | truncatewords: 25 }}{%- endcapture -%}
-    <meta name="description" content="{{ auto_description | strip | truncate: 155 | escape }}" />
-  {%- elsif template.name == 'article' -%}
-    {%- if article.excerpt != blank -%}
-      <meta name="description" content="{{ article.excerpt | strip_html | truncate: 155 | escape }}" />
-    {%- elsif article.content != blank -%}
-      {%- capture auto_description -%}{{ article.content | strip_html | truncatewords: 25 }}{%- endcapture -%}
-      <meta name="description" content="{{ auto_description | strip | truncate: 155 | escape }}" />
-    {%- endif -%}
-  {%- endif -%}
+  <!-- DNS prefetches -->
+  <link rel="dns-prefetch" href="https://cdn.shopify.com">
+  <link rel="dns-prefetch" href="https://fonts.shopify.com">
+  <link rel="dns-prefetch" href="https://monorail-edge.shopifysvc.com">
+  <link rel="dns-prefetch" href="https://ajax.googleapis.com">
+
+  <!-- Preconnects -->
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+
+  <!-- Preloads -->
+  <!-- Preload CSS -->
+  <link rel="preload" href="{{ 'fancybox.css' | asset_url }}" as="style">
+  <link rel="preload" href="{{ 'theme.css' | asset_url }}" as="style">
+
+  <!-- Preload JS -->
+  <link rel="preload" href="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" as="script">
+  <link rel="preload" href="{{ 'vendors.js' | asset_url }}" as="script">
+  <link rel="preload" href="{{ 'utilities.js' | asset_url }}" as="script">
+  <link rel="preload" href="{{ 'app.js' | asset_url }}" as="script">
 
   {% if settings.show_multiple_currencies or shop.enabled_currencies.size > 1 or localization.available_countries.size > 1 %}
     <link rel="preload" href="/services/javascripts/currencies.js" as="script">
@@ -69,82 +52,44 @@
 
   {% if settings.disqus_enabled %}
     {% if template.name == "blog" or template.name == "article" or template.name == "index" %}
-      <link rel="preload" href="https://{{ settings.disqus_shortname }}.disqus.com/count.js" as="script">
+      <link rel="preload" href="//{{ settings.disqus_shortname }}.disqus.com/count.js" as="script">
     {% endif %}
   {% endif %}
- 
-
-  {% render 'social-meta-info' %}
-
-  <!-- Font preloads — body and heading fonts only; skipped for system fonts -->
-  {%- unless settings.regular__font.system? -%}
-    <link rel="preload" href="{{ settings.regular__font | font_url: 'woff2' }}" as="font" type="font/woff2" crossorigin>
-  {%- endunless -%}
-  {%- unless settings.heading__font.system? -%}
-    {%- if settings.heading__font.family != settings.regular__font.family -%}
-      <link rel="preload" href="{{ settings.heading__font | font_url: 'woff2' }}" as="font" type="font/woff2" crossorigin>
-    {%- endif -%}
-  {%- endunless -%}
-
-  <!-- DNS prefetches -->
-  <link rel="dns-prefetch" href="https://cdn.shopify.com">
-  <link rel="dns-prefetch" href="https://fonts.shopify.com">
-  <link rel="dns-prefetch" href="https://ajax.googleapis.com">
-
-  <!-- Preconnects — limited to 4 most critical origins (monorail removed: flagged unused by PSI) -->
-  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
-  <link rel="preconnect" href="https://ajax.googleapis.com">
-
-  <!-- Preloads -->
-  <!-- Preload CSS -->
-  {%- if template.name == 'product' or template.name == 'collection' or template.directory == 'page' -%}
-    <link rel="preload" href="{{ 'fancybox.css' | asset_url }}" as="style">
-  {%- endif -%}
-  <link rel="preload" href="{{ 'styles.css' | asset_url }}" as="style">
-
-  <!-- Preload JS -->
-  <link rel="preload" href="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" as="script">
-  <link rel="preload" href="{{ 'vendors.js' | asset_url }}" as="script">
-  <link rel="preload" href="{{ 'utilities.js' | asset_url }}" as="script">
-  <link rel="preload" href="{{ 'app.js' | asset_url }}" as="script">
-  <link rel="preload" href="{{ 'swatch-layout.js' | asset_url }}" as="script">
 
   <!-- CSS for Flex -->
-  {%- if template.name == 'product' or template.name == 'collection' or template.directory == 'page' -%}
-    <link rel="stylesheet" href="{{ 'fancybox.css' | asset_url }}">
-  {%- endif -%}
-  <link rel="stylesheet" href="{{ 'styles.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'fancybox.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
   <link rel="stylesheet" href="{{ 'custom.css' | asset_url }}">
 
   {% comment %}Inject theme-object begin{% endcomment %}
   <script>
     window.PXUTheme = window.PXUTheme || {};
-    window.PXUTheme.version = '5.2.1';
+    window.PXUTheme.version = '5.5.1';
     window.PXUTheme.name = 'Flex';
   </script>
   {% comment %}Inject theme-object end{% endcomment %}
+
 
   <script>
     {% render 'js-variables' %}
   </script>
 
-  {%- comment -%} Dependency: jQuery 3.6.0 | Purpose: Required by theme JS modules (vendors.js, app.js) | Removable: No — theme-native dependency {%- endcomment -%}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" defer></script>
   <script src="{{ 'vendors.js' | asset_url }}" defer></script>
   <script src="{{ 'utilities.js' | asset_url }}" defer></script>
   <script src="{{ 'app.js' | asset_url }}" defer></script>
-  <script src="{{ 'swatch-layout.js' | asset_url }}" defer></script>
 
   {%- if settings.show_multiple_currencies or shop.enabled_currencies.size > 1 or localization.available_countries.size > 1 -%}
-    <script src="/services/javascripts/currencies.js" defer></script>
+    <script type="text/javascript" src="/services/javascripts/currencies.js"></script>
     <script src="{{ 'currencyConversion.js' | asset_url }}" defer></script>
   {%- endif -%}
+
+
 
   {%- if settings.enable_shipping_calculator and template.name == "cart" -%}
     <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer></script>
     <script src="{{ 'api.jquery.js' | shopify_asset_url }}" defer></script>
-    <script src="/services/javascripts/countries.js" defer></script>
+    <script src="{{ '/services/javascripts/countries.js' }}"></script>
   {%- endif -%}
 
   {%- if template.directory == 'customers' -%}
@@ -152,10 +97,9 @@
     <script src="{{ 'customer_area.js' | shopify_asset_url }}" defer></script>
   {%- endif -%}
 
-  {%- comment -%} App: Disqus | Purpose: Comment counts on blog/article/homepage — conditional on settings.disqus_enabled | Removable: Yes — disable Disqus in Theme Settings > Blog to remove {%- endcomment -%}
   {% if settings.disqus_enabled %}
     {% if template.name == "blog" or template.name == "article" or template.name == "index" %}
-      <script id="dsq-count-scr" src="https://{{ settings.disqus_shortname }}.disqus.com/count.js" async></script>
+      <script id="dsq-count-scr" src="//{{ settings.disqus_shortname }}.disqus.com/count.js" async></script>
     {% endif %}
   {% endif %}
 
@@ -175,76 +119,252 @@
     if(('ontouchstart' in window)||window.DocumentTouch&&document instanceof DocumentTouch)document.documentElement.className=document.documentElement.className.replace(/\bno-touch\b/,'has-touch');
   </script>
 
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}{% if current_tags %} {{ 'general.meta.tagged_html' | t: tags: meta_tags | escape }}.{% endif %}{% if current_page != 1 %} {{ 'general.meta.page' | t: page_number: current_page }}.{% endif %}" />
+  {%- endif -%}
+
+  {%- if settings.favicon != nil -%}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ settings.favicon | img_url: '180x180' }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon | img_url: '180x180' }}"/>
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ settings.favicon | img_url: '57x57' }}"/>
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ settings.favicon | img_url: '60x60' }}"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ settings.favicon | img_url: '72x72' }}"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ settings.favicon | img_url: '76x76' }}"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ settings.favicon | img_url: '114x114' }}"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | img_url: '180x180' }}"/>
+    <link rel="apple-touch-icon" sizes="228x228" href="{{ settings.favicon | img_url: '228x228' }}"/>
+  {%- else -%}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.png' | asset_url }}">
+  {%- endif -%}
+
+  {%- render 'head.import-map' -%}
+  {%- render 'head.es-module-shims' -%}
+  {%- render 'head.is-land' -%}
+  {%- render 'head.styles' -%}
+
+  {{ content_for_header }}
 
 
-{%- comment -%}
-  Consent Mode v2 — must run BEFORE content_for_header so GTM honours the default state.
-  Default: all storage denied. Updated to 'granted' when user clicks "I agree" in the cookie banner
-  (z__jsFixedMessage.js). Stape GTM reads this signal and fires GA4/Meta in cookieless mode until
-  consent is updated.
-{%- endcomment -%}
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('consent', 'default', {
-    'analytics_storage': 'denied',
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied',
-    'wait_for_update': 500
-  });
-  if (document.cookie.indexOf('fixed-message=dismiss') !== -1) {
-    gtag('consent', 'update', {
-      'analytics_storage': 'granted',
-      'ad_storage': 'granted',
-      'ad_user_data': 'granted',
-      'ad_personalization': 'granted'
-    });
-  }
-</script>
+  {% assign button_primary_bg_color_transparency = settings.button_primary_bg_color_transparency | divided_by: 100.0 %}
+  {% assign button_primary_bg_color_transparency_highlight = settings['button_primary_bg_color_transparency--highlight'] | divided_by: 100.0 %}
+  {% assign button_secondary_bg_color_transparency = settings.button_secondary_bg_color_transparency | divided_by: 100.0 %}
+  {% assign button_secondary_bg_color_transparency_highlight = settings['button_secondary_bg_color_transparency--highlight'] | divided_by: 100.0 %}
 
-{%- comment -%}
-  content_for_header — Shopify injects the following here automatically:
-    - Shopify Analytics (native, always present)
-    - Web Pixels / Customer Events (configured in Shopify Admin > Settings > Customer events)
-    - App ScriptTag injections from installed apps:
-        - Stape Server GTM (app block: stape-server-gtm) — GTM container + dataLayer
-        - Yotpo Product Reviews (app block: yotpo-product-reviews) — review widgets
-        - Instafeed (app block: instafeed) — Instagram feed head block
-    - The .atom feed autodiscovery link (filtered out below — intentional, avoids duplicate feeds)
-  Do not wrap content_for_header in conditionals — this will break app injection.
-{%- endcomment -%}
-{{ content_for_header }}
+  <style>
+    :root {
+      /* Absolute values for style.primitive-tokens, based on 16px root */
+      /* needed because root font size can be changed by the merchant */
+      --size-0-25: 1px;
+      --size-0-5: 2px;
+      --size-1: 4px;
+      --size-1-5: 6px;
+      --size-2: 8px;
+      --size-2-5: 10px;
+      --size-3: 12px;
+      --size-3-5: 14px;
+      --size-4: 16px;
+      --size-4-5: 18px;
+      --size-5: 20px;
+      --size-5-5: 22px;
+      --size-6: 24px;
+      --size-6-5: 26px;
+      --size-7: 28px;
+      --size-7-5: 30px;
+      --size-8: 32px;
+      --size-8-5: 34px;
+      --size-9: 36px;
+      --size-9-5: 38px;
+      --size-10: 40px;
+      --size-11: 44px;
+      --size-12: 48px;
+      --size-14: 56px;
+      --size-16: 64px;
+      --size-18: 72px;
+      --size-20: 80px;
+      --size-24: 96px;
+      --size-28: 112px;
+      --size-32: 128px;
+
+      /* ------------------------------------------------------------
+        Typography
+      ------------------------------------------------------------ */
+
+      /* Body */
+      --element-text-font-family--body: {{ settings.regular__font.family }}, {{ settings.regular__font.fallback_families }};
+      --element-text-font-weight--body: {{ settings.regular__font.weight }};
+      --element-text-font-size--body-md: {{ settings.regular_font_size }}px;
+      --element-text-font-size--body-sm: max(14px, {{ settings.regular_font_size | times: 0.8333 }}px);
+      --element-text-line-height--body: 1.5;
 
 
+      /* Headings */
+      --element-text-font-family--heading: {{ settings.heading__font.family }}, {{ settings.heading__font.fallback_families }};
+      --element-text-font-weight--heading: {{ settings.heading__font.weight }};
+      --element-text-letter-spacing--heading: {{ settings.heading_letter_spacing }}px;
+      --element-text-text-transform--heading: {{ settings.heading_font_style }};
 
+      --element-text-font-size--heading-lg: {{ settings.heading_size }}px;
+      --element-text-font-size--heading-md: {{ settings.heading_size | times: 0.9 }}px;
+      --element-text-font-size--heading-sm: {{ settings.heading_size | times: 0.8 }}px;
+      --element-text-font-size--heading-xs: {{ settings.heading_size | times: 0.7 }}px;
 
+      /* Buttons */
+      --element-button-font-family: {{ settings.button__font.family }}, {{ settings.button__font.fallback_families }};
+      --element-button-font-weight: {{ settings.button__font.weight }};
+      --element-button-letter-spacing: {{ settings.button_letter_spacing }}px;
+      --element-button-text-transform: {{ settings.button_font_style }};
 
+      /* ------------------------------------------------------------
+        Colors
+      ------------------------------------------------------------ */
+
+      --color-primary: {{ settings.button_primary_bg_color }};
+      
+      --element-button-shade-border: 100%;
+
+      --element-text-color--body: {{ settings.regular_color }};
+      --element-text-color--heading: {{ settings.heading_color }};
+
+      --section-collection-feed-control-bar-background: {{ settings.shop_bg_color }};
+      --overlay-drawer-background: {{ settings.shop_bg_color }};
+
+      --price-range-slider-target-color: color-mix(in srgb, {{ settings.regular_color }} 12%, transparent);
+      --price-range-slider-handle-color: {{ settings.regular_color }};
+      --price-range-slider-handle-box-shadow-color: {{ settings.shop_bg_color }};
+      --price-range-slider-connect-color: {{ settings.regular_color }};
+
+      --element-radio-color-primary: {{ settings.link_color }};
+      --element-radio-color-secondary: #fff;
+
+      --element-chip-color-primary: {{ settings.regular_color }};
+      --element-chip-color-secondary: {{ settings.shop_bg_color }};
+      --element-chip-shade-inset-box-shadow: 12%;
+
+      --element-input-text-shade: 60%;
+      --element-input-color-primary: {{ settings.regular_color }};
+
+      --element-checkbox-color-primary: {{ settings.link_color }};
+      --element-checkbox-color-secondary: #fff;
+      --element-checkbox-color-text: {{ settings.regular_color }};
+
+      --element-accordion-color-primary: {{ settings.border_color }};
+      --element-accordion-shade-border: 100%;
+
+      /* ------------------------------------------------------------
+        Other
+      ------------------------------------------------------------ */
+
+      --element-button-radius: {{ settings.button_primary_border_radius }}px;
+
+      --element-input-radius: 0;
+
+      --element-radio-size: var(--size-3-5);
+      --element-radio-dot-size: calc(var(--size-3-5) * 0.5);
+
+      --element-checkbox-size: var(--size-3-5);
+      --element-checkbox-icon-size: var(--size-3);
+
+      --element-swatch-radius: 0;
+
+      --element-chip-radius: 0px;
+
+      --element-icon-stroke-width: initial;
+      --element-icon-stroke-linejoin: initial;
+
+      --element-accordion-border-style: solid;
+      --element-accordion-border-width: var(--size-0-25);
+    }
+
+    /*------------------
+      Overrides
+    ------------------ */
+
+    .collection-feed {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Subheading for filter sort form */
+    .collection-feed__filter-sort-form .element-accordion__toggle {
+      --element-text-font-family--heading: {{ settings.subheading_font.family }}, {{ settings.subheading_font.fallback_families }};
+      --element-text-font-size--heading: {{ settings.subheading_size }}px;
+      --element-text-font-weight--heading: {{ settings.subheading_font.weight }};
+      --element-text-text-transform--heading: {{ settings.subheading_style }};
+    }
+
+    /* Prevent a:hover from theme on buttons */
+    a.element-button:hover {
+      color: color-mix(in srgb, var(--_color-background) var(--_shade-text), var(--_color-text));
+    }
+    
+    /* Prevent a:hover from theme on chips */
+    a.element-chip:hover {
+      color: var(--_color-text);
+    }
+
+    /* Button mappings for primary button */
+    :is(.element-button:not(.element-button--transparent, .element-button--plain, .element-button--inverted)) {
+      --_color-primary: {{ settings.button_primary_bg_color | color_modify: 'alpha', button_primary_bg_color_transparency }};
+      --_color-text: {{ settings.button_primary_text_color }};
+      --_color-box-shadow: {{ settings.button_primary_border_color }};
+
+      --element-button-box-shadow: inset 0 0 0 var(--_border-width) color-mix(in srgb, var(--_color-box-shadow) var(--_shade-border), transparent);
+
+      &:hover {
+        --_color-primary: {{ settings['button_primary_bg_color--highlight'] | color_modify: 'alpha', button_primary_bg_color_transparency_highlight }};
+        --_color-text: {{ settings.button_primary_text_color--highlight }};
+        --_color-box-shadow: {{ settings.button_primary_border_color--highlight }};
+      }
+    }
+
+    /* Button mappings for secondary button */
+    :is(.element-button,.element-button--shopify-payment-wrapper .shopify-payment-button .shopify-payment-button__button--unbranded).element-button--inverted.element-button--transparent {
+      --_color-primary: {{ settings.button_secondary_bg_color | color_modify: 'alpha', button_secondary_bg_color_transparency }};
+      --_color-text: {{ settings.button_secondary_text_color }};
+      --_color-box-shadow: {{ settings.button_secondary_border_color }};
+      --_color-background: var(--_color-primary);
+      --_radius: {{ settings.button_secondary_border_radius }}px;
+
+      --element-button-box-shadow: inset 0 0 0 var(--_border-width) color-mix(in srgb, var(--_color-box-shadow) var(--_shade-border), transparent);
+
+      &:hover {
+        --_color-primary: {{ settings['button_secondary_bg_color--highlight'] | color_modify: 'alpha', button_secondary_bg_color_transparency_highlight }};
+        --_color-text: {{ settings.button_secondary_text_color--highlight }};
+        --_color-box-shadow: {{ settings.button_secondary_border_color--highlight }};
+      }
+    }
+
+    /* Select button mapping for background color */
+    .element-select {
+      --element-button-color-secondary: {{ settings.background_color }};
+    }
+
+    /* Override column width but keep column classes for sticker styling */
+    .collection-feed .product__thumbnail {
+      width: 100% !important;
+
+      &.has-padding-bottom {
+        padding-bottom: 0 !important;
+      }
+    }
+  </style>
+
+  {% render 'social-meta-info' %}
   {% if collection.previous_product %}<link rel="prev" href="{{ collection.previous_product }}">{% endif %}
   {% if collection.next_product %}<link rel="next" href="{{ collection.next_product }}">{% endif %}
 
-  
-  {% render 'structured-data' %}
-  {%- capture money_format_output -%}
+  {% if template.name == 'customers' %}
+    {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+    {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+  {% endif %}
+</head>
+
+{%- capture money_format_output -%}
   {%- if settings.currency_format == 'money_with_currency_format' -%}
     {{- shop.money_with_currency_format | strip_html -}}
   {%- else -%}
     {{- shop.money_format | strip_html -}}
   {%- endif -%}
 {%- endcapture -%}
-  
-  {% if settings.enable_quickshop %}
-    {% render 'quick-shop' %}
-  {% endif %}
-
-  {%- if settings.klaviyo_public_key != blank -%}
-    {%- comment -%} Klaviyo onsite JS — loads the subscribe API and powers Klaviyo-hosted popup forms {%- endcomment -%}
-    <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id={{ settings.klaviyo_public_key }}"></script>
-  {%- endif -%}
-
-</head>
-
-
 <body
   class="
     {%- if template.name == '404' -%}
@@ -260,8 +380,8 @@
   data-shop-url="{{ shop.url }}"
   data-current-lang="{{ request.locale.iso_code }}"
   data-site-header-layout="{{ settings.header_layout }}"
+  data-enable-mobile-mega-menu="{{ settings.enable_mega_menu_mobile | json }}"
 >
-  <a href="#MainContent" class="skip-to-content-link">Skip to content</a>
   <div
     class="
       site-overlay
@@ -351,13 +471,11 @@
     <div class="is-beside-vertical-header" data-is-beside-vertical-header>
   {% endif %}
 
-  <main id="MainContent" tabindex="-1">
-    <div id="template-{{ template | replace: '.', '-' | handle }}" data-check-for-order="true">
-      <div class="dynamic-sections">
-        {{ content_for_layout }}
-      </div>
+  <div id="template-{{ template | replace: '.', '-' | handle }}" data-check-for-order="true">
+    <div class="dynamic-sections">
+      {{ content_for_layout }}
     </div>
-  </main>
+  </div>
 
   {% case settings.footer_layout %}
     {% when 'centered' %}
@@ -376,6 +494,9 @@
     {% section 'fixed-message' %}
   {% endif %}
 
+  {% if settings.enable_quickshop %}
+    {% render 'quick-shop' %}
+  {% endif %}
 
   {% if settings.search_display_style == 'popup' %}
     {% render 'search-popup' %}
@@ -387,12 +508,13 @@
 
   {% render 'mobile-search' %}
 
-
-  {%- comment -%} App: Out of the Sandbox | Purpose: Theme vendor telemetry — fires once per design-mode session via sendBeacon, never in storefront | Removable: Yes — fires only in Shopify admin theme editor, no customer data sent {%- endcomment -%}
-  <script>(function(n, v) {/* eslint-disable-next-line max-len */if (window.Shopify && window.Shopify.theme && navigator && navigator.sendBeacon && window.Shopify.designMode) {if (sessionStorage.getItem('oots_beacon')) return;navigator.sendBeacon('https://app.outofthesandbox.com/beacon', new URLSearchParams({shop_domain: window.Shopify.shop.toLowerCase(),shop_id: window.BOOMR.shopId,shop_email: '{{ shop.email }}',theme_name: n.toLowerCase(),theme_version: v.toLowerCase(),theme_store_id: window.Shopify.theme.theme_store_id,theme_id: window.Shopify.theme.id,theme_role: window.Shopify.theme.role,}));sessionStorage.setItem('oots_beacon', '');}}('Flex','5.2.1'))</script>
-  {%- render 'klaviyo-popup' -%}
-
-  {%- comment -%} App: instant.page | Purpose: Prefetches pages on hover/touchstart to reduce perceived navigation latency | Removable: Yes — pure performance optimization, no analytics or tracking {%- endcomment -%}
-  <script src="https://instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z"></script>
+  {% render 'structured-data' %}
+  <script>(function(n, v) {/* eslint-disable-next-line max-len */if (window.Shopify && window.Shopify.theme && navigator && navigator.sendBeacon && window.Shopify.designMode) {if (sessionStorage.getItem('oots_beacon')) return;navigator.sendBeacon('https://app.outofthesandbox.com/beacon', new URLSearchParams({shop_domain: window.Shopify.shop.toLowerCase(),shop_id: '{{ shop.id }}',shop_email: '{{ shop.email }}',theme_name: n.toLowerCase(),theme_version: v.toLowerCase(),theme_store_id: window.Shopify.theme.theme_store_id,theme_id: window.Shopify.theme.id,theme_role: window.Shopify.theme.role,}));sessionStorage.setItem('oots_beacon', '');}}('Flex','5.5.1'))</script>
 </body>
 </html>
+{% endcapture %}
+{% assign content = content | replace_first: '<!doctype', '!doctype' | split: ' <' %}
+{%- for html in content -%}
+  {%- assign htmlblock = html | strip | prepend: ' <' -%}
+  {{ htmlblock | replace: ' </', '</' }}
+{%- endfor -%}

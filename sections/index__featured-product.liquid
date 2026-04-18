@@ -83,7 +83,14 @@
   </div>
 </section>
 
-{% render 'shopify-xr', product: product %}
+{% comment %} Shopify-XR {% endcomment %}
+{% if product.media %}
+  <script>
+    window.ShopifyXR=window.ShopifyXR||function(){(ShopifyXR.q=ShopifyXR.q||[]).push(arguments)}
+      {% assign models = product.media | where: 'media_type', 'model' | json %}
+      ShopifyXR('addModels', {{ models }});
+  </script>
+{% endif %}
 
 {% for block in section.blocks %}
   {% if block.type == 'price' %}
@@ -372,6 +379,24 @@
         "type": "title",
         "name": "Title",
         "limit": 1
+      },
+      {
+        "type": "collapsible-row",
+        "name": "Collapsible row",
+        "settings": [
+          {
+            "type": "text",
+            "id": "question",
+            "label": "Question",
+            "default": "What is your question?"
+          },
+          {
+            "type": "richtext",
+            "id": "answer",
+            "label": "Answer",
+            "default": "<p>Provide the answer to the question here.</p>"
+          },
+        ]
       },
       {
         "type": "vendor",

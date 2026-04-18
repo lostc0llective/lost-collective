@@ -80,9 +80,6 @@
                           "
                           src="{{ product.featured_media | image_url: height: '300' }}"
                           alt="{{ product.featured_media.alt }}"
-                          loading="lazy"
-                          width="300"
-                          height="300"
                         >
                       {%- else -%}
                         {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}

@@ -389,20 +389,23 @@
   },
   "homepage": {
     "onboarding": {
-      "product_title": "Nome do seu produto",
-      "product_description": "Essa área é usada para descrever os detalhes do seu produto. Diga aos clientes sobre a aparência, toque e estilo de seu produto. Adicione detalhes como cor, materiais usados, tamanho e onde foi fabricado.",
-      "collection_title": "Nome de sua coleção",
-      "blog_title": "Título de sua postagem",
-      "blog_excerpt": "Sua loja ainda não publicou nenhuma postagem de blog. Um blog pode ser usado para falar sobre o lançamento de novos produtos, dicas e outras novidades que queira compartilhar com os clientes. Você também pode ver nosso blog de e-commerce do Shopify para inspiração e conselhos para sua própria loja e blog.",
       "blog_author": "Nome do autor",
-      "no_content": "Atualmente, esta seção não inclui nenhum conteúdo. Adicione conteúdo nesta seção usando a barra lateral.",
-      "menu_title": "Título do menu",
+      "blog_excerpt": "Sua loja ainda não publicou nenhuma postagem de blog. Um blog pode ser usado para falar sobre o lançamento de novos produtos, dicas e outras novidades que queira compartilhar com os clientes. Você também pode ver nosso blog de e-commerce do Shopify para inspiração e conselhos para sua própria loja e blog.",
+      "blog_title": "Título de sua postagem",
+      "blogpost_title": "Título",
+      "caption_button": "Botão",
       "caption_headline": "Título",
       "caption_subtitle": "Legenda",
-      "promotion_name": "Título da promoção",
+      "collection_title": "Nome de sua coleção",
+      "menu_title": "Título do menu",
+      "no_content": "Atualmente, esta seção não inclui nenhum conteúdo. Adicione conteúdo nesta seção usando a barra lateral.",
+      "price": "$49.00",
+      "product_description": "Essa área é usada para descrever os detalhes do seu produto. Diga aos clientes sobre a aparência, toque e estilo de seu produto. Adicione detalhes como cor, materiais usados, tamanho e onde foi fabricado.",
+      "product_title": "Nome do seu produto",
       "promotion_description": "Texto da promoção",
-      "blogpost_title": "Título",
-      "caption_button": "Botão"
+      "promotion_name": "Título da promoção",
+      "sku": "1234567890",
+      "vendor_name": "Nome do fornecedor"
     }
   },
   "gift_cards": {
@@ -471,6 +474,29 @@
       "is_not_supported": "não é suportado"
     }
   },
+  "labels": {
+    "one_product": "1 produto",
+    "n_products": "{{ count }} produtos",
+    "one_result": "1 resultado",
+    "n_results": "{{ count }} resultados",
+    "filter_count_label": "Filtros ({{ filter_count }})",
+    "to": "a"
+  },
+  "actions": {
+    "sort_by": "Ordenar por",
+    "filter_and_sort": "Filtrar e ordenar",
+    "sort": "Ordenar",
+    "filter": "Filtrar",
+    "reset_filters": "Limpar tudo",
+    "apply_filters": "Aplicar",
+    "view_standard": "Vista padrão",
+    "view_compact": "Vista compacta",
+    "view_list": "Vista de lista"
+  },
+  "info": {
+    "no_results_found": "Nenhum resultado encontrado",
+    "try_different_filters": "Tente novamente com filtros diferentes."
+  },
   "layout": {
     "general": {
       "menu": "Menu",
@@ -486,7 +512,8 @@
       "pick_a_currency": "Escolha uma moeda",
       "social": "Social",
       "close_window": "Fechar",
-      "designer_credits_html": "<a href=\"http://outofthesandbox.com/\" target=\"_blank\" title=\"Flex Shopify Theme by Out of the Sandbox\">Concebido por Out of the Sandbox</a>."
+      "designer_credits_html": "<a href=\"http://outofthesandbox.com/\" target=\"_blank\" title=\"Flex Shopify Theme by Out of the Sandbox\">Concebido por Out of the Sandbox</a>.",
+      "powered_by_shopify_html": "<a href=\"https://shopify.pxf.io/pixel-union\" target=\"_blank\" rel=\"nofollow\">Desenvolvido com Shopify</a>."
     },
     "social_sharing": {
       "title": "Partilhar",

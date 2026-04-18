@@ -11,7 +11,9 @@
   "sections": {
     "banner": {
       "type": "banner",
-      "settings": {}
+      "settings": {
+        "subtitle": ""
+      }
     },
     "main": {
       "type": "404__main",

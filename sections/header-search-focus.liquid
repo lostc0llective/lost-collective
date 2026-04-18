@@ -97,10 +97,9 @@
               {%
                 render 'image-element',
                 image: section.settings.logo,
-                alt: section.settings.logo.alt | default: shop.name,
+                alt: section.settings.logo.alt,
                 additional_classes: 'primary-logo',
                 focal_point: section.settings.logo.presentation.focal_point,
-                loading: 'eager',
               %}
             </a>
           {% else %}
@@ -155,7 +154,7 @@
               {% if link.links == blank %}
                 <div class="navbar-item header__item {% if link.active or link.child_active %}is-active{% endif %}" data-navlink-handle="{{ link.title | handleize }}">
                   <label for="mega-{{ link.title | handleize }}">
-                    <a {% unless link.url == 'http://' or link.url == '' or link.url == 'https://' or link.url == '#' %} href="{{ link.url }}" {% endunless %} class="navbar-link header__link {% if link.active %}is-active{% endif %} is-arrowless"{% if link.active %} aria-current="page"{% endif %}>
+                    <a {% unless link.url == 'http://' or link.url == '' or link.url == 'https://' or link.url == '#' %} href="{{ link.url }}" {% endunless %} class="navbar-link header__link {% if link.active %}is-active{% endif %} is-arrowless">
                       {{ link.title }}
                     </a>
                   </label>
@@ -202,7 +201,7 @@
     "dropdown_click": {{ section.settings.dropdown_click | json }}
   }
 </script>
-<script data-theme-editor-load-script src="{{ 'z__jsHeader.js' | asset_url }}"></script>
+<script src="{{ 'z__jsHeader.js' | asset_url }}"></script>
 
 {% schema %}
   {

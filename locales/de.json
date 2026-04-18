@@ -12,7 +12,8 @@
     "variants": {
       "choose_option": "Wählen Sie eine {{ option }}",
       "chosen_option_html": "{{ option }}: <span>{{ value }}</span>",
-      "choose_variant": "Wählen Sie eine Variante"
+      "choose_variant": "Wählen Sie eine Variante",
+      "unavailable": "Nicht verfügbar"
     },
     "price": {
       "range_html": "{{ price_min }} - {{ price_max }}",
@@ -454,20 +455,23 @@
   },
   "homepage": {
     "onboarding": {
-      "product_title": "Der Name Ihres Produkts",
-      "product_description": "Diesen Abschnitt können Sie nutzen, um die Details Ihres Produkts zu beschreiben. Erzählen Sie den Kunden, wie Ihr Produkt aussieht, sich anfühlt und designt ist. Fügen Sie Einzelheiten zu Farbe, verwendeten Materialien, Größe und Produktionsort hinzu.",
-      "collection_title": "Der Name Ihrer Kollektion",
-      "blog_title": "Der Titel Ihres Posts",
-      "blog_excerpt": "Ihr Laden hat noch keine Blogposts veröffentlicht. Ein Blog kann genutzt werden, um über die Einführung neuer Produkte, Tipps oder andere Neuigkeiten, die Sie mit Ihren Kunden teilen möchten, zu berichten. Für Inspiration und Ratschläge für Ihren eigenen Laden und Blog können Sie den E-Commerce-Blog von Shopify besuchen.",
       "blog_author": "Name des Autors",
-      "menu_title": "Menütitel",
-      "no_content": "Dieser Bereich hat zur Zeit keinen Inhalt. Füge diesem Bereich über die Seitenleiste Inhalte hinzu.",
+      "blog_excerpt": "Ihr Laden hat noch keine Blogposts veröffentlicht. Ein Blog kann genutzt werden, um über die Einführung neuer Produkte, Tipps oder andere Neuigkeiten, die Sie mit Ihren Kunden teilen möchten, zu berichten. Für Inspiration und Ratschläge für Ihren eigenen Laden und Blog können Sie den E-Commerce-Blog von Shopify besuchen.",
+      "blog_title": "Der Titel Ihres Posts",
+      "blogpost_title": "Titel",
+      "caption_button": "Taste",
       "caption_headline": "Titel",
       "caption_subtitle": "Untertitel",
-      "promotion_name": "Förderung Titel",
+      "collection_title": "Der Name Ihrer Kollektion",
+      "menu_title": "Menütitel",
+      "no_content": "Dieser Bereich hat zur Zeit keinen Inhalt. Füge diesem Bereich über die Seitenleiste Inhalte hinzu.",
+      "price": "$49.00",
+      "product_description": "Diesen Abschnitt können Sie nutzen, um die Details Ihres Produkts zu beschreiben. Erzählen Sie den Kunden, wie Ihr Produkt aussieht, sich anfühlt und designt ist. Fügen Sie Einzelheiten zu Farbe, verwendeten Materialien, Größe und Produktionsort hinzu.",
+      "product_title": "Der Name Ihres Produkts",
       "promotion_description": "Förderungtext",
-      "blogpost_title": "Titel",
-      "caption_button": "Taste"
+      "promotion_name": "Förderung Titel",
+      "sku": "1234567890",
+      "vendor_name": "Anbietername"
     }
   },
   "gift_cards": {
@@ -536,6 +540,29 @@
       "is_not_supported": "wird nicht unterstützt"
     }
   },
+  "labels": {
+    "one_product": "1 Produkt",
+    "n_products": "{{ count }} Produkte",
+    "one_result": "1 Ergebnis",
+    "n_results": "{{ count }} Ergebnisse",
+    "filter_count_label": "Filter ({{ filter_count }})",
+    "to": "bis"
+  },
+  "actions": {
+    "sort_by": "Sortieren nach",
+    "filter_and_sort": "Filtern & sortieren",
+    "sort": "Sortieren",
+    "filter": "Filtern",
+    "reset_filters": "Alles löschen",
+    "apply_filters": "Anwenden",
+    "view_standard": "Standardansicht",
+    "view_compact": "Kompaktansicht",
+    "view_list": "Listenansicht"
+  },
+  "info": {
+    "no_results_found": "Keine Ergebnisse gefunden",
+    "try_different_filters": "Bitte versuchen Sie es mit anderen Filtern erneut."
+  },
   "layout": {
     "general": {
       "menu": "Menü",
@@ -551,7 +578,8 @@
       "pick_a_currency": "Wählen Sie eine Währung",
       "social": "Sozial",
       "close_window": "Schließen",
-      "designer_credits_html": "<a href=\"http://outofthesandbox.com/\" target=\"_blank\" title=\"Flex Shopify Theme by Out of the Sandbox\">Gestaltet von Out of the Sandbox</a>."
+      "designer_credits_html": "<a href=\"http://outofthesandbox.com/\" target=\"_blank\" title=\"Flex Shopify Theme by Out of the Sandbox\">Gestaltet von Out of the Sandbox</a>.",
+      "powered_by_shopify_html": "<a href=\"https://shopify.pxf.io/pixel-union\" target=\"_blank\" rel=\"nofollow\">Bereitgestellt von Shopify</a>."
     },
     "social_sharing": {
       "title": "Teilen",

@@ -2,6 +2,20 @@
 {%- comment -%}
 # Caution! Please read https://help.shopify.com/en/manual/promoting-marketing/seo/editing-robots-txt before proceeding to make changes to this file.
 {% endcomment %}
+User-agent: Googlebot
+Allow: /*?country=*
+Allow: /*?currency=*
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /carts
+Disallow: /account
+Disallow: /*?q=*
+Disallow: /search
+Disallow: /apple-app-site-association
+
 {% for group in robots.default_groups %}
   {{- group.user_agent }}
 
@@ -30,6 +44,9 @@
 {{ 'Disallow: /web-pixels-manager' }}
 {{ 'Disallow: /wpm@' }}
 {{ 'Disallow: /cdn/wpm/' }}
+{{ 'Disallow: /*?country=*' }}
+{{ 'Disallow: /*?currency=*' }}
+{{ 'Disallow: /*?rb_tags=*' }}
   {%- endif -%}
 
   {%- if group.sitemap != blank -%}

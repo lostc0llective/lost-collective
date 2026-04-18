@@ -21,25 +21,6 @@ window.PXUTheme.jsFixedMessage = {
     this.$el.addClass('is-hidden');
     // Remove fixed message and set cookie to hide it for 30 days
     Cookies.set('fixed-message', 'dismiss', { expires: 30 });
-
-    // Update Google Consent Mode v2 — grants all storage on explicit user acceptance
-    if (typeof gtag === 'function') {
-      gtag('consent', 'update', {
-        'analytics_storage': 'granted',
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted'
-      });
-    }
-
-    // Update Shopify Customer Privacy API — signals consent to Shopify's native systems
-    if (window.Shopify && window.Shopify.customerPrivacy) {
-      window.Shopify.customerPrivacy.setTrackingConsent(
-        { marketing: true, analytics: true, preferences: true, sale_of_data: true },
-        function() {}
-      );
-    }
-
   },
   unload: function ($section) {
 

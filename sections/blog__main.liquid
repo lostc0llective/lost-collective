@@ -147,7 +147,15 @@
               has-no-side-gutter
             "
           >
-
+            <div class="hide-when-banner-enabled">
+              {%
+                render 'heading',
+                title: blog.title,
+                heading_tag: 'h1',
+                context: 'blog',
+                text_alignment: 'left',
+              %}
+            </div>
           </div>
 
           {% if section.settings.blog_tags %}
@@ -275,11 +283,11 @@
               <div class="card-content blog-card__content">
                 <div class="media">
                   <div class="media-content">
-                    <h2 class="title">
+                    <h4 class="title">
                       <a class="featured-article--link" href="{{ article.url }}">
                         {{- article.title -}}
                       </a>
-                    </h2>
+                    </h4>
                   </div>
                 </div>
 

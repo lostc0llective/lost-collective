@@ -37,7 +37,7 @@
                   {% assign image_name = value | handle | append: '.' | append: file_extension %}
                   {% assign swatch = images[image_name] %}
 
-                  <img class="swatch__image {% if swatch == empty %}swatch__image--empty{% endif %}" src="{{ swatch | img_url: '50x' }}" alt="{{ variant.title }}" loading="lazy" width="50" height="50">
+                  <img class="swatch__image {% if swatch == empty %}swatch__image--empty{% endif %}" src="{{ swatch | img_url: '50x' }}" alt="{{ variant.title }}">
                 </span>
             </a>
           {% endunless %}

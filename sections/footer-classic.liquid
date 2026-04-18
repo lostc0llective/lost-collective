@@ -233,14 +233,14 @@
         "
       >
         <div class="footer__credits small-down--one-whole">
-          <p>&copy; {{ "now" | date: "%Y" }} <a href="{{ routes.root_url }}">{{ shop.name }}</a></p>
+          <p>&copy; {{ "now" | date: "%Y" }} {{ shop.name | link_to: routes.root_url }}.</p>
           {{ section.settings.copyright_text }}
-          {%- if section.settings.display_designed_by -%}
+          {% if section.settings.display_designed_by %}
             <p>{{ 'layout.general.designer_credits_html' | t }}</p>
-          {%- endif -%}
-          {%- if section.settings.display_shopify -%}
-            <p>{{ powered_by_link }}</p>
-          {%- endif -%}
+          {% endif %}
+          {% if section.settings.display_shopify %}
+            <p>{{ 'layout.general.powered_by_shopify_html' | t }}</p>
+          {% endif %}
         </div>
 
         {{ footer_right_column }}

@@ -1,0 +1,12 @@
+{% doc %}
+  This snippet is used to add attributes to filter and sort controls to support the feed hot reload.
+  @param {string} [change_trigger] - The type of the element to use as a change trigger (form, form_filter, form_select, form_price_range_min, form_price_range_max, sort_select)
+  @param {object} [pagination_part] - A pagination part object
+  @param {string} [url_to_remove] - The URL to remove the filter or filter value
+  @param {string} [feed_view] - The feed view for view buttons (1, 2, 3)
+{% enddoc %}
+
+{% if change_trigger %}data-change-trigger="{{ change_trigger }}"{% endif %}
+{% if pagination_part and pagination_part.is_link %}data-pagination-part-url="{{ pagination_part.url }}"{% endif %}
+{% if url_to_remove %}data-url-to-remove="{{ url_to_remove }}"{% endif %}
+{% if feed_view %}data-feed-view="{{ feed_view }}"{% endif %}

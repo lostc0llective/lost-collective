@@ -93,41 +93,6 @@
     id: id,
   %}
 
-  #shopify-section-{{ id }} .video-wrapper {
-    {% if section.settings.aspect_ratio == '16:9' %}
-      aspect-ratio: 16 / 9;
-    {% elsif section.settings.aspect_ratio == '4:3' %}
-      aspect-ratio: 4 / 3;
-    {% endif %}
-    position: relative;
-    overflow: hidden;
-  }
-
-  #shopify-section-{{ id }} .video-section-poster {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  #shopify-section-{{ id }} .html5-video-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  #shopify-section-{{ id }} .html5-video-wrapper video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
   @media only screen and (min-width: 480px) {
     #shopify-section-{{ id }} .video__text-wrapper {
       width: {{ section.settings.text_width }}%;
@@ -186,13 +151,9 @@
           video-present--{{ video_exists }}
           video-controls--{{ section.settings.controls }}
         "
-        {% if image != blank %}
-          style="background-image: url('{{ image | image_url: width: 1600 }}'); background-size: cover; background-position: center;"
-        {% endif %}
       >
         {% if image != blank %}
-          <link rel="preload" as="image" href="{{ image | image_url: width: 1600 }}" fetchpriority="high">
-          <div class="image-wrapper video-section-poster" data-image-element>
+          <div class="image-wrapper" data-image-element>
             {%
               render 'image-element',
               image: image,
@@ -200,7 +161,6 @@
               additional_classes: 'placeholder-img',
               stretch_width: true,
               focal_point: image.presentation.focal_point,
-              fetchpriority: 'high',
             %}
           </div>
         {% else %}
@@ -216,15 +176,15 @@
           {% if iframe_video != blank %}
             <div class="plyr__video-embed video-{{ id }}" data-video-element>
             {% if iframe_video.type == 'youtube' %}
-              <iframe data-src="https://www.youtube.com/embed/{{ iframe_video.id }}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1" allowfullscreen allowtransparency allow="autoplay"></iframe>
+              <iframe src="https://www.youtube.com/embed/{{ iframe_video.id }}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1" allowfullscreen allowtransparency allow="autoplay"></iframe>
             {% elsif iframe_video.type == 'vimeo' %}
-              <iframe data-src="https://player.vimeo.com/video/{{ iframe_video.id }}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media&amp;dnt=1" allowfullscreen allowtransparency allow="autoplay"></iframe>
+              <iframe src="https://player.vimeo.com/video/{{ iframe_video.id }}?loop=false&amp;byline=false&amp;portrait=false&amp;title=false&amp;speed=true&amp;transparent=0&amp;gesture=media" allowfullscreen allowtransparency allow="autoplay"></iframe>
             {% endif %}
             </div>
           {% elsif html5_video != blank %}
-            <div class="html5-video-wrapper" data-video-element>
-              <video class="video-{{ id }}" autoplay muted loop playsinline preload="metadata">
-                <source src="{{ html5_video }}" type="video/mp4">
+            <div class="video-element" data-video-element>
+              <video class="video-{{ id }}">
+                <source src="{{ html5_video }}">
               </video>
             </div>
           {% endif %}
@@ -235,7 +195,7 @@
             class="
               video__text
               is-justify-{{ section.settings.vertical_text_position }}
-              {% if pretext == blank and title == blank and subtitle == blank and button_label == blank and section.settings.cta_label == blank %}
+              {% if pretext == blank and title == blank and subtitle == blank and button_label == blank %}
                 hidden
               {% endif %}
             "
@@ -302,15 +262,6 @@
                     {{- button_label -}}
                   </button>
                 {% endif %}
-
-                {% if section.settings.cta_label != blank %}
-                  <a
-                    href="{{ section.settings.cta_url }}"
-                    class="button {{ section.settings.cta_style }}"
-                  >
-                    {{- section.settings.cta_label | escape -}}
-                  </a>
-                {% endif %}
               </div>
             </div>
           </div>
@@ -333,7 +284,7 @@
       "iframe_video": {{ iframe_video | json }},
       "html5_video": {{ html5_video | json }},
       "aspect_ratio": {{ section.settings.aspect_ratio | json }},
-      "poster": {% if html5_video != blank %}null{% else %}{{ image | json }}{% endif %},
+      "poster": {{ image | json }},
       "button": {{ button_label | json }},
       "id": {{ id | json }},
       "mute": {{ mute | json }}
@@ -514,40 +465,6 @@
           {
             "value": "button--secondary",
             "label": "Secondary"
-          },
-          {
-            "value": "button--link-style",
-            "label": "Link style"
-          }
-        ]
-      },
-      {
-        "type": "text",
-        "id": "cta_label",
-        "label": "CTA button label"
-      },
-      {
-        "type": "url",
-        "id": "cta_url",
-        "label": "CTA button link"
-      },
-      {
-        "type": "select",
-        "id": "cta_style",
-        "label": "CTA button style",
-        "default": "button--secondary",
-        "options": [
-          {
-            "value": "button--primary",
-            "label": "Primary"
-          },
-          {
-            "value": "button--secondary",
-            "label": "Secondary"
-          },
-          {
-            "value": "button--primary-action",
-            "label": "Primary action (dark)"
           },
           {
             "value": "button--link-style",

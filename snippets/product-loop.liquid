@@ -1,18 +1,3 @@
-{%- comment -%}
-  Parameters:
-    products:               {Array}   Required. Array of product objects to iterate over.
-    limit:                  {Number}  Required. Max number of products to render.
-    products_per_row:       {Number}  Required. Passed through to product-thumbnail.
-    mobile_products_per_row:{String}  Required. Passed through to product-thumbnail.
-    align_height:           {Boolean} Optional. Passed through to product-thumbnail. Default: false.
-    height:                 {Number}  Optional. Passed through to product-thumbnail.
-    related_products:       {Boolean} Optional. When true, enables hover from block settings. Default: false.
-    skip_product:           {Object}  Optional. Product to exclude from the loop — used on product pages
-                                      to prevent the current product from appearing in related products.
-                                      When nil (not passed), no product is skipped. All 5 call sites
-                                      outside product recommendations do not pass this parameter.
-    collection:             {Object}  Optional. Passed through to product-thumbnail for within-collection URLs.
-{%- endcomment -%}
 {% assign collection_group = products | map: 'id' %}
 {% assign collection_group_thumb = collection_group | append : 'thumb' %}
 {% assign collection_group_mobile = collection_group | append : 'mobile' %}

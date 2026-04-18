@@ -3,7 +3,6 @@ var __webpack_exports__ = {};
 /* eslint-disable */
 window.PXUTheme.jsHeader = {
   init: function($section) {
-
     // Add settings from schema to current object
     window.PXUTheme.jsHeader = $.extend(this, window.PXUTheme.getSectionData($section));
 
@@ -239,10 +238,8 @@ window.PXUTheme.jsHeader = {
         touch: false,
         beforeClose: function(){
           $('[data-show-search-trigger]').removeClass('is-active');
-          document.querySelector('.js-search-popup').setAttribute('aria-hidden', 'true');
         },
         afterShow: function() {
-          document.querySelector('.js-search-popup').setAttribute('aria-hidden', 'false');
           // Set the cursor at the end of the input field for better UX,
           // otherwise it may be at the beginning of the input field when the input gets focus.
           const searchInputEl = $('.search-form .search__fields input[type="text"]')[0];

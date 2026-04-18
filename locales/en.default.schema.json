@@ -42,7 +42,8 @@
         "label": "Minimum age required to access page"
       },
       "presets": {
-        "name": "Page age gate"
+        "name": "Page age gate",
+        "category": "Layout"
       }
     }
   },

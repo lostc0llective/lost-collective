@@ -33,14 +33,14 @@
             <span class="breadcrumb-separator">
               {% render 'icon', name: breadcrumb_separator %}
             </span>
-            <a href="{{ routes.collections_url }}/{% if collection.handle != blank %}{{ collection.handle }}{% else %}all{% endif %}/{{ tag | handleize }}" title="{{ tag | escape }}">
+            <a href="{{ routes.collections_url }}/{% if collection.handle != blank %}{{ collection.handle }}{% else %}all{% endif %} {{ tag | handleize }}" title="{{ tag | escape }}">
               {{ tag }}
             </a>
           </li>
         {% endfor %}
       {% endif %}
     {% elsif template.name == 'collection' %}
-      <li aria-current="page">
+      <li>
         <span class="breadcrumb-separator">
           {% render 'icon', name: breadcrumb_separator %}
         </span>
@@ -66,17 +66,9 @@
           {{ blog.title }}
         </a>
       </li>
-      {%- if article.title != blank -%}
-        <li aria-current="page">
-          <span class="breadcrumb-separator">
-            {% render 'icon', name: breadcrumb_separator %}
-          </span>
-          {{ article.title }}
-        </li>
-      {%- endif -%}
     {% endif %}
     {% if product.handle != blank %}
-      <li aria-current="page">
+      <li>
         <span class="breadcrumb-separator">
           {% render 'icon', name: breadcrumb_separator %}
         </span>

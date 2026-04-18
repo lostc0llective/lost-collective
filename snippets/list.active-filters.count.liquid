@@ -1,0 +1,25 @@
+{% doc %}
+  Renders the count of active filters.
+  @param {object} context - The collection or search object
+  @example
+  {% render 'list.active-filters.count', context: collection %}
+{% enddoc %}
+
+{%- liquid
+  assign current_filter_size = 0
+
+  for filter in context.filters
+    assign current_filter_size = current_filter_size | plus: filter.active_values.size
+
+    if filter.type == 'price_range'
+      assign price_min = filter.min_value.value
+      assign price_max = filter.max_value.value
+
+      if price_min and price_max
+        assign current_filter_size = current_filter_size | plus: 1
+      endif
+    endif
+  endfor
+
+  echo current_filter_size
+-%}

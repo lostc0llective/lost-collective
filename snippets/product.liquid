@@ -42,7 +42,6 @@
         {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg placeholder-svg--product' }}
       </div>
     {% else %}
-      
       {%
         render 'product__images',
         product: product,
@@ -79,13 +78,6 @@
       %}
     {% endif %}
 
-
-
-
-
-
-    
-    
     {%- for block in section.blocks -%}
       <div
         class="
@@ -102,7 +94,7 @@
           <p class="vendor">
             <span class="vendor">
               {% if section_onboarding %}
-                Vendor name
+                {{ 'homepage.onboarding.vendor_name' | t }}
               {% else %}
                 {{ product.vendor | link_to_vendor }}
               {% endif %}
@@ -113,19 +105,13 @@
           {% comment %} Sku {% endcomment %}
           <p class="sku">
             {% if section_onboarding %}
-              1234567890
+              {{ 'homepage.onboarding.sku' | t }}
             {% else %}
               {{ selected_variant.sku }}
             {% endif %}
           </p>
 
         {%- elsif block.type == 'title' -%}
-          {% comment %} Back to collection link (D7) {% endcomment %}
-          {%- unless is_product_modal or section_onboarding -%}
-            {%- if collection -%}
-              <a href="{{ collection.url }}" class="product__back-link">← {{ collection.title }}</a>
-            {%- endif -%}
-          {%- endunless -%}
           {% comment %} Name {% endcomment %}
           <h1 class="product-title title">
             {% if is_product_modal %}
@@ -146,7 +132,6 @@
           {% endfor %}
 
           {% if settings.size_chart != blank or block.settings.size_chart != blank or meta_size_chart %}
-           
             <a
               class="product__size-chart"
               href="javascript:;"
@@ -156,7 +141,6 @@
             >
               {{ block.settings.title | escape }}
             </a>
-        
             {%
               render 'popup-size-chart',
               block: block,
@@ -168,16 +152,12 @@
           {% comment %} Price {% endcomment %}
           <div class="modal_price subtitle" data-display-savings="{{ block.settings.display_savings }}">
             {% if section_onboarding %}
-              <span class="money">$49.00</span>
+              <span class="money">{{ 'homepage.onboarding.price' | t }}</span>
             {% elsif product.available == false %}
               <span class="sold_out">
                 {{- 'products.product.sold_out' | t -}}
               </span>
             {% else %}
-              {% comment %} Price range (D6) {% endcomment %}
-              {%- if product.price_varies -%}
-                <p class="product__price-range">From {{ product.price_min | money }} – {{ product.price_max | money }}</p>
-              {%- endif -%}
               {% comment %}Inject @pixelunion/shopify-price-ui/price-ui begin{% endcomment %}
               <div class="price-ui price-ui--loading" data-price-ui>
                 <noscript>
@@ -261,6 +241,13 @@
             {% endif %}
           </div>
 
+        {%- elsif block.type == 'collapsible-row' -%}
+          {% comment %} Collapsible row {% endcomment %}
+          {%
+            render 'collapsible-row',
+            block: block,
+          %}
+
         {%- elsif block.type == 'complementary_products' -%}
           {% comment %} Complementary products {% endcomment %}
           {%
@@ -306,7 +293,7 @@
           {% if is_product_modal %}
             <a
               class="product__view-details"
-              href="{{ product.url }}"
+              href="{{ product.url | within: collection }}"
               title="{{ product.title | escape }}"
             >
               {{- 'collections.general.view_product_details' | t -}}
@@ -347,7 +334,7 @@
 
         {%- elsif block.type == 'product-links' -%}
           {% comment %} Collections, type, tags {% endcomment %}
-          {% if block.settings.show_collections or block.settings.show_tags or block.settings.show_type %}
+          {% if block.settings.show_collections or block.settings.show_tags or block.settings.show_types %}
             <div class="product__classification-links has-padding-top">
               {% if block.settings.show_collections %}
                 <p class="product__collections-list tags">
@@ -360,7 +347,7 @@
                 </p>
               {% endif %}
 
-              {% if block.settings.show_type %}
+              {% if block.settings.show_types %}
                 <p class="product__type-list tags">
                   <span class="product__classification-title">{{ 'products.product.product_types' | t }}:</span>
                   <span class="tag tag--{{ tag_style }}">{{ product.type | link_to_type }}</span>
@@ -383,116 +370,30 @@
           {% endif %}
 
         {%- elsif block.type == 'rating' -%}
-          {% render 'product-rating', product: product %}
+          {% if product.metafields.reviews.rating.value != blank %}
+            <div class="product__rating rating">
+              {%
+                render 'rating-stars',
+                value: product.metafields.reviews.rating.value.rating,
+                scale_max: product.metafields.reviews.rating.value.scale_max,
+              %}
 
-        {%- elsif block.type == 'art-details' -%}
-          {% comment %} Art provenance & edition details from custom metafields {% endcomment %}
-          {% liquid
-            assign has_art_details = false
-            assign _first_size = product.selected_or_first_available_variant.option1
-            if _first_size == 'M' or _first_size == 'L' or _first_size == 'XL'
-              assign has_art_details = true
-            elsif product.metafields.custom.print_technique != blank
-              assign has_art_details = true
-            elsif product.metafields.custom.paper_type != blank
-              assign has_art_details = true
-            elsif product.metafields.custom.year_photographed != blank
-              assign has_art_details = true
-            elsif product.metafields.custom.location != blank
-              assign has_art_details = true
-            elsif product.metafields.custom.collection_series != blank
-              assign has_art_details = true
-            endif
-          %}
-          {% if has_art_details %}
-            <div class="product__art-details">
-              <dl class="product__art-details-list">
-                {% if product.metafields.custom.collection_series != blank %}
-                  {%- liquid
-                    assign _series_name = product.metafields.custom.collection_series.value
-                    assign _series_handle = _series_name | handleize
-                    assign _series_collection = collections[_series_handle]
-                  -%}
-                  <div class="product__art-detail">
-                    <dt>Series</dt>
-                    <dd>
-                      {%- if _series_collection != blank -%}
-                        <a href="{{ _series_collection.url }}">{{ _series_name }}</a>
-                      {%- else -%}
-                        {{ _series_name }}
-                      {%- endif -%}
-                    </dd>
-                  </div>
-                {% endif %}
-                {% if product.metafields.custom.year_photographed != blank %}
-                  <div class="product__art-detail">
-                    <dt>Year</dt>
-                    <dd>{{ product.metafields.custom.year_photographed }}</dd>
-                  </div>
-                {% endif %}
-                {% if product.metafields.custom.location != blank %}
-                  <div class="product__art-detail">
-                    <dt>Location</dt>
-                    <dd>{{ product.metafields.custom.location }}</dd>
-                  </div>
-                {% endif %}
-                {% comment %} Edition size derived from selected variant's Size option — M=100, L=50, XL=25.
-                  edition_number metafield (custom.edition_number, integer) is optional — when present,
-                  the display reads "Edition [number] of [size]". When absent: "Edition of [size]". {% endcomment %}
-                {%- assign _initial_size = product.selected_or_first_available_variant.option1 -%}
-                {%- case _initial_size -%}
-                  {%- when 'M' -%}{%- assign _initial_edition = 100 -%}
-                  {%- when 'L' -%}{%- assign _initial_edition = 50 -%}
-                  {%- when 'XL' -%}{%- assign _initial_edition = 25 -%}
-                  {%- else -%}{%- assign _initial_edition = nil -%}
-                {%- endcase -%}
-                {%- assign _edition_num = "" -%}
-                {%- if product.metafields.custom.edition_number != blank -%}
-                  {%- assign _edition_num = product.metafields.custom.edition_number.value -%}
-                {%- endif -%}
-                <div class="product__art-detail"
-                     id="edition-detail-{{ product.id }}"
-                     data-edition-detail
-                     data-edition-number="{{ _edition_num }}">
-                  <dt>Edition</dt>
-                  <dd data-edition-value>
-                    {%- if _initial_edition -%}
-                      {%- if _edition_num != blank -%}Edition {{ _edition_num }} of {{ _initial_edition }}
-                      {%- else -%}Edition of {{ _initial_edition }}
-                      {%- endif -%}
-                    {%- else -%}Open edition
-                    {%- endif -%}
-                  </dd>
-                </div>
-                {% comment %}Edition updates handled by product__form.liquid after DOM is ready{% endcomment %}
-                {% if product.metafields.custom.print_technique != blank %}
-                  <div class="product__art-detail">
-                    <dt>Process</dt>
-                    <dd>{{ product.metafields.custom.print_technique }}</dd>
-                  </div>
-                {% endif %}
-                {% if product.metafields.custom.paper_type != blank %}
-                  <div class="product__art-detail">
-                    <dt>Substrate</dt>
-                    <dd id="substrate-value-{{ product.id }}"
-                        data-substrate-default="{{ product.metafields.custom.paper_type }}">{{ product.metafields.custom.paper_type }}</dd>
-                  </div>
-                {% endif %}
-                {% if product.metafields.custom.certificate_included == true %}
-                  <div class="product__art-detail product__art-detail--cert">
-                    <dt>Certificate</dt>
-                    <dd>&#10003; Certificate of Authenticity included</dd>
-                  </div>
-                {% endif %}
-              </dl>
-              {%- if product.metafields.custom.subject_description != blank -%}
-                <p class="product__art-description">{{ product.metafields.custom.subject_description.value | newline_to_br }}</p>
-              {%- endif -%}
-              {% comment %} Story link (D12) — links to blog/tagged/[series-handle] if series is set {% endcomment %}
-              {%- if product.metafields.custom.collection_series != blank -%}
-                {%- assign _story_tag = product.metafields.custom.collection_series.value | handleize -%}
-                <a href="/blogs/blog/tagged/{{ _story_tag }}" class="product__story-link">Read the story behind this series →</a>
-              {%- endif -%}
+              <p class="rating__text">
+                <span aria-hidden="true">
+                  {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+                </span>
+              </p>
+
+              <p class="rating__count">
+                <span aria-hidden="true">
+                  {{ product.metafields.reviews.rating_count }}
+                  {% if product.metafields.reviews.rating_count > 1 %}
+                    {{ "general.accessibility.star_reviews_text" | t }}
+                  {% else %}
+                    {{ "general.accessibility.star_review_text" | t }}
+                  {% endif %}
+                </span>
+              </p>
             </div>
           {% endif %}
 
@@ -516,51 +417,3 @@
     {%- endfor -%}
   </div>
 </div>
-
-{% comment %} Mobile sticky add-to-cart bar {% endcomment %}
-{% unless is_product_modal or section_onboarding %}
-  <div class="product__sticky-atc" id="product-sticky-atc-{{ product.id }}" aria-hidden="true">
-    <div class="product__sticky-atc-inner">
-      <div class="product__sticky-atc-info">
-        <span class="product__sticky-atc-title">{{ product.title }}</span>
-        <span class="product__sticky-atc-price money" data-sticky-price>
-          {{ selected_variant.price | money }}
-        </span>
-      </div>
-      <button
-        class="product__sticky-atc-btn button"
-        type="button"
-        data-sticky-atc-trigger
-        aria-label="{{ 'products.product.add_to_cart' | t }}"
-      >
-        {{ 'products.product.add_to_cart' | t }}
-      </button>
-    </div>
-  </div>
-
-  <script>
-    (function() {
-      var stickyBar = document.getElementById('product-sticky-atc-{{ product.id }}');
-      var formContainer = document.querySelector('#product-form-{{ product.id }} [data-add-to-cart-trigger]');
-      if (!stickyBar || !formContainer) return;
-
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (!entry.isIntersecting) {
-            stickyBar.classList.add('is-visible');
-            stickyBar.setAttribute('aria-hidden', 'false');
-          } else {
-            stickyBar.classList.remove('is-visible');
-            stickyBar.setAttribute('aria-hidden', 'true');
-          }
-        });
-      }, { threshold: 0 });
-
-      observer.observe(formContainer);
-
-      stickyBar.querySelector('[data-sticky-atc-trigger]').addEventListener('click', function() {
-        formContainer.click();
-      });
-    })();
-  </script>
-{% endunless %}

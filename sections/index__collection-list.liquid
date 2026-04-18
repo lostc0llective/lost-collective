@@ -130,13 +130,13 @@
 
           if image != blank
             assign collection_image = image
-            assign collection_image_alt = image.alt | default: collection.title | escape
+            assign collection_image_alt = image.alt | escape
           elsif collection.image != blank
             assign collection_image = collection.image
-            assign collection_image_alt = collection.image.alt | default: collection.title | escape
+            assign collection_image_alt = collection.image.alt | escape
           else
             assign collection_image = collection.products.first.featured_image
-            assign collection_image_alt = collection.products.first.featured_image.alt | default: collection.title | escape
+            assign collection_image_alt = collection.products.first.featured_image.alt | escape
           endif
         %}
 
@@ -161,7 +161,6 @@
 
             {% if collection_image != blank %}
               <div class="thumbnail image__container has-image-crop">
-                <!-- TODO: Scenes collection needs a proper high-res featured image (900×462px min) in Shopify Admin -->
                 {%
                   render 'image-element',
                   image: collection_image.src,
@@ -254,7 +253,7 @@
         "id": "collections_per_row",
         "label": "Collections per row",
         "min": 2,
-        "max": 6,
+        "max": 5,
         "step": 1,
         "default": 3
       },

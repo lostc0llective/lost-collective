@@ -47,32 +47,6 @@
   </div>
 </section>
 
-<script>
-(function () {
-  var sectionEl = document.getElementById('shopify-section-{{ id }}');
-  if (!sectionEl) return;
-
-  function applyLazyLoading() {
-    sectionEl.querySelectorAll('.instafeed-lazy-image').forEach(function (img) {
-      if (!img.getAttribute('loading')) {
-        img.setAttribute('loading', 'lazy');
-      }
-    });
-  }
-
-  // Apply to any images already in the DOM
-  applyLazyLoading();
-
-  // Watch for images added dynamically by the Instafeed app JS
-  if (typeof MutationObserver !== 'undefined') {
-    new MutationObserver(applyLazyLoading).observe(sectionEl, {
-      childList: true,
-      subtree: true
-    });
-  }
-})();
-</script>
-
 {% schema %}
   {
     "name": "App wrapper",

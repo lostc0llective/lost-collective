@@ -78,7 +78,7 @@
       "
     >
       {% for block in section.blocks %}
-        {% assign icon = block.settings.icon | downcase %}
+        {% assign icon = block.settings.icon_library | downcase %}
 
         {% if block.settings.link %}
           <a
@@ -134,8 +134,6 @@
     </div>
   </section>
 {% endif %}
-
-{{ 'trust-bar-marquee.js' | asset_url | script_tag }}
 
 {% schema %}
   {

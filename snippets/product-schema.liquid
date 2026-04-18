@@ -1,3 +1,11 @@
+{%- comment -%}
+  Edition sizes — reads from product metafields (custom.edition_size_m, custom.edition_size_l,
+  custom.edition_size_xl) with defaults of 100 / 50 / 25 for products without metafields set.
+{%- endcomment -%}
+{%- assign edition_size_m = product.metafields.custom.edition_size_m | default: 100 -%}
+{%- assign edition_size_l = product.metafields.custom.edition_size_l | default: 50 -%}
+{%- assign edition_size_xl = product.metafields.custom.edition_size_xl | default: 25 -%}
+
 {%- assign price_valid_until = 'now' | date: '%s' | plus: 63072000 | date: '%Y-%m-%d' -%}
 <script type="application/ld+json">
 {
@@ -41,15 +49,15 @@
     {%- assign _schema_size = product.selected_or_first_available_variant.option1 -%}
     {%- if _schema_size == 'M' or _schema_size == 'L' or _schema_size == 'XL' -%}
       {%- case _schema_size -%}
-        {%- when 'M' -%}{%- assign _schema_edition = 100 -%}
-        {%- when 'L' -%}{%- assign _schema_edition = 50 -%}
-        {%- when 'XL' -%}{%- assign _schema_edition = 25 -%}
+        {%- when 'M' -%}{%- assign _schema_edition = edition_size_m -%}
+        {%- when 'L' -%}{%- assign _schema_edition = edition_size_l -%}
+        {%- when 'XL' -%}{%- assign _schema_edition = edition_size_xl -%}
       {%- endcase -%}
       {%- if _ap_comma -%},{%- endif -%}{"@type":"PropertyValue","name":"Edition Size","value":{{ _schema_edition | json }}}
     {%- endif -%}
   ],
   {%- endif -%}
-  {%- assign _review_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count | plus: 0 -%}
+  {%- assign _review_count = product.metafields.reviews.rating_count | plus: 0 -%}
   {%- if product.metafields.reviews.rating.value != blank and _review_count > 0 %}
   "aggregateRating": {
     "@type": "AggregateRating",
@@ -59,6 +67,12 @@
     "worstRating": 1
   },
   {%- endif %}
+  "hasMerchantReturnPolicy": {
+    "@type": "MerchantReturnPolicy",
+    "applicableCountry": "AU",
+    "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+    "merchantReturnLink": "https://lostcollective.com/policies/refund-policy"
+  },
   {%- if product.price_min != product.price_max -%}
   "offers": {
     "@type": "AggregateOffer",
@@ -69,7 +83,34 @@
     "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
     "url": {{ canonical_url | json }},
     "priceValidUntil": "{{ price_valid_until }}",
-    "itemCondition": "https://schema.org/NewCondition"
+    "itemCondition": "https://schema.org/NewCondition",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "15.00",
+        "currency": "AUD"
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "AU"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 5,
+          "maxValue": 10,
+          "unitCode": "DAY"
+        },
+        "transitTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 3,
+          "maxValue": 7,
+          "unitCode": "DAY"
+        }
+      }
+    }
   }
   {%- else -%}
   "offers": {
@@ -79,7 +120,34 @@
     "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
     "url": {{ canonical_url | json }},
     "priceValidUntil": "{{ price_valid_until }}",
-    "itemCondition": "https://schema.org/NewCondition"
+    "itemCondition": "https://schema.org/NewCondition",
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "15.00",
+        "currency": "AUD"
+      },
+      "shippingDestination": {
+        "@type": "DefinedRegion",
+        "addressCountry": "AU"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 5,
+          "maxValue": 10,
+          "unitCode": "DAY"
+        },
+        "transitTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 3,
+          "maxValue": 7,
+          "unitCode": "DAY"
+        }
+      }
+    }
   }
   {%- endif -%}
 }

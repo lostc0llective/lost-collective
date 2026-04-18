@@ -1,0 +1,2546 @@
+/* ================================
+   Custom CSS — Lost Collective
+   Shopify Flex Theme v5.2.1
+   Last restructured: 2026-04-02
+
+   Structure:
+    1.  CSS Custom Properties
+    2.  Accessibility
+    3.  Base / Reset
+    4.  Typography
+    5.  Navigation
+    6.  Header
+    7.  Buttons
+    8.  Links & Animated Underlines
+    9.  Video Hero
+   10.  Swatches
+   11.  Homepage — Collection Grid & Featured Collection
+   12.  Homepage — Art Story Section
+   13.  Homepage — About Brett Section
+   14.  Homepage — Featured Slideshow
+   15.  Instagram Feed
+   16.  Trust Bar
+   17.  Footer
+   18.  Collection Page
+   19.  All Collections Page
+   20.  Product Page
+   21.  Blog & Article Pages
+   22.  Homepage — Parallax
+   23.  Homepage — Collection Card Hover Reveal
+   24.  Cookie Banner
+   25.  Search Popup
+   26.  Cart Drawer — Free Shipping Bar
+   27.  Cart Drawer — Trust Bar
+   28.  Product Page — Art Details Block
+   29.  Product Page — Mobile Sticky Add-to-Cart
+   30.  Mobile UX — Touch Targets, Scroll & Zoom
+================================ */
+
+
+/* ================================
+   1. CSS Custom Properties
+================================ */
+
+:root {
+  /* Brand colours */
+  --color-brand-yellow: var(--color-brand-yellow);
+  --color-dark:         var(--color-dark);
+  --color-mid:          var(--color-mid);
+  --color-light:        var(--color-light);
+  --color-sale:         var(--color-sale);
+  --color-white:        var(--color-white, #ffffff);
+
+  /* Fonts — set in settings_data.json; vars here for use in overrides */
+  --font-body:    'Lato', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+
+  /* Border radius */
+  --radius-sm:   5px;
+  --radius-md:  10px;
+  --radius-lg:  20px;
+  --radius-xl:  40px;
+  --radius-pill: 35px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 6px 15px rgba(0, 0, 0, 0.2);
+
+  /* Transitions */
+  --transition-fast: 0.2s ease-in-out;
+  --transition-base: 0.3s ease;
+}
+
+
+/* ================================
+   2. Accessibility
+================================ */
+
+/* Skip to main content — visually hidden until focused */
+.skip-to-content-link {
+  position: absolute;
+  top: -9999px;
+  left: 16px;
+  background: var(--color-brand-yellow);
+  color: var(--color-dark);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 9999;
+  text-decoration: none;
+}
+
+.skip-to-content-link:focus {
+  top: 16px;
+}
+
+/* Remove default grey tap highlight on iOS for interactive elements */
+a,
+button,
+[role="button"],
+label,
+.button,
+.mobile-menu-link,
+.mobile-menu__item,
+.submenu__label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Suppress all motion for users who opt out */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ================================
+   3. Base / Reset
+================================ */
+
+/* Smooth scrolling — skipped when user prefers reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Prevent horizontal overflow — all viewports.
+   The announcement bar sticky plugin sets inline width: window.outerWidth on
+   .announcement-bar__container at init time, which can exceed viewport width.
+   max-width + overflow-x clamp it without breaking sticky behaviour. */
+body {
+  overflow-x: hidden;
+}
+
+body.index {
+  display: block;
+}
+
+.announcement-bar__container {
+  overflow-x: hidden;
+}
+
+/* Hidden scrollbar — scroll still functions; no visible bar */
+html {
+  scrollbar-width: none; /* Firefox */
+}
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+
+/* ================================
+   4. Typography
+   Theme font settings (Lato body / Montserrat headings) are managed
+   in settings_data.json. Rules here add targeted overrides only.
+================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Content section headings: no CSS uppercase, consistent spacing */
+.rich-text h2,
+.rich-text__title,
+.featured-collection__title,
+.image-with-text-overlay h2,
+.banner__heading,
+.video__title,
+.slideshow-classic__preheading h2,
+.product-app--container h2 {
+  text-transform: none;
+  letter-spacing: 0.08em;
+}
+
+/* Product price */
+.product-block--price .money {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* Size chart link */
+.product-block--size-chart a.product__size-chart {
+  font-family: var(--font-heading);
+  font-weight: 800;
+}
+
+/* Footer column headings */
+.footer__container p.footer__heading {
+  font-family: var(--font-heading);
+  font-weight: 800;
+}
+
+/* Rich text max-width — prevents body copy spanning full viewport on wide screens */
+.rich-text__content {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rich-text__text {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rich-text__heading.title {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* h2 → paragraph gap inside rich text sections */
+.rich-text__content .rich-text__heading + .rich-text__text {
+  margin-top: 16px;
+}
+
+
+/* ================================
+   5. Navigation
+   The flex-icon .woff, .ttf and .svg files were corrupted during
+   upload (binary data garbled through UTF-8 encoding). The @font-face
+   declaration has been removed from styles.css.liquid. These rules
+   replace every glyph the font served with a pure CSS border-triangle
+   that has zero font dependency. The overrides are required
+   to defeat the font-family and content rules in styles.css.liquid
+   that would otherwise render nothing (or a box) with the corrupt font.
+================================ */
+
+{%- comment -%}
+  Dropdown arrow: replaces corrupted icon font with pure CSS border triangle.
+  Uses :where() selector to lower specificity and :is() for compact multi-selector,
+  reducing reliance on while maintaining override over theme defaults.
+{%- endcomment -%}
+
+.navbar-link:not(.is-arrowless)::after,
+.mobile-menu-link::after,
+.select:not(.is-multiple):not(.is-loading):not(.is-arrowless)::after,
+.age-gate__select-wrapper:not(.is-multiple):not(.is-loading):not(.is-arrowless)::after {
+  content: "";
+  font-family: unset;
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  right: 0.8em;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  border-bottom: none;
+  transform: translateY(-50%);
+  transform-origin: center;
+  transition: transform var(--transition-fast);
+  pointer-events: none;
+}
+
+
+/* ================================
+   6. Header
+================================ */
+
+/* Fix: header must be full-width at page load when in overlay/absolute state.
+   The sticky JS sets position:absolute but omits width:100%, causing ~520px
+   gap on the right side before scrolling. */
+.header,
+.mobile-header {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Slightly transparent dark header — lets the hero image bleed through subtly.
+   backdrop-filter adds a frosted-glass blur so text remains legible. */
+html body .header,
+html body .mobile-header,
+html body .is-drawer {
+  background-color: rgba(42, 42, 42, 0.92);
+}
+
+@supports (backdrop-filter: blur(6px)) {
+  .header,
+  .mobile-header,
+  .is-drawer {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+}
+
+/* Sticky header — near-opaque when scrolled (content behind it changes).
+   The section-scoped inline <style> from settings_data.json sets
+   #shopify-section-...header .header-sticky-wrapper.is-sticky .header { background:var(--color-light) }
+   That ID-prefixed rule wins on specificity without. */
+html body .header-sticky-wrapper.is-sticky .header,
+html body #mobile-header-sticky-wrapper.is-sticky .mobile-header,
+html body .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
+  background-color: rgba(42, 42, 42, 0.97);
+}
+
+@supports (backdrop-filter: blur(8px)) {
+  .header-sticky-wrapper.is-sticky .header,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-header,
+  .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Announcement bar sticky-wrapper collapse guard.
+   The theme uses a jQuery sticky plugin that wraps the bar in
+   .announcement-sticky-wrapper. If that wrapper collapses to zero
+   height (timing or plugin issue), the fixed announcement bar overlaps
+   the header logo below it. Ensuring the wrapper retains its natural
+   height prevents this. */
+.announcement-sticky-wrapper {
+  min-height: inherit;
+}
+
+/* Nav link text — white on dark background */
+.header .navbar-link,
+.header .navbar-item,
+.header a:not([class*="logo"]),
+.mobile-header a:not([class*="logo"]) {
+  color: var(--color-white, #ffffff);
+}
+
+.header .navbar-link:hover,
+.header .navbar-item:hover {
+  color: var(--color-brand-yellow);
+  background-color: transparent;
+}
+
+/* Dropdown — always display:block so visibility/opacity can transition in AND out.
+   Theme's display:none default and is-hidden utility are overridden here.
+   visibility:hidden keeps it out of pointer flow while allowing the fade. */
+.navbar-item.has-dropdown .navbar-dropdown {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, visibility 0s 0.18s;
+  background-color: var(--color-dark);
+  box-shadow: inset 0 3px 0 var(--color-brand-yellow);
+}
+
+/* Show in both hover-mode and click-mode */
+.dropdown-click--false .navbar-item.has-dropdown:hover .navbar-dropdown,
+.navbar-item.has-dropdown.is-opened .navbar-dropdown {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.18s ease;
+}
+
+.navbar-dropdown .navbar-item,
+.navbar-dropdown .navbar-link {
+  color: var(--color-white, #ffffff);
+}
+
+.navbar-dropdown .navbar-item:hover {
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+}
+
+/* Mega menu — always display:block so we can transition in and out.
+   Background needs 3-class specificity to beat the section inline {% style %}
+   which uses .mega-menu__{{ id }} .mega-menu { background: ... } (2 classes). */
+.mega-menu {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, visibility 0s 0.22s;
+  box-shadow: inset 0 3px 0 var(--color-brand-yellow);
+}
+
+/* 3-class rule beats section inline 2-class rule */
+.header .mega-menu__section .mega-menu,
+.header-sticky-wrapper .mega-menu__section .mega-menu {
+  background-color: var(--color-dark);
+}
+
+/* Show states */
+.mega-menu__section.is-active .mega-menu,
+.mega-menu.mega-menu--show,
+.mega-menu.mega-menu--force-show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.22s ease;
+}
+
+.mega-menu a,
+.mega-menu a:active,
+.mega-menu a:visited,
+.mega-menu .mega-menu__heading,
+.mega-menu .menu__heading {
+  color: var(--color-white, #ffffff);
+}
+
+.mega-menu a:hover {
+  color: var(--color-brand-yellow);
+}
+
+
+/* ================================
+   7. Buttons
+================================ */
+
+.button,
+a.button {
+  /* Override Bulma's fixed height (2.25em) which clips text at bottom when
+     combined with padding. height:auto lets padding drive the box height.
+     align-items:center ensures text is vertically centred in the flex row. */
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  padding-top: 0.65em;
+  padding-bottom: 0.65em;
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button:hover,
+  a.button:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Add to cart */
+.purchase-details__buttons .ajax-submit.button--add-to-cart {
+  text-transform: none;
+  border-radius: var(--radius-pill);
+}
+
+.purchase-details__buttons .action_button.action_button--secondary:hover {
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+}
+
+/* Dynamic checkout (Shopify Payments — Shop Pay, Apple Pay, etc.) */
+gravity-button.accelerated-checkout-button {
+  border-radius: var(--radius-pill);
+}
+
+/* Primary action — dark background, gold text (main CTAs)
+   Selector includes a.button--primary-action to match the specificity of
+   a.button (0,1,1), which otherwise overrides the 14px padding here. */
+a.button--primary-action,
+button.button--primary-action,
+.button--primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 32px;
+  line-height: 1.2;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.button--primary-action:hover {
+  background-color: var(--color-mid);
+  color: var(--color-brand-yellow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button--primary-action:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Secondary button — matching size to primary-action.
+   Selector matches the specificity of styles.css rule
+   "a.button--secondary.button" (0,2,1) which otherwise wins
+   and sets font-size:1rem (17px) and padding:0.65em (11.05px). */
+a.button--secondary.button,
+button.button--secondary.button,
+.button--secondary {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  font-size: 16px;
+  line-height: 1.2;
+  border-radius: var(--radius-pill);
+}
+
+/* "Read more" collapsible toggle (collection descriptions) */
+.toggle-text {
+  display: inline-block;
+  background: var(--color-brand-yellow);
+  color: var(--color-dark);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 16px;
+  margin-top: 15px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  border: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.toggle-text:focus {
+  outline: 3px solid var(--color-brand-yellow);
+  outline-offset: 2px;
+}
+
+.toggle-text:hover {
+  background: var(--color-dark);
+  color: var(--color-brand-yellow);
+}
+
+/* Button containers — gap between body copy and CTA
+   .buttons is the Bulma wrapper rendered by the button snippet. */
+.rich-text__content .buttons {
+  margin-top: 28px;
+}
+
+
+/* ================================
+   8. Links & Animated Underlines
+================================ */
+
+a {
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+/* Animated underline — prose body links only */
+p a:not(.button):not([class*="logo"]) {
+  position: relative;
+}
+
+p a:not(.button):not([class*="logo"])::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-mid);
+  transition: width var(--transition-base);
+  pointer-events: none;
+}
+
+p a:not(.button):not([class*="logo"]):hover::after {
+  width: 100%;
+}
+
+/* Reusable animated underline modifier class */
+.link--animated {
+  position: relative;
+}
+
+.link--animated::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-mid);
+  transition: width var(--transition-base);
+  pointer-events: none;
+}
+
+.link--animated:hover::after {
+  width: 100%;
+  background-color: var(--color-dark);
+}
+
+
+/* ================================
+   9. Video Hero
+================================ */
+
+/* Cap hero height so a 16:9 video doesn't exceed 720px on wide desktops.
+   The inline {% style %} sets aspect-ratio:16/9 which at 1440px = 810px,
+   at 1920px = 1080px — both far too tall. max-height clamps it.
+   The absolute-positioned children (poster, video, text overlay) all
+   inherit the capped height via overflow:hidden on the wrapper. */
+#shopify-section-index_video_e3PxRq .video-wrapper {
+  max-height: min(85vh, 720px);
+}
+
+/* Show text overlay once video is present; JS manages the none→flex transition */
+.video-present--true .video__text-container {
+  display: flex;
+}
+
+/* Hide the poster image when autoplay video is present —
+   poster exists as a click-to-play fallback only, not needed for autoplay.
+   Two rules needed: the Liquid sets a background-image inline on .video-wrapper
+   AND renders a .video-section-poster div — both must be suppressed. */
+.has-video-added .video-section-poster {
+  display: none;
+}
+.has-video-added .video-wrapper {
+  background-image: none;
+}
+
+.video-player {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+.plyr__video-embed video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Horizontal padding so text doesn't sit at the viewport edge.
+   The theme default is 30px on all sides — too close on wide screens. */
+.video__text-wrapper {
+  padding-left: 72px;
+  padding-right: 72px;
+}
+
+@media (max-width: 768px) {
+  .video__text-wrapper {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* Push CTA button down from the subtitle text */
+.video__text-wrapper .button {
+  margin-top: 28px;
+}
+
+
+/* ================================
+   10. Swatches
+================================ */
+
+.swatch input:checked + .swatch-element {
+  background: var(--color-dark);
+  color: var(--color-brand-yellow);
+}
+
+.swatch label {
+  border-radius: 3px;
+  min-width: 100%;
+}
+
+.swatch__options.custom-size,
+.swatch__options.custom-type,
+.swatch__options.custom-colour {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  grid-template-columns: repeat(var(--swatch-count, auto-fit), minmax(0, 1fr));
+}
+
+/* Grid layout based on data-count attribute set by swatch-layout.js */
+.swatch__options[data-count="2"] { grid-template-columns: repeat(2, 1fr); }
+.swatch__options[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
+.swatch__options[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+.swatch__options[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
+.swatch__options[data-count="6"] { grid-template-columns: repeat(6, 1fr); }
+
+.swatch-element {
+  border-radius: var(--radius-pill);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.swatch-element:hover {
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .swatch-element:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.purchase-details .purchase-details__spb--true {
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .swatch label {
+    padding: 0;
+    text-align: center;
+  }
+}
+
+
+/* ================================
+   11. Homepage — Collection Grid & Featured Collection
+   .jsCollectionList is added by theme JS when the collection list
+   section initialises. Mobile layout is handled by Flickity
+   (.flickity-enabled present) — these rules apply to both states.
+================================ */
+
+/* Fix: collection list wrapper forces width to ~1716px with 5+ columns,
+   causing all ancestor block elements to overflow the viewport.
+   overflow:hidden prevents the flex container expanding beyond 100vw. */
+.collection-list__wrapper {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Rounded corners + shadow on every card */
+.jsCollectionList .collection-list__thumbnail {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Image fills card */
+.jsCollectionList .collection-list__thumbnail .image-element__wrap,
+.jsCollectionList .collection-list__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Card title — uppercase is intentional here (category label) */
+.jsCollectionList .collection-info__caption .title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-white, #fff);
+  text-transform: uppercase;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* Featured collection sliders (Best Sellers, New Arrivals):
+   heading row needs breathing room before the product slider. */
+.featured-collection-section .featured-collection__heading-row {
+  margin-bottom: 20px;
+}
+
+.featured-collection-section .featured-collection__title {
+  margin-bottom: 0;
+}
+
+/* "View All" link — pull it back from the raw right viewport edge
+   and style it as a legible pill link rather than a small text anchor.
+   The theme positions it absolute right:0 which reaches the edge on
+   wide sections with no container padding. */
+.featured-collection__view-all {
+  right: 1.5rem;
+}
+
+.featured-collection__view-all-link {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-mid);
+  border: 1.5px solid var(--color-mid);
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  text-decoration: none;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.featured-collection__view-all-link:hover {
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  border-color: var(--color-dark);
+}
+
+
+/* ================================
+   12. Homepage — Art Story Section
+   Image-with-text-overlay (first instance — "Shop Best Sellers").
+   Scoped via css_class: section--art-story set in index.json.
+================================ */
+
+/* Global image-with-text-overlay overlay card defaults.
+   The section--art-story / section--about-brett rules below override
+   this for those specific homepage sections. */
+html body .image-with-text-overlay .caption-content {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+@supports (backdrop-filter: blur(2px)) {
+  .image-with-text-overlay .caption-content {
+    backdrop-filter: blur(2px);
+  }
+}
+
+.image-with-text-overlay__heading {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.image-with-text-overlay__preheading.banner__subheading.pretext.subtitle {
+  margin-bottom: 0;
+}
+
+/* Buttons inside overlay cards — gap above from subheading */
+.caption-content .buttons,
+.caption-content .button-group,
+.image-with-text-overlay__buttons {
+  margin-top: 24px;
+  gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Rounded image card with margin inset */
+.section--art-story .image-element__wrap {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin: 40px;
+  width: calc(100% - 80px);
+  box-sizing: border-box;
+  background-color: var(--color-white, #fff);
+}
+
+/* Dark overlay card — overrides the global light rule and section inline <style> */
+html body .section--art-story .caption-content {
+  background-color: rgba(0, 0, 0, 0.55);
+  border-color: transparent;
+}
+
+html body .section--art-story .caption-content .image-with-text-overlay__heading,
+html body .section--art-story .caption-content h2 {
+  color: var(--color-white, #ffffff);
+}
+
+html body .section--art-story .caption-content .image-with-text-overlay__preheading {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html body .section--art-story .caption-content .image-with-text-overlay__subheading {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+@media (min-width: 769px) {
+  .section--art-story .caption-content.text-align-center {
+    border-radius: var(--radius-lg);
+    margin: 80px;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .section--art-story .image-element__wrap {
+    margin: 20px;
+    width: auto;
+  }
+}
+
+
+/* ================================
+   13. Homepage — About Brett Section
+   Image-with-text-overlay (second instance).
+   Scoped via css_class: section--about-brett set in index.json.
+================================ */
+
+.section--about-brett .image-element__wrap {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin: 40px;
+  width: calc(100% - 80px);
+  box-sizing: border-box;
+  background-color: var(--color-white, #fff);
+}
+
+/* Dark overlay card */
+html body .section--about-brett .caption-content {
+  background-color: rgba(0, 0, 0, 0.55);
+  border-color: transparent;
+}
+
+html body .section--about-brett .caption-content .image-with-text-overlay__heading,
+html body .section--about-brett .caption-content h2 {
+  color: var(--color-white, #ffffff);
+}
+
+html body .section--about-brett .caption-content .image-with-text-overlay__preheading {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html body .section--about-brett .caption-content .image-with-text-overlay__subheading {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.section--about-brett .caption-content.text-align-center {
+  border-radius: var(--radius-lg);
+  margin: 80px;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+  .section--about-brett .image-element__wrap {
+    margin: 20px;
+    width: auto;
+  }
+
+  .section--about-brett .caption-content.text-align-center {
+    border-radius: var(--radius-md);
+    padding: 15px;
+    margin: 0;
+    width: 100%;
+    background-color: var(--color-white, #fff);
+  }
+}
+
+
+/* ================================
+   14. Homepage — Featured Slideshow
+   Scoped via css_class: section--featured-slideshow set in index.json.
+================================ */
+
+.section--featured-slideshow .slideshow-classic-container,
+.section--featured-slideshow .flickity-viewport,
+.section--featured-slideshow .slideshow-classic__banner {
+  overflow: visible;
+}
+
+/* Desktop slide image */
+.section--featured-slideshow .image-element__wrap.is-hidden-mobile-only {
+  margin: 0 40px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  width: calc(100% - 80px);
+  box-sizing: border-box;
+}
+
+/* Mobile slide image */
+.section--featured-slideshow .image-element__wrap.is-hidden-desktop-only {
+  margin: 0 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  width: calc(100% - 40px);
+  box-sizing: border-box;
+}
+
+.section--featured-slideshow .caption-content.text-align-center {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .section--featured-slideshow .caption-content.text-align-center {
+    box-shadow: none;
+  }
+}
+
+
+/* ================================
+   15. Instagram Feed
+   The Instafeed app injects inline opacity styles at runtime.
+   The overrides here are necessary — they cannot be
+   avoided without modifying third-party app code.
+================================ */
+
+/* Prevent hover overlay from staying visible after JS interaction */
+.instafeed-new-layout-item .instafeed-hover-layer {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.instafeed-new-layout-item:hover .instafeed-hover-layer {
+  opacity: 1;
+}
+
+/* Prevent app from rendering section title in uppercase */
+.instafeed-title,
+[class*="instafeed"] h2,
+[class*="instafeed"] .title {
+  text-transform: none;
+  letter-spacing: 0.08em;
+}
+
+
+/* ================================
+   16. Trust Bar
+================================ */
+
+html body [id*="trust_icon_bar"] {
+  background-color: var(--color-dark);
+}
+
+html body [id*="trust_icon_bar"] .icon-bar__block,
+html body [id*="trust_icon_bar"] a.icon-bar__block {
+  color: var(--color-white, #ffffff);
+}
+
+html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
+  color: var(--color-brand-yellow);
+}
+
+[id*="trust_icon_bar"] .icon-bar__wrapper {
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+
+/* trust-bar-marquee.js handles cloning + animation. CSS clips overflow and
+   fades the edges using pseudo-element overlays that match the bg colour —
+   more reliable than mask-image across browsers and stacking contexts. */
+[id*="trust_icon_bar"] .section {
+  overflow: hidden;
+  position: relative;
+}
+
+[id*="trust_icon_bar"] .section::before,
+[id*="trust_icon_bar"] .section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+[id*="trust_icon_bar"] .section::before {
+  left: 0;
+  background: linear-gradient(to right, var(--color-dark) 0%, transparent 100%);
+}
+
+[id*="trust_icon_bar"] .section::after {
+  right: 0;
+  background: linear-gradient(to left, var(--color-dark) 0%, transparent 100%);
+}
+
+/* Hide container until JS has set up the marquee, preventing a layout flash. */
+[id*="trust_icon_bar"] .container {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[id*="trust_icon_bar"] .icon-bar__block {
+  flex-shrink: 0;
+}
+
+/* The theme strips padding-left/:first-child and padding-right/:last-child.
+   Inside a marquee set that removes the gap at the set boundary.
+   Restore full padding so every junction looks identical. */
+[id*="trust_icon_bar"] .trust-marquee__set .icon-bar__block:first-child {
+  padding-left: 0.75rem;
+}
+[id*="trust_icon_bar"] .trust-marquee__set .icon-bar__block:last-child {
+  padding-right: 0.75rem;
+}
+
+
+/* ================================
+   17. Footer
+   Targets .footer which is the top-level class on the footer section
+   render. Avoids the hardcoded shopify-section ID for portability.
+================================ */
+
+/* Background — overrides the rgb(77,77,77) default from styles.css */
+.footer__content {
+  background-color: var(--color-dark);
+}
+
+.footer__bottom,
+[class*="footer-bottom"] {
+  background-color: var(--color-dark);
+}
+
+/* Copyright bar */
+/* Bottom bar: the .section class (Bulma) adds 1.5rem horizontal padding
+   which can create uneven-looking inner edges. Remove that padding from the
+   section itself and push it onto the inner .sub-footer container so the dark
+   background runs fully edge-to-edge. A hairline top border replaces the
+   abrupt colour-step from the main footer. */
+.footer__extra-content {
+  background-color: var(--color-dark);
+  color: var(--color-mid);
+  padding-left: 0;
+  padding-right: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer__extra-content .sub-footer {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.footer__extra-content a {
+  color: var(--color-light);
+}
+
+.footer__extra-content a:hover {
+  color: var(--color-brand-yellow);
+}
+
+/* Animated underline on footer links */
+.footer a {
+  text-decoration: none;
+  position: relative;
+  transition: color var(--transition-base);
+}
+
+.footer a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-light);
+  transition: width var(--transition-base);
+}
+
+.footer a:hover {
+  color: var(--color-brand-yellow);
+}
+
+.footer a:hover::after {
+  width: 100%;
+}
+
+/* No underline pseudo-element on images, buttons, logos */
+.footer a img::after,
+.footer a.button::after,
+.footer a[class*="logo"]::after {
+  content: none;
+}
+
+/* Footer columns — all start at the same top edge regardless of content height */
+.footer__content .container.has-limit {
+  align-items: flex-start;
+}
+
+/* Each column: consistent top padding and comfortable internal spacing */
+.footer__block {
+  padding-top: 24px;
+}
+
+.footer__block .footer__heading {
+  margin-bottom: 16px;
+}
+
+/* Suppress the double padding the Liquid wraps around social icons */
+.footer__heading + .has-padding-bottom.has-padding-top {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Social icons — stacked vertically, left-aligned, with proper vertical gap.
+   The theme's base CSS gives li { padding: 0 5px } which is horizontal only —
+   override here to provide vertical breathing room between each icon row. */
+ul.social-icons.is-flex.is-flex-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+ul.social-icons.is-flex.is-flex-wrap li {
+  display: flex;
+  align-items: center;
+  padding: 0; /* override theme's horizontal padding */
+}
+
+ul.social-icons.is-flex.is-flex-wrap li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+/* ================================
+   18. Collection Page
+   #template-collection is generated by theme.liquid:
+   id="template-{{ template | replace: '.', '-' | handle }}"
+================================ */
+
+/* Banner content pill */
+#template-collection .banner__content {
+  display: inline-block;
+  padding: 8px 16px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  max-width: fit-content;
+}
+
+@media (max-width: 768px) {
+  #template-collection .banner__content {
+    padding: 4px 8px;
+    max-width: 80%;
+  }
+
+  #template-collection .banner__heading {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .one-whole.column {
+    margin: 0;
+  }
+
+  .collection__description.content.has-padding-bottom {
+    margin: 10px;
+  }
+}
+
+/* Collection description box.
+   required to defeat section-scoped inline <style> blocks. */
+html body .collection__description {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  padding: 40px;
+  margin: 40px;
+  line-height: 1.8;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+section.gallery-intro {
+  padding: 20px;
+}
+
+section.gallery-intro p {
+  margin-bottom: 20px;
+}
+
+/* Collapsible description */
+html body .collapsible-text-container {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+  line-height: 1.8;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+}
+
+.collapsible-text {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.collapsible-text .history-text {
+  max-height: 6em;
+  overflow: hidden;
+  position: relative;
+}
+
+.collapsible-text .history-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(42, 42, 42, 0), rgba(42, 42, 42, 1));
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+}
+
+.collapsible-text .history-text.expanded {
+  max-height: 1000px;
+}
+
+.collapsible-text .history-text.expanded::after {
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .collapsible-text-container {
+    padding: 20px;
+    margin: 10px;
+  }
+}
+
+/* Collection series info bar — rendered when collection metafields are populated */
+.collection__series-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 0 0 0 40px;
+  padding: 16px 40px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.collection__series-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collection__series-info-item dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.45);
+  line-height: 1;
+}
+
+.collection__series-info-item dd {
+  font-size: 13px;
+  color: var(--color-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.collection__series-description {
+  margin: 16px 40px 0;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(26, 26, 26, 0.8);
+}
+
+.collection__series-description p {
+  margin: 0 0 0.75em;
+}
+
+.collection__series-description p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .collection__series-info,
+  .collection__series-description {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Product grid */
+.collection-matrix {
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.container.collection-matrix .image-element__wrap {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  background-color: var(--color-white, #fff);
+}
+
+@media (max-width: 768px) {
+  .collection-matrix {
+    padding: 1rem 1.5rem;
+  }
+}
+
+
+/* ================================
+   19. All Collections Page
+   #template-list-collections matches when template == 'list-collections'
+================================ */
+
+#template-list-collections {
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+#template-list-collections .button.button--secondary {
+  display: none;
+}
+
+#template-list-collections .image-element__wrap {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+#template-list-collections .list-collection__thumbnail {
+  overflow: visible;
+}
+
+
+/* ================================
+   20. Product Page
+   #template-product matches when template == 'product'
+================================ */
+
+#template-product .product_section {
+  padding-top: 40px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* Image column wider, info column narrower — desktop only.
+   space-between on the parent handles the gap as a % of container width.
+   Scoped to min-width:769px so medium-down--one-whole still stacks on mobile. */
+@media (min-width: 769px) {
+  #template-product .product__images.one-half {
+    width: 57%;
+    flex: none;
+  }
+
+  #template-product .product__information.one-half {
+    width: 38%;
+    flex: none;
+  }
+}
+
+.lc-edition-scarcity {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  background: var(--color-brand-yellow)14;
+  border-left: 3px solid var(--color-brand-yellow);
+  padding: 8px 12px;
+  margin: 12px 0 16px;
+  border-radius: 0 4px 4px 0;
+  letter-spacing: 0.01em;
+}
+
+.lc-edition-scarcity:empty {
+  display: none;
+}
+
+.lc-collector-discount {
+  font-size: 14px;
+  color: var(--color-mid);
+  margin: 6px 0 16px;
+  padding: 6px 10px;
+  background: var(--color-light);
+  border-radius: 4px;
+}
+
+.product-block.product-block--size-chart {
+  text-align: right;
+  padding-top: 15px;
+  padding-bottom: 0;
+  margin-right: 18px;
+}
+
+.product-block.product-block--price {
+  padding-top: 15px;
+}
+
+.purchase-details {
+  margin-top: 0.8rem;
+}
+
+.product__social-share.has-padding-top {
+  padding-top: 0;
+}
+
+/* Description block — consistent line-height and colour, inherit size from theme */
+.product-block--description .product__description,
+.product-block--description .content {
+  line-height: 1.75;
+  color: rgba(26, 26, 26, 0.85);
+}
+
+/* Colour option — CSS grid so display:none N/A item is excluded from layout */
+.swatch__options.custom-colour {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.swatch__options.custom-colour .swatch__option {
+  min-width: 0;
+}
+
+.swatch__options.custom-colour .swatch-element.color {
+  display: flex;
+  width: 100%;
+  border-radius: 3px;
+  padding: 0;
+}
+
+.swatch__options.custom-colour .swatch-element.color label {
+  width: 100%;
+  height: 40px;
+  border-radius: 3px;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatch__options.custom-colour .swatch-label-text {
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Colour option row hidden when Glass or Unframed is selected */
+.lc-colour-row-hidden {
+  display: none;
+}
+
+/* Hide Flex theme's built-in inventory counter — edition scarcity handled by lc-edition-scarcity */
+#template-product .items_left {
+  display: none;
+}
+
+/* LCP fix — single-image product gallery is immediately visible.
+   styles.css starts all galleries at opacity:0 waiting for Flickity init,
+   but a one-image product never needs Flickity so the class never gets added.
+   Override for that case so the image qualifies as the LCP candidate. */
+.product-gallery--media-amount-1 .product-gallery__main {
+  opacity: 1;
+}
+
+/* Size chart link — animated underline + gold hover */
+.product-block.product-block--size-chart .product__size-chart {
+  position: relative;
+  color: inherit;
+  border-bottom: 0;
+  transition: color var(--transition-base);
+}
+
+.product-block.product-block--size-chart .product__size-chart::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-mid);
+  transition: width var(--transition-base);
+  pointer-events: none;
+}
+
+.product-block.product-block--size-chart .product__size-chart:hover {
+  color: var(--color-brand-yellow);
+}
+
+.product-block.product-block--size-chart .product__size-chart:hover::after,
+.product-block.product-block--size-chart .product__size-chart:active::after {
+  width: 100%;
+}
+
+/* Social share buttons */
+.product-block--share {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.social-share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.social-share-buttons .share-btn {
+  flex: 1;
+}
+
+.social-share-buttons .share-btn a.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  max-width: 100px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-white, #fff);
+  border: 2px solid var(--color-light);
+  color: inherit;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.social-share-buttons .share-btn a.button:hover {
+  border-color: transparent;
+}
+
+.social-share-buttons .share-btn--x         a.button { color: #1da1f2; }
+.social-share-buttons .share-btn--x         a.button:hover { background-color: #1da1f2; color: var(--color-white, #fff); }
+
+.social-share-buttons .share-btn--facebook  a.button { color: #3b5998; }
+.social-share-buttons .share-btn--facebook  a.button:hover { background-color: #3b5998; color: var(--color-white, #fff); }
+
+.social-share-buttons .share-btn--pinterest a.button { color: #bd081c; }
+.social-share-buttons .share-btn--pinterest a.button:hover { background-color: #bd081c; color: var(--color-white, #fff); }
+
+.social-share-buttons .share-btn--mail      a.button { color: #333; }
+.social-share-buttons .share-btn--mail      a.button:hover { background-color: #333; color: var(--color-white, #fff); }
+
+/* Accordion (FAQ / product info tabs).
+   required to defeat section-scoped inline <style> blocks. */
+.accordion {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.accordion dt {
+  padding: 16px;
+  font-weight: bold;
+  background: var(--color-dark);
+  color: var(--color-white, #fff);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
+}
+
+.accordion dt a {
+  color: inherit;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+.accordion dt small {
+  font-size: 18px;
+}
+
+.accordion dd {
+  display: none;
+  padding: 16px;
+  background: var(--color-white, #fff);
+  font-size: 14px;
+  color: var(--color-dark);
+  line-height: 1.5;
+  border-radius: var(--radius-md);
+}
+
+.accordion dd.active {
+  display: block;
+}
+
+/* Featured collection — rounded product images */
+.featured-collection .product-image__wrapper {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.featured-collection .product-image__wrapper img {
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  #template-product .product_section {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+
+/* ================================
+   21. Blog & Article Pages
+   #template-blog  → template == 'blog'
+   #template-article → template == 'article'
+================================ */
+
+/* Banner content pill */
+#template-blog .banner__content,
+#template-article .banner__content {
+  display: inline-block;
+  padding: 8px 16px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  max-width: fit-content;
+}
+
+@media (max-width: 768px) {
+  .breadcrumb__wrapper {
+    margin-bottom: 20px;
+  }
+
+  #template-blog .banner__content,
+  #template-article .banner__content {
+    padding: 4px 8px;
+    max-width: 80%;
+  }
+
+  #template-blog .banner__heading,
+  #template-article .banner__heading {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+}
+
+/* Blog article list — card images */
+#template-blog .image-element__wrap {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  background-color: var(--color-white, #fff);
+}
+
+.blog-card__read-more.buttons {
+  justify-content: center;
+}
+
+/* Article inline photo gallery */
+.image-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(33.333% - 20px);
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+  margin-bottom: 24px;
+}
+
+.image-item p {
+  max-width: 100%;
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 40px;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+.kandos-gallery {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.kandos-gallery .image-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 1024px) {
+  .image-container { gap: 15px; }
+  .image-item { width: calc(50% - 15px); }
+}
+
+@media (max-width: 768px) {
+  .image-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .image-item { width: 100%; }
+  .image-item img { max-height: 450px; }
+}
+
+
+/* ================================
+   22. Homepage — Parallax (Art Story & About Brett)
+   Uses scroll-driven animation where supported.
+   Falls back to static (no effect) on older browsers.
+   The image is oversized (115% tall) so the overflow:hidden wrapper
+   clips the translateY movement, creating the parallax window.
+================================ */
+
+@supports (animation-timeline: view()) {
+  .section--art-story .image-element__wrap img,
+  .section--about-brett .image-element__wrap img {
+    height: 115%;
+    width: 100%;
+    object-fit: cover;
+    animation: lc-parallax linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+
+  @keyframes lc-parallax {
+    from { transform: translateY(-7%); }
+    to   { transform: translateY(7%); }
+  }
+}
+
+
+/* ================================
+   23. Homepage — Collection Card Hover Reveal
+   Title and button slide up from the bottom on hover.
+   The actual hover parent in the Flex theme HTML is .product-wrap
+   (confirmed via DOM inspection — .collection-thumbnail-item does
+   not exist in this theme version).
+================================ */
+
+/* Gradient overlay — always visible so titles are always readable */
+.collection-thumbnail-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 55%);
+  opacity: 1;
+}
+
+/* Caption wrapper — always visible */
+.collection-info__caption-wrapper {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Hover: lift the overlay slightly for interactivity feel */
+.product-wrap:hover .collection-thumbnail-overlay {
+  opacity: 1;
+}
+
+.product-wrap:hover .collection-info__caption-wrapper {
+  opacity: 1;
+}
+
+/* Text and button colour on the dark gradient */
+.collection-info__caption .title,
+.collection-info__caption-wrapper .title {
+  color: var(--color-white, #ffffff);
+}
+
+.collection-info__caption .button {
+  color: var(--color-white, #ffffff);
+  border-color: rgba(255,255,255,0.7);
+  background-color: transparent;
+}
+
+.collection-info__caption .button:hover {
+  background-color: var(--color-white, #ffffff);
+  color: var(--color-dark);
+  border-color: var(--color-white, #ffffff);
+}
+
+
+/* ================================
+   24. Cookie Banner
+   .fixed-message-section (schema class) wraps the whole thing.
+   .fixed-message__container is the inner panel that gets background/color
+   from the section's inline <style> block. overrides that.
+================================ */
+
+html body .fixed-message__container {
+  background-color: rgba(26, 26, 26, 0.96);
+  color: var(--color-white, #ffffff);
+  border-top: 2px solid var(--color-brand-yellow);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+}
+
+@supports (backdrop-filter: blur(10px)) {
+  .fixed-message__container {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+html body .fixed-message__text p,
+html body .fixed-message__text {
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Privacy-policy / inline links in the banner text */
+html body .fixed-message__text a {
+  color: var(--color-brand-yellow);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Override the theme's generic button rules — gold pill, dark text */
+html body .fixed-message__button .button,
+html body .fixed-message__button .age-gate__confirm_btn {
+  background-color: var(--color-brand-yellow);
+  color: var(--color-dark);
+  border-color: var(--color-brand-yellow);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  min-height: unset;
+  height: auto;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+html body .fixed-message__button .button:hover,
+html body .fixed-message__button .age-gate__confirm_btn:hover {
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  border-color: var(--color-dark);
+  transform: none; /* suppress global hover lift inside a fixed bar */
+}
+
+@media (max-width: 798px) {
+  .fixed-message__container .container {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+}
+
+
+/* ================================
+   25. Search Popup
+   Opened by Fancybox with baseClass: 'search__lightbox'.
+   The container gets class="fancybox-container search__lightbox".
+   Theme CSS sets .search-popup { background: {{ settings.search_popup_bg }} }
+   which renders as #FFF — overridden below.
+================================ */
+
+/* Fancybox overlay — slightly deeper than default for the search context */
+.search__lightbox .fancybox-bg {
+  background: var(--color-dark);
+  opacity: 0.72;
+}
+
+/* Strip default fancybox-content white background and padding */
+.search__lightbox .fancybox-slide--html .fancybox-content {
+  background: transparent;
+  padding: 0;
+  overflow: visible;
+  box-shadow: none;
+  max-width: 660px;
+  width: calc(100vw - 48px);
+}
+
+/* Main popup panel — dark frosted glass to match the header */
+html body .search-popup {
+  background-color: rgba(22, 22, 22, 0.97);
+  color: var(--color-white, #ffffff);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
+  max-width: 660px;
+  padding: 40px 40px 32px;
+}
+
+@supports (backdrop-filter: blur(14px)) {
+  .search-popup {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}
+
+/* Collapse the inner wrapper's extra padding since .search-popup now owns it */
+html body .search-popup .search-overlay__wrapper {
+  padding: 0;
+}
+
+/* Title */
+html body .search-popup__title {
+  color: var(--color-white, #ffffff);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  margin-bottom: 0;
+}
+
+/* Input — standard site style (white bg, bordered, dark text, no radius) */
+html body .search-popup .input {
+  background-color: hsl(0, 0%, 100%);
+  border-color: var(--color-light);
+  border-radius: 0;
+  color: hsl(0, 0%, 21%);
+  box-shadow: none;
+}
+
+html body .search-popup .input:focus {
+  border-color: var(--color-mid);
+  box-shadow: 0 0 0 0.125em rgba(77, 77, 77, 0.25);
+  outline: 3px solid var(--color-brand-yellow);
+  outline-offset: 2px;
+}
+
+/* Search icon — gold tint matching the brand */
+html body .search-popup button[name="search"] {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+html body .search-popup .icon.is-left,
+html body .search-popup .icon.is-left svg,
+html body .search-popup button[name="search"] svg {
+  color: var(--color-brand-yellow);
+  fill: currentColor;
+  transition: color var(--transition-fast);
+}
+
+html body .search-popup button[name="search"]:hover .icon.is-left,
+html body .search-popup button[name="search"]:hover svg {
+  color: var(--color-white, #fff);
+}
+
+/* "Common searches" label */
+html body .search-popup .search-menu__heading {
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Quick-link items */
+html body .search-popup .search-menu__item a {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  padding: 5px 0;
+  display: block;
+  transition: color var(--transition-fast);
+  text-decoration: none;
+}
+
+html body .search-popup .search-menu__item a:hover {
+  color: var(--color-brand-yellow);
+}
+
+/* Predictive results pane — stay dark when it appears */
+html body .search-popup .search__results-wrapper,
+html body .search-popup .search__results {
+  background-color: rgba(22, 22, 22, 0.97);
+  border-radius: var(--radius-md);
+  margin-top: 4px;
+}
+
+html body .search-popup .search__results__item .description__title,
+html body .search-popup .search__results__item .item-pricing {
+  color: var(--color-white, #ffffff);
+}
+
+/* Mobile */
+@media (max-width: 798px) {
+  .search__lightbox .fancybox-slide--html .fancybox-content {
+    width: calc(100vw - 32px);
+  }
+
+  .search-popup {
+    padding: 28px 20px 24px;
+    border-radius: var(--radius-md);
+  }
+
+  .search-popup__title {
+    font-size: 1.15rem;
+  }
+}
+
+
+/* ================================
+   26. Cart Drawer — Width + Free Shipping Bar
+================================ */
+
+/* Drawer width — theme default of 40% is too wide on large screens */
+@media only screen and (min-width: 799px) {
+  #theme-ajax-cart.is-drawer {
+    width: 400px;
+    right: -400px;
+  }
+  #theme-ajax-cart.is-drawer.is-visible {
+    right: 0;
+  }
+}
+
+/* Free shipping progress bar — sits above checkout button */
+.ajax-cart__shipping-progress {
+  padding: 14px 20px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4px;
+}
+
+.ajax-cart__shipping-bar-track {
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.ajax-cart__shipping-bar-fill {
+  height: 100%;
+  background-color: var(--color-brand-yellow);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.ajax-cart__shipping-message {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+.ajax-cart__shipping-message .money {
+  color: var(--color-white, #fff);
+  font-weight: 600;
+}
+
+.ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved {
+  color: var(--color-brand-yellow);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved .icon svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+
+/* ================================
+   27. Cart Drawer — Trust Bar
+================================ */
+
+.ajax-cart__trust-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 14px 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 8px;
+  gap: 4px;
+}
+
+.ajax-cart__trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  text-align: center;
+}
+
+.ajax-cart__trust-item .icon svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--color-brand-yellow);
+  opacity: 0.85;
+}
+
+.ajax-cart__trust-item span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+
+/* ================================
+   28. Product Page — Art Details Block
+================================ */
+
+.product__art-details {
+  margin-top: 12px;
+  margin-bottom: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.product__art-details-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.product__art-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product__art-detail dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.45);
+  line-height: 1;
+}
+
+.product__art-detail dd {
+  font-size: 15px;
+  color: var(--color-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.product__art-detail--cert dd {
+  color: var(--color-brand-yellow);
+  font-weight: 600;
+}
+
+.product__art-description {
+  margin-top: 14px;
+  font-size: 14px;
+  color: rgba(26, 26, 26, 0.75);
+  line-height: 1.6;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+
+/* ================================
+   29. Product Page — Mobile Sticky Add-to-Cart
+================================ */
+
+.product__sticky-atc {
+  display: none;
+}
+
+@media (max-width: 798px) {
+  .product__sticky-atc {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background-color: var(--color-dark);
+    border-top: 2px solid var(--color-brand-yellow);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    padding: 10px 16px max(12px, env(safe-area-inset-bottom));
+    transform: translateY(100%);
+    transition: transform 0.25s ease-in-out;
+    pointer-events: none;
+  }
+
+  .product__sticky-atc.is-visible {
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .product__sticky-atc-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .product__sticky-atc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .product__sticky-atc-title {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .product__sticky-atc-price {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-white, #ffffff);
+    line-height: 1.2;
+  }
+
+  .product__sticky-atc-btn {
+    background-color: var(--color-brand-yellow);
+    color: var(--color-dark);
+    border-color: var(--color-brand-yellow);
+    border-radius: 35px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: unset;
+    height: auto;
+  }
+
+  .product__sticky-atc-btn:hover {
+    background-color: var(--color-white, #ffffff);
+    color: var(--color-dark);
+    border-color: var(--color-white, #ffffff);
+  }
+}
+
+
+/* ================================
+   30. Mobile UX — Touch Targets, Scroll & Zoom
+================================ */
+
+/* --- Cart drawer: enable scrolling --- */
+/* The theme CSS sets height:100% on the drawer but no overflow rule,
+   which clips content on carts with many items. */
+#theme-ajax-cart.is-drawer {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- Mobile menu: increase link touch targets to 44px minimum --- */
+/* Theme sets 0.5rem (8px) vertical padding = ~24px touch target. WCAG minimum is 44px. */
+@media (max-width: 798px) {
+  .mobile-menu .mobile-menu-link,
+  .mobile-menu .mobile-menu__item,
+  .mobile-menu .submenu__label,
+  .mobile-menu .mobile-menu a {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Close-dropdown chevron areas — currently undersize */
+  .mobile-menu .close-dropdown,
+  .mobile-menu .close-sub-dropdown {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
+
+/* --- Enforce minimum 16px font-size on all inputs on mobile ---
+   iOS Safari auto-zooms the viewport when an input with font-size
+   below 16px receives focus. This override prevents that on all
+   native and theme input variants. */
+@media (max-width: 798px) {
+  input,
+  textarea,
+  select,
+  .input,
+  .textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* --- Page body padding when sticky product bar is visible ---
+   Prevents the fixed sticky ATC from permanently obscuring
+   page content at the bottom of the product page. */
+@media (max-width: 798px) {
+  body.product {
+    padding-bottom: 72px;
+  }
+}
+
+/* ================================
+   31.  Product Page — Back Link, Price Range, Story Link
+================================ */
+
+/* ================================
+   32.  Product Gallery — Variant Thumbnail Strip (D18)
+================================ */
+
+/* Override theme's 0.3 dim on non-selected thumbnails */
+.product-gallery__thumbnails .product-gallery__thumbnail {
+  opacity: 1;
+}
+
+/* D7: Back to collection link */
+.product__back-link {
+  display: inline-block;
+  font-size: 0.8125rem;
+  color: var(--color-body-text, #6f6f6f);
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0;
+  font-family: var(--font-stack-body, Lato, sans-serif);
+}
+
+.product__back-link:hover {
+  color: var(--color-primary, var(--color-brand-yellow));
+}
+
+/* D6: Price range line */
+.product__price-range {
+  font-size: 0.8125rem;
+  color: var(--color-body-text, #6f6f6f);
+  margin: 0 0 0.25rem;
+  letter-spacing: 0;
+}
+
+/* D12: Story link */
+.product__story-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--color-body-text, #6f6f6f);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+.product__story-link:hover {
+  color: var(--color-primary, var(--color-brand-yellow));
+}
+
+
+/* ================================
+   33.  Blog — Shop CTA Block (D11)
+================================ */
+
+.blog-cta {
+  margin-top: 2.5rem;
+  padding: 1.5rem 2rem;
+  background-color: var(--color-light, var(--color-light));
+  border-left: 3px solid var(--color-brand-yellow);
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.blog-cta__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-mid, var(--color-mid));
+  margin: 0;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+}
+
+.blog-cta__link.button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media screen and (max-width: 640px) {
+  .blog-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Tablet optimisation (1024px to 1280px — landscape tablets to small desktops) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Swatch options adjust to 2-3 columns on tablets */
+  .swatch__options[data-count="4"],
+  .swatch__options[data-count="5"],
+  .swatch__options[data-count="6"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Reduce padding on medium screens */
+  .product__form { padding: 0 15px; }
+}
+
+/* Small desktop optimisation (1025px to 1279px — small desktop/large tablet) */
+@media (min-width: 1025px) and (max-width: 1279px) {
+  /* Swatch options adjust to 3-4 columns for small desktops */
+  .swatch__options[data-count="4"],
+  .swatch__options[data-count="5"],
+  .swatch__options[data-count="6"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Standard padding for small desktops */
+  .product__form { padding: 0 18px; }
+
+  /* Adjust body text size for better spacing */
+  body { font-size: 15px; }
+}
+
+/* Desktop optimisation (1280px+ — medium to large desktops) */
+@media (min-width: 1280px) {
+  /* Re-establish full column counts on larger screens */
+  .swatch__options[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+  .swatch__options[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
+  .swatch__options[data-count="6"] { grid-template-columns: repeat(6, 1fr); }
+
+  /* Expand padding on larger screens */
+  .product__form { padding: 0 20px; }
+}
+

@@ -13,7 +13,7 @@
       "type": "banner",
       "settings": {
         "image_darken": false,
-        "subtitle": "Subheading",
+        "subtitle": "",
         "width": "wide",
         "banner_height": "medium",
         "padding_top": 0,

@@ -42,7 +42,7 @@ window.PXUTheme.jsMap = {
         // Create map
         window.PXUTheme.jsMap.initMap(geoLat, geoLng, mapData);
       } else {
-        console.error('Maps geocode error: ' + status);
+        console.log('Error:' + status);
       }
     });
   },

@@ -34,6 +34,18 @@
    28.  Product Page — Art Details Block
    29.  Product Page — Mobile Sticky Add-to-Cart
    30.  Mobile UX — Touch Targets, Scroll & Zoom
+   31.  Product Page — Back Link, Price Range, Story Link
+   32.  Product Gallery — Variant Thumbnail Strip
+   33.  Blog — Shop CTA Block
+   34.  Homepage — Category Grid
+   35.  Breakpoint Smoothing
+   36.  Collection Page — Responsive Grid
+   37.  Accessibility & Proportion Fixes (audit 2026-04-08)
+   38.  (merged into 37)
+   39.  Collection Page — Spacing, Typography, Filter Row
+   40.  Collection Page — Responsiveness (White Bay audit)
+   41.  Mobile Homepage — Layout compliance (audit 2026-04-09)
+   42.  Accessibility & touch target fixes (audit 2026-04-09)
 ================================ */
 
 
@@ -42,18 +54,37 @@
 ================================ */
 
 :root {
-  /* Brand colours */
+  /* Brand colours — all values aligned with Shopify admin settings_data.json.
+     --color-brand-yellow = admin link_hover_color / header_link_hover_color (#ebac20)
+     --color-mid          = admin regular_color (#6f6f6f)
+     --color-light        = admin dropdown_background (#f5f5f5)
+     --color-sale         = admin sale_color (#d32f2f)
+     --color-body-text    = admin regular_color (#6f6f6f)
+     --color-footer-bg    = admin footer_background (#4d4d4d)
+     --color-dark is NOT overridden by admin — used only for custom non-admin-controlled
+     elements (cookie banner, search popup, mobile sticky ATC, cart drawer, art description
+     boxes, accordion headers). These are intentionally near-black for design. */
   --color-brand-yellow: #ebac20;
   --color-dark:         #1a1a1a;
-  --color-mid:          #4d4d4d;
+  --color-mid:          #6f6f6f;
   --color-light:        #f5f5f5;
   --color-sale:         #d32f2f;
+  --color-white:        #ffffff;
+  --color-body-text:    #6f6f6f;
+  --color-footer-bg:    #4d4d4d;
+
+  /* Social brand colours */
+  --color-twitter:      #1da1f2;
+  --color-facebook:     #3b5998;
+  --color-pinterest:    #bd081c;
+  --color-email:        #333333;
 
   /* Fonts — set in settings_data.json; vars here for use in overrides */
   --font-body:    'Lato', sans-serif;
   --font-heading: 'Montserrat', sans-serif;
 
   /* Border radius */
+  --radius-xs:   3px;
   --radius-sm:   5px;
   --radius-md:  10px;
   --radius-lg:  20px;
@@ -68,9 +99,56 @@
 
   /* Transitions */
   --transition-fast: 0.2s ease-in-out;
+  --transition-mid:  0.25s ease;
+  --transition-slide: 0.25s ease-in-out;
   --transition-base: 0.3s ease;
+
+  /* Dark grey for announcement bar, mobile header — matches footer colour (#4d4d4d) */
+  --color-header-bg: #4d4d4d;
+
+  /* Spacing scale — use these instead of hardcoded px values */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 40px;
+  --space-3xl: 80px;
+
+  /* Primary action colour alias (used for hover/focus states) */
+  --color-primary: var(--color-brand-yellow);
 }
 
+
+/* Prevent flex-icon font download delay causing FOIT on nav chevrons.
+   The theme declares @font-face for "flex-icon" which loads asynchronously.
+   Browser font-display:block behaviour holds ::after rendering until the font
+   resolves. Overriding with src:local('') resolves immediately — no download,
+   no wait. Our chevrons use content:"" so no glyph is needed from the font. */
+@font-face {
+  font-family: "flex-icon";
+  src: local('Arial');
+  font-display: swap;
+}
+
+/* Metric-matched fallback for Montserrat — prevents horizontal layout shift when
+   the web font swaps in. size-adjust scales Arial to approximate Montserrat's
+   character widths, so nav items and headings occupy the same horizontal space
+   before and after the swap. Values derived from Montserrat/Arial x-height ratio. */
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial');
+  size-adjust: 94.6%;
+  ascent-override: 90.28%;
+  descent-override: 22.38%;
+  line-gap-override: 0%;
+}
+
+.navbar-link,
+.header__link,
+h1, h2, h3, h4 {
+  font-family: Montserrat, 'Montserrat Fallback', sans-serif !important;
+}
 
 /* ================================
    2. Accessibility
@@ -86,7 +164,7 @@
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 0.875rem;
   z-index: 9999;
   text-decoration: none;
 }
@@ -147,9 +225,44 @@ body.index {
   overflow-x: hidden;
 }
 
+/* Flex items don't respect overflow clipping unless min-width: 0 is set.
+   Without it, the marquee track's intrinsic width (6352px) expands the flex
+   item and bleeds into body scrollWidth. */
+.announcement-bar__content {
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Prevent layout shift on page load.
+   Theme sets .announcement-bar { position: absolute } so the bar is out of normal flow.
+   The container's height then comes from .announcement-bar__shadow (an invisible placeholder,
+   min-height: 20px). JS measures the bar after load and sets shadow to match — this creates
+   a squish-then-expand effect. Fix: put the bar back in flow (position: relative) so the
+   container sizes to the bar directly, and hide the now-redundant shadow. */
+.announcement-container {
+  height: auto !important;
+}
+.announcement-bar {
+  position: relative !important;
+  background-color: var(--color-header-bg) !important;
+  overflow: hidden !important; /* W3C: prevent 2280px marquee track from contributing to page scroll width */
+}
+.announcement-bar__shadow {
+  display: none !important;
+}
+
+/* Suppress the 'transition: all 0s linear' that fires on .announcement-container when
+   announcement-bar--visible is added to body — even 0s transitions trigger a style-flush repaint. */
+.announcement-bar--visible .announcement-container {
+  transition: none !important;
+}
+
+
 /* Hidden scrollbar — scroll still functions; no visible bar */
 html {
   scrollbar-width: none; /* Firefox */
+  min-width: 0 !important; /* Override styles.css min-width: 300px which forces horizontal
+                               scroll on sub-300px CSS-pixel viewports (e.g. iPhone SE at DPR≥2) */
 }
 ::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */
@@ -169,7 +282,6 @@ h1, h2, h3, h4, h5, h6 {
 /* Content section headings: no CSS uppercase, consistent spacing */
 .rich-text h2,
 .rich-text__title,
-.featured-collection__title,
 .image-with-text-overlay h2,
 .banner__heading,
 .video__title,
@@ -179,9 +291,50 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.08em;
 }
 
+/* ================================
+   Typography — Two-tier section heading hierarchy
+
+   TIER 1 — Editorial headings (narrative, larger):
+     "What Gets Left Behind", "Six Categories. Two Countries. One Thread."
+     → 24px, mixed case, Montserrat 800, dark
+
+   TIER 2 — Section label headings (functional, smaller):
+     "Best Sellers", "New Arrivals", "Recently Added",
+     "See the Story Unfold on Instagram"
+     → 0.95rem, uppercase, tracking
+
+   Implementation:
+   - h2.rich-text__heading: override global h2 uppercase → mixed case (Tier 1)
+   - .section--label h2.rich-text__heading: Tier 2 label treatment for rich-text sections
+   - .featured-collection__title: Tier 2 label treatment
+================================ */
+
+/* Tier 1: editorial rich-text headings — strip global h2 uppercase */
+h2.rich-text__heading.title {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+/* Tier 2: section label headings via rich-text (e.g. "Recently Added")
+   — scoped by css_class: "section--label" set in index.json */
+.section--label h2.rich-text__heading.title {
+  font-size: 0.95rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  font-weight: 700 !important;
+}
+
+/* Tier 2: featured-collection section labels ("Best Sellers", "New Arrivals") */
+.featured-collection__title.title {
+  font-size: 0.95rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  font-weight: 700 !important;
+}
+
 /* Product price */
 .product-block--price .money {
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 700;
 }
 
@@ -228,30 +381,127 @@ h1, h2, h3, h4, h5, h6 {
    upload (binary data garbled through UTF-8 encoding). The @font-face
    declaration has been removed from styles.css.liquid. These rules
    replace every glyph the font served with a pure CSS border-triangle
-   that has zero font dependency. The !important overrides are required
+   that has zero font dependency. The overrides are required
    to defeat the font-family and content rules in styles.css.liquid
    that would otherwise render nothing (or a box) with the corrupt font.
 ================================ */
 
+/* Dropdown arrow: replaces corrupted icon font with a modern inline chevron.
+   Inline (not absolute) so it sits tight next to the link text, not floating
+   at the far right of the nav item. Select/age-gate keep absolute positioning
+   since they are fixed-width form elements. */
+
+/* Nav chevron — thin line chevron (two-border L rotated), animates on hover + open.
+   font-family:Arial !important overrides theme's font-family:"flex-icon" !important (line 2263
+   of styles.css.liquid) — eliminates FOIT delay where browser held ::after rendering until
+   the flex-icon webfont resolved. Arial is always available locally, so chevron renders instantly.
+   position/content also require !important to beat theme defaults.
+
+   The mega-menu parent (SHOP) renders with is-arrowless in HTML because the Shopify nav has
+   no child links — the sub-items come from the mega-menu section. z__jsMegaMenu.js removes
+   is-arrowless on init (~200-400ms after load), which is why the chevron appeared late and
+   caused a nav reflow/jump. The data-navlink-handle="shop" rule targets that element from
+   first paint, bypassing the is-arrowless gating entirely. */
 .navbar-link:not(.is-arrowless)::after,
-.mobile-menu-link::after,
+.mobile-menu-link::after {
+  content: "" !important;
+  font-family: Arial, sans-serif !important;
+  display: inline-block !important;
+  position: static !important;
+  right: auto !important;
+  top: auto !important;
+  width: 7px !important;
+  height: 7px !important;
+  border-right: 2px solid currentColor !important;
+  border-bottom: 2px solid currentColor !important;
+  border-left: none !important;
+  border-top: none !important;
+  transform: rotate(45deg) !important;
+  margin-left: 7px !important;
+  vertical-align: 0.1em !important;
+  opacity: 0.55 !important;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+  pointer-events: none !important;
+}
+
+/* Hover: brighten */
+.navbar-item:hover > .navbar-link:not(.is-arrowless)::after {
+  opacity: 1 !important;
+}
+
+/* Open: flip to point UP (click-mode regular dropdowns) */
+.navbar-item.is-opened > .navbar-link:not(.is-arrowless)::after {
+  transform: rotate(-135deg) !important;
+  opacity: 1 !important;
+}
+
+/* Desktop-only: SHOP pre-JS chevron + mega menu hover/open states.
+   On mobile the mega menu is injected into the mobile drawer — the data-navlink-handle
+   element doesn't exist in the same form and these rules would be meaningless/harmful. */
+@media (min-width: 799px) {
+  .header__item[data-navlink-handle="shop"] .navbar-link::after {
+    content: "" !important;
+    font-family: Arial, sans-serif !important;
+    display: inline-block !important;
+    position: static !important;
+    right: auto !important;
+    top: auto !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-right: 2px solid currentColor !important;
+    border-bottom: 2px solid currentColor !important;
+    border-left: none !important;
+    border-top: none !important;
+    transform: rotate(45deg) !important;
+    margin-left: 7px !important;
+    vertical-align: 0.1em !important;
+    opacity: 0.55 !important;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    pointer-events: none !important;
+  }
+
+  .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
+    opacity: 1 !important;
+  }
+
+  .dropdown-click--false .navbar-item.has-mega-menu:hover > .navbar-link:not(.is-arrowless)::after,
+  .dropdown-click--false .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
+    transform: rotate(-135deg) !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Form selects — keep absolute triangle (fixed-width containers) */
 .select:not(.is-multiple):not(.is-loading):not(.is-arrowless)::after,
 .age-gate__select-wrapper:not(.is-multiple):not(.is-loading):not(.is-arrowless)::after {
-  content: "" !important;
-  font-family: unset !important;
-  display: inline-block !important;
-  position: absolute !important;
-  top: 50% !important;
-  right: 0.8em !important;
-  width: 0 !important;
-  height: 0 !important;
-  border-left: 4px solid transparent !important;
-  border-right: 4px solid transparent !important;
-  border-top: 5px solid currentColor !important;
-  border-bottom: none !important;
+  content: "";
+  font-family: unset;
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  right: 0.8em;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  border-bottom: none;
   transform: translateY(-50%);
   transform-origin: center;
-  transition: transform var(--transition-fast);
+  pointer-events: none;
+}
+
+
+/* Tighten nav item horizontal padding.
+   The theme reserves padding-right: 2.5em on :not(.is-arrowless) for its
+   absolute-positioned icon. Our chevron is inline, so that space is wasted —
+   override both rules to make Shop visually match the other nav items. */
+.navbar-link {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.navbar-link:not(.is-arrowless) {
+  padding-right: 0.5rem;
 }
 
 
@@ -259,71 +509,320 @@ h1, h2, h3, h4, h5, h6 {
    6. Header
 ================================ */
 
+/* Header icons — add right breathing room so icons aren't flush with the viewport edge */
+.header__icons {
+  padding-right: 20px;
+}
+
 /* Fix: header must be full-width at page load when in overlay/absolute state.
    The sticky JS sets position:absolute but omits width:100%, causing ~520px
    gap on the right side before scrolling. */
 .header,
 .mobile-header {
-  width: 100% !important;
+  width: 100%;
   box-sizing: border-box;
 }
 
-/* Slightly transparent dark header — lets the hero image bleed through subtly.
-   backdrop-filter adds a frosted-glass blur so text remains legible. */
-.header,
-.mobile-header,
-.is-drawer {
-  background-color: rgba(42, 42, 42, 0.92) !important;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+/* Fix: the announcement bar section is a DOM sibling rendered AFTER the header
+   and carries z-index:90 in the base theme styles (styles.css). Since the header
+   has z-index:50, the announcement bar's stacking context (z-90) paints over the
+   top ~47px of the mega menu, hiding the column headings entirely.
+   Raising the header stacking context to z-200 ensures mega menu content
+   appears above the announcement bar section. The sticky wrapper needs the same
+   value so the fix holds after the header becomes sticky on scroll. */
+html body .header,
+html body .mobile-header {
+  z-index: 200;
 }
 
-/* Sticky header — near-opaque when scrolled (content behind it changes).
-   The section-scoped inline <style> from settings_data.json sets
-   #shopify-section-...header .header-sticky-wrapper.is-sticky .header { background:#f5f5f5 }
-   That ID-prefixed rule wins on specificity without !important. */
-.header-sticky-wrapper.is-sticky .header,
-#mobile-header-sticky-wrapper.is-sticky .mobile-header,
-.mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
-  background-color: rgba(42, 42, 42, 0.97) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+html body .header-sticky-wrapper,
+html body #mobile-header-sticky-wrapper {
+  z-index: 200;
 }
 
-/* Announcement bar sticky-wrapper collapse guard.
-   The theme uses a jQuery sticky plugin that wraps the bar in
-   .announcement-sticky-wrapper. If that wrapper collapses to zero
-   height (timing or plugin issue), the fixed announcement bar overlaps
-   the header logo below it. Ensuring the wrapper retains its natural
-   height prevents this. */
+/* Mobile: the sticky plugin sets an inline height on .header-sticky-wrapper equal to
+   #mobile-header's height. Since #mobile-header is position:fixed it's out of flow,
+   but the wrapper placeholder still creates a white gap. Collapse it to 0.
+   overflow:visible lets the fixed child escape without clipping. */
+@media (max-width: 798px) {
+  .header-sticky-wrapper:has(#mobile-header) {
+    height: 0 !important;
+    overflow: visible !important;
+  }
+}
+
+/* Header background — dark, no blur.
+   Desktop .header: semi-transparent (overlay mode active — hero shows through).
+   Mobile .mobile-header: solid default here; overridden to semi-transparent in the
+   @media (max-width:798px) block below once the overlay is CSS-forced on mobile. */
+html body .header {
+  background-color: rgba(18, 18, 18, 0.55) !important;
+}
+
+html body .mobile-header {
+  background-color: var(--color-header-bg) !important;
+}
+
+/* Sticky: desktop slightly more opaque */
+html body .header-sticky-wrapper.is-sticky .header {
+  background-color: rgba(18, 18, 18, 0.78) !important;
+}
+
+/* Sticky header shrink — css-loop scopes section CSS to #shopify-section-{id},
+   making .is-sticky (added to the wrapper around the section) an ancestor rather
+   than a descendant. The section's scroll_logo_width rule never fires.
+   These unscoped rules bypass that and drive the actual shrink. */
+.header-sticky-wrapper.is-sticky .header__logo,
+.header-sticky-wrapper.is-sticky .logo__content {
+  width: 80px !important;
+  transition: width 0.3s ease;
+}
+
+.header-sticky-wrapper.is-sticky .header__brand {
+  padding: 0.35rem 0.75rem;
+  transition: padding 0.2s linear;
+}
+
+/* Mobile sticky: overridden in the @media block below */
+html body #mobile-header-sticky-wrapper.is-sticky .mobile-header,
+html body .mobile-menu--opened #mobile-header-sticky-wrapper.is-sticky .mobile-header {
+  background-color: var(--color-header-bg) !important;
+}
+
+/* Mobile sticky shrink — when the header locks to top on scroll, compress it
+   so the logo has equal space above and below. The 33px padding-top is an
+   announcement-bar offset that's no longer needed once sticky. Icon link
+   padding drops from 17px → 8px, pulling the content height from 78px to
+   ~60px. CSS transitions make the collapse smooth. */
+@media (max-width: 798px) {
+  #mobile-header {
+    transition: padding 0.3s ease;
+  }
+
+  #mobile-header-sticky-wrapper.is-sticky #mobile-header {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Icon links (search, cart, hamburger) — reduce vertical padding */
+  #mobile-header-sticky-wrapper.is-sticky .mobile-icons .action-area__link,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-icons .header__link,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-icons .header-cart,
+  #mobile-header-sticky-wrapper.is-sticky .mobile-toggle {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    transition: padding 0.3s ease;
+  }
+
+  /* Logo wrapper — match icon padding so everything centres evenly */
+  #mobile-header-sticky-wrapper.is-sticky .mobile-logo {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    transition: padding 0.3s ease;
+  }
+}
+
+/* Nav link colours — white on dark (13.5:1 — WCAG AAA). Gold on hover (6.8:1 — WCAG AA).
+   Applies to all pages and all scroll states; removes the old light-bg sticky reset. */
+html body .header .navbar-link,
+html body .header .header__link,
+html body .mobile-header .navbar-link,
+html body .mobile-header .header__link {
+  color: var(--color-white);
+  fill: var(--color-white);
+}
+
+html body .header .navbar-link:hover,
+html body .header .header__link:hover,
+html body .header .navbar-item:hover > .navbar-link,
+html body .mobile-header .navbar-link:hover,
+html body .mobile-header .header__link:hover {
+  color: var(--color-brand-yellow);
+  fill: var(--color-brand-yellow);
+}
+
+/* Header icons (cart, search, account) — .header__icon class is explicitly passed for these */
+html body .header .header__icon,
+html body .mobile-header .header__icon {
+  fill: var(--color-white) !important;
+  color: var(--color-white) !important;
+}
+
+/* Hamburger and close (X) icons — rendered without header__icon class, just .icon span.
+   Theme sets fill from settings.header_link_color (#4d4d4d) via .mobile-menu__toggle-icon .icon.
+   Override to white for dark header. */
+html body .mobile-menu__toggle-icon .icon {
+  fill: var(--color-white) !important;
+  color: var(--color-white) !important;
+}
+
+/* Mobile header — fixed at top of viewport on all mobile pages.
+   The header section group collapses to 0 height on mobile (desktop header is
+   display:none, and no sticky wrapper is created). Fixed positioning bypasses
+   the clipping issue and keeps the header always visible at the top.
+   Homepage (body.index-json via Shopify JSON template naming): transparent so
+   the video hero shows through. Other pages: dark background from the global rule. */
+@media (max-width: 798px) {
+  /* Fixed header for all mobile pages.
+     z-index 9999 ensures it clears the video section and any other positioned elements. */
+  #mobile-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    min-height: 56px !important;
+  }
+
+  /* Homepage: no visible bar — icons float transparently over the video.
+     padding-top pushes icons below the announcement bar (~44px) plus a small buffer,
+     so they sit visually on the video rather than on top of the announcement text. */
+  body.index-json #mobile-header,
+  body.index #mobile-header {
+    background-color: transparent !important;
+    min-height: 0 !important;
+    padding-top: 33px !important; /* increased from 28px: bar now ~27px at 1rem + 5px buffer */
+  }
+
+  /* Homepage icons: white with drop-shadow so they read against any video frame. */
+  body.index-json #mobile-header .header__icon,
+  body.index #mobile-header .header__icon,
+  body.index-json #mobile-header .mobile-menu__toggle-icon .icon,
+  body.index #mobile-header .mobile-menu__toggle-icon .icon {
+    fill: var(--color-white) !important;
+    color: var(--color-white) !important;
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.8)) !important;
+  }
+
+  /* Smaller logo on mobile */
+  .mobile-header .primary-logo,
+  .mobile-header .mobile-header__logo {
+    max-width: 52px !important;
+    flex-shrink: 0 !important;
+  }
+  .mobile-header .primary-logo img,
+  .mobile-header .mobile-header__logo img {
+    width: 52px !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+
+  /* Announcement bar: 1rem (≈17px at root 17px) satisfies WCAG mobile legibility.
+     Previous 0.7rem (11.9px) passed contrast (10.2:1) but was below readable threshold.
+     Contrast: #ebac20 on #0d0d0d = 10.2:1 — continues to exceed WCAG AA 4.5:1.
+     Padding kept at 5px/5px: total bar height now ~27px (was ~22px). */
+  .announcement-bar.is-regular,
+  .announcement-bar.is-small {
+    font-size: 1rem !important;
+  }
+  .announcement-bar .message-header {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  /* Hero video: show text on mobile — brand messaging and conversion path are critical.
+     Colours are controlled by section settings (heading_color_mobile, etc.) in index.json;
+     set to #ffffff for the hero. The existing 35% black video overlay provides sufficient
+     scrim for WCAG AA contrast on white text. */
+  .video-section .video__title,
+  .video-section .banner__heading,
+  .video__title.banner__heading {
+    font-size: 2rem !important;
+    line-height: 1.15 !important;
+    padding: 0 20px !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6) !important;
+  }
+  .video-section .video__subtitle,
+  .video-section .banner__subheading,
+  .video__subtitle.banner__subheading,
+  .video-section .video__text,
+  .video-section .banner__text {
+    font-size: 0.9375rem !important;
+    line-height: 1.5 !important;
+    padding: 0 20px !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+  }
+  .video-section .buttons {
+    padding: 0 20px !important;
+    margin-top: 8px !important;
+  }
+
+  /* Trust bar: reduce padding on mobile to match announcement bar height */
+  [id*="trust_icon_bar"] .section {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+  [id*="trust_icon_bar"] .icon-bar__block {
+    padding: 4px 8px !important;
+  }
+  [id*="trust_icon_bar"] .icon-bar__block .icon,
+  [id*="trust_icon_bar"] .icon-bar__block svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  [id*="trust_icon_bar"] .icon-bar__text {
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/* Mobile: kill the announcement bar shadow div — it has min-height:20px and is invisible,
+   creating a phantom white gap between the header and the first page section. */
+@media (max-width: 798px) {
+  .announcement-bar__shadow {
+    display: none !important;
+  }
+}
+
+/* Announcement bar: scrolls off on scroll, not sticky.
+   The jQuery sticky plugin sets position:fixed + top:0 inline on
+   .announcement-bar__container when the user scrolls past its natural
+   position. !important overrides that inline style, keeping the bar in
+   normal document flow so it scrolls away with the page.
+   The wrapper height is reset to auto so no phantom gap remains. */
+.announcement-bar__container {
+  position: relative !important;
+  top: auto !important;
+  width: 100% !important;
+}
 .announcement-sticky-wrapper {
-  min-height: inherit;
+  height: auto !important;
+  min-height: 0 !important;
 }
 
-/* Nav link text — white on dark background */
-.header .navbar-link,
-.header .navbar-item,
-.header a:not([class*="logo"]),
-.mobile-header a:not([class*="logo"]) {
-  color: #ffffff !important;
+/* Non-homepage mobile: fixed header is 56px tall and sits at top:0.
+   The .header-sticky-wrapper is collapsed to height:0, so the page content
+   starts right after the ~22px announcement bar — sliding 34px under the
+   dark header. Add padding-top equal to the header height so content clears it.
+   Homepage is excluded: the video intentionally fills the full viewport. */
+@media (max-width: 798px) {
+  body:not(.index):not(.index-json) #MainContent {
+    padding-top: 56px !important;
+  }
 }
 
-.header .navbar-link:hover,
+/* Nav link hover background — ensure no default grey highlight shows on dark header */
 .header .navbar-item:hover {
-  color: var(--color-brand-yellow) !important;
-  background-color: transparent !important;
+  background-color: transparent;
 }
+
+/* Desktop-only: dropdown + mega menu.
+   On mobile, .navbar-dropdown and .mega-menu are injected into the mobile drawer
+   where position:absolute / left:50% / translateX(-50%) destroy the layout.
+   The theme breakpoint for "large" (desktop) is min-width:799px (utilities.js line 107). */
+@media (min-width: 799px) {
 
 /* Dropdown — always display:block so visibility/opacity can transition in AND out.
    Theme's display:none default and is-hidden utility are overridden here.
-   visibility:hidden keeps it out of pointer flow while allowing the fade. */
+   visibility:hidden keeps it out of pointer flow while allowing the fade.
+   Background and text colours defer to admin settings (dropdown_background: #f5f5f5,
+   dropdown_link_color: #4d4d4d) set in styles.css.liquid. */
 .navbar-item.has-dropdown .navbar-dropdown {
-  display: block !important;
+  display: block;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.18s ease, visibility 0s 0.18s;
-  background-color: #1a1a1a !important;
+  transition: opacity var(--transition-fast), visibility 0s var(--transition-fast);
   box-shadow: inset 0 3px 0 var(--color-brand-yellow);
 }
 
@@ -333,58 +832,190 @@ h1, h2, h3, h4, h5, h6 {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 0.18s ease;
-}
-
-.navbar-dropdown .navbar-item,
-.navbar-dropdown .navbar-link {
-  color: #ffffff !important;
+  transition: opacity var(--transition-fast);
 }
 
 .navbar-dropdown .navbar-item:hover {
-  background-color: #2a2a2a !important;
-  color: var(--color-brand-yellow) !important;
+  background-color: rgba(235, 172, 32, 0.12);  /* Subtle gold tint on dark bg */
+  color: var(--color-brand-yellow);
 }
 
-/* Mega menu — always display:block so we can transition in and out.
-   Background needs 3-class specificity to beat the section inline {% style %}
-   which uses .mega-menu__{{ id }} .mega-menu { background: ... !important } (2 classes). */
+/* Mega menu full-width positioning.
+   Root cause of columns being left-aligned: .navbar-item { position: relative } (styles.css.liquid
+   line 9159) makes .navbar-dropdown { position: absolute; left: 0 } anchor to the SHOP nav item,
+   which sits somewhere in the centre of the header, not the left edge.
+   Fix: remove position from the mega menu nav item so the dropdown's containing block becomes
+   .header { position: relative } (line 14512) — then left:0; right:0 spans the full header width. */
+.navbar-item.has-mega-menu {
+  position: static !important;
+}
+
+/* Mega menu dropdown wrapper — full-width + instant-show.
+   left:0; right:0; width:100% = spans full .header width (containing block).
+   top:100% positions flush at the bottom of the header — no overlap.
+   padding, background, box-shadow, opacity, transition all zeroed so the
+   .mega-menu panel drives all appearance. */
+.navbar-item.has-mega-menu .navbar-dropdown {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  top: 100% !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* ── Mega menu — premium animation system ──────────────────────────────────
+   Techniques: spring cubic-bezier, scale+translate, GPU promotion,
+   full-width glass panel (matches header width), per-link hover nudge,
+   separate heading timing, column stagger.
+   Background rgba set via admin JSON → section inline <style>.             */
+
+/* Panel — hidden state.
+   position:absolute keeps element out of normal flow (no layout space when hidden).
+   Containing block = header.header (position:relative) since navbar-item is static.
+   left:50% + translateX(-50%) centres the max-content panel within the header width.
+   min-width:0 overrides theme's min-width:100% which otherwise forces full-width. */
 .mega-menu {
   display: block !important;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.22s ease, visibility 0s 0.22s;
-  box-shadow: inset 0 3px 0 var(--color-brand-yellow);
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 4rem) !important;
+  margin: 0 !important;
+  background-color: rgba(18, 18, 18, 0.55) !important;
+  border-radius: 0 0 12px 12px;
+  transition:
+    opacity    0.22s ease   0.08s,
+    visibility 0s           0.3s;
 }
 
-/* 3-class rule beats section inline 2-class rule */
-.header .mega-menu__section .mega-menu,
-.header-sticky-wrapper .mega-menu__section .mega-menu {
-  background-color: #1a1a1a !important;
-}
-
-/* Show states */
-.mega-menu__section.is-active .mega-menu,
+/* Panel — shown.
+   CSS :hover only — no .is-active dependency. The JS is-active class caused the panel
+   to stay visible after the mouse left the SHOP text (is-active persists until mouseleave
+   on .navbar fires, which can be far away). Pure CSS :hover is correct: .navbar-item:hover
+   is true when hovering the nav item OR any DOM descendant including the panel and the
+   full-width transparent .navbar-dropdown wrapper below the header, so moving from SHOP
+   text down into the panel keeps hover alive. Moving left off SHOP text immediately ends
+   hover since you're no longer inside the navbar-item or its descendants. */
+.dropdown-click--false .navbar-item.has-mega-menu:hover .mega-menu,
 .mega-menu.mega-menu--show,
 .mega-menu.mega-menu--force-show {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 0.22s ease;
+  transition:
+    opacity    0.22s ease,
+    visibility 0s;
 }
 
+/* Column headings — animate in first, before the links */
+@keyframes mega-heading-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-click--false .navbar-item.has-mega-menu:hover .menu__heading,
+.mega-menu__section.is-active .mega-menu .menu__heading,
+.mega-menu.mega-menu--show .menu__heading,
+.mega-menu.mega-menu--force-show .menu__heading {
+  animation-name: mega-heading-in;
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode: backwards;
+  animation-delay: 80ms;
+}
+
+/* Column blocks — stagger with spring easing */
+@keyframes mega-col-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-click--false .navbar-item.has-mega-menu:hover .mega-menu .mega-menu__block,
+.mega-menu__section.is-active .mega-menu .mega-menu__block,
+.mega-menu.mega-menu--show .mega-menu__block,
+.mega-menu.mega-menu--force-show .mega-menu__block {
+  animation-name: mega-col-in;
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode: backwards;
+  will-change: opacity, transform;
+}
+
+/* Stagger delays */
+.mega-menu__block:nth-child(1) { animation-delay: 60ms; }
+.mega-menu__block:nth-child(2) { animation-delay: 95ms; }
+.mega-menu__block:nth-child(3) { animation-delay: 130ms; }
+.mega-menu__block:nth-child(4) { animation-delay: 165ms; }
+.mega-menu__block:nth-child(5) { animation-delay: 200ms; }
+.mega-menu__block:nth-child(6) { animation-delay: 235ms; }
+
+/* Column layout — full-width panel, columns centred with justify-content.
+   max-width:none prevents Bulma's .container from capping width at a breakpoint value. */
+.mega-menu .container.has-no-side-gutter {
+  width: auto !important;
+  max-width: none !important;
+  padding: 1.25rem 2rem !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+}
+
+.mega-menu .mega-menu__block {
+  flex: 0 1 auto !important;
+  width: auto !important;
+  min-width: 0;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* Row spacing */
+.mega-menu .mega-menu__content a {
+  display: block;
+  padding-top: 0.42rem;
+  padding-bottom: 0.42rem;
+  line-height: 1.5;
+  transition: color 0.18s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Per-link hover nudge — slides 5px right with spring snap */
+.mega-menu .mega-menu__content a:hover {
+  transform: translateX(5px);
+}
+
+/* Link colours for dark (#1e1e1e) mega menu background */
 .mega-menu a,
 .mega-menu a:active,
-.mega-menu a:visited,
+.mega-menu a:visited {
+  color: rgba(255, 255, 255, 0.78);
+}
+
 .mega-menu .mega-menu__heading,
 .mega-menu .menu__heading {
-  color: #ffffff !important;
+  color: var(--color-white);
+  letter-spacing: 0.04em;
 }
 
 .mega-menu a:hover {
-  color: var(--color-brand-yellow) !important;
+  color: var(--color-brand-yellow);
 }
+
+} /* end @media (min-width: 799px) */
 
 
 /* ================================
@@ -402,6 +1033,7 @@ a.button {
   line-height: 1.2;
   padding-top: 0.65em;
   padding-bottom: 0.65em;
+  white-space: nowrap !important;
   transition:
     background-color var(--transition-base),
     transform var(--transition-base);
@@ -427,7 +1059,7 @@ a.button {
 
 /* Dynamic checkout (Shopify Payments — Shop Pay, Apple Pay, etc.) */
 gravity-button.accelerated-checkout-button {
-  border-radius: var(--radius-pill) !important;
+  border-radius: var(--radius-pill);
 }
 
 /* Primary action — dark background, gold text (main CTAs)
@@ -444,9 +1076,10 @@ button.button--primary-action,
   color: var(--color-brand-yellow);
   border-radius: var(--radius-pill);
   font-weight: 700;
-  font-size: 16px;
-  padding: 14px 32px;
+  font-size: 1rem;
+  padding: 10px 22px;
   line-height: 1.2;
+  white-space: nowrap !important;
   border: none;
   text-decoration: none;
   cursor: pointer;
@@ -469,15 +1102,17 @@ button.button--primary-action,
 /* Secondary button — matching size to primary-action.
    Selector matches the specificity of styles.css rule
    "a.button--secondary.button" (0,2,1) which otherwise wins
-   and sets font-size:1rem (17px) and padding:0.65em (11.05px). */
+   and sets font-size:1rem (17px) and padding:0.65em (11.05px).
+   white-space: nowrap overrides styles.css.liquid line 6213 which sets normal. */
 a.button--secondary.button,
 button.button--secondary.button,
 .button--secondary {
-  padding-top: 14px;
-  padding-bottom: 14px;
-  font-size: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 1rem;
   line-height: 1.2;
   border-radius: var(--radius-pill);
+  white-space: nowrap !important;
 }
 
 /* "Read more" collapsible toggle (collection descriptions) */
@@ -485,22 +1120,48 @@ button.button--secondary.button,
   display: inline-block;
   background: var(--color-brand-yellow);
   color: var(--color-dark);
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   padding: 10px 16px;
   margin-top: 15px;
   border-radius: var(--radius-pill);
   cursor: pointer;
   border: none;
-  outline: none;
   transition:
     background-color var(--transition-fast),
     color var(--transition-fast);
 }
 
+.toggle-text:focus {
+  outline: 3px solid var(--color-brand-yellow);
+  outline-offset: 2px;
+}
+
 .toggle-text:hover {
   background: var(--color-dark);
   color: var(--color-brand-yellow);
+}
+
+/* Consistent button--primary styling across the site.
+   Overrides admin-set button color to match our dark+gold primary action standard.
+   Specificity matches styles.css.liquid's ".button--primary, a.button--primary.button" (0,2,0). */
+.button.button--primary,
+a.button.button--primary,
+button.button--primary {
+  background-color: var(--color-dark) !important;
+  color: var(--color-brand-yellow) !important;
+  border-color: var(--color-dark) !important;
+  border-radius: var(--radius-pill) !important;
+  font-weight: 700;
+  white-space: nowrap !important; /* overrides styles.css.liquid line 6142 which sets normal */
+}
+
+.button.button--primary:hover,
+a.button.button--primary:hover,
+button.button--primary:hover {
+  background-color: var(--color-mid) !important;
+  color: var(--color-brand-yellow) !important;
+  border-color: var(--color-mid) !important;
 }
 
 /* Button containers — gap between body copy and CTA
@@ -540,40 +1201,34 @@ p a:not(.button):not([class*="logo"]):hover::after {
   width: 100%;
 }
 
-/* Reusable animated underline modifier class */
-.link--animated {
-  position: relative;
-}
-
-.link--animated::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background-color: var(--color-mid);
-  transition: width var(--transition-base);
-  pointer-events: none;
-}
-
-.link--animated:hover::after {
-  width: 100%;
-  background-color: var(--color-dark);
-}
 
 
 /* ================================
    9. Video Hero
 ================================ */
 
-/* Cap hero height so a 16:9 video doesn't exceed 720px on wide desktops.
-   The inline {% style %} sets aspect-ratio:16/9 which at 1440px = 810px,
-   at 1920px = 1080px — both far too tall. max-height clamps it.
-   The absolute-positioned children (poster, video, text overlay) all
-   inherit the capped height via overflow:hidden on the wrapper. */
-#shopify-section-index_video_e3PxRq .video-wrapper {
-  max-height: min(85vh, 720px);
+/* FIX 2026-04-12 (rev3): Desktop hero — full-width, zero-clip video.
+   Root cause: some earlier custom CSS injected a max-height on .video-wrapper,
+   which combined with Liquid's aspect-ratio:16/9 (ID-selector specificity)
+   constrained the wrapper width to ~1280px on wide screens.
+   Fix: unset aspect-ratio, clear any max-height, set height = natural 16:9
+   (56.25vw) so the wrapper is always full-width at correct 16:9 proportion.
+   The Plyr container and html5-video-wrapper both size to 100%, matching
+   exactly — no clipping on any screen size.
+   Mobile: mobile_text_below_video is FALSE — Liquid/Plyr defaults handle it. */
+@media (min-width: 799px) {
+  [id*="index_video_e3PxRq"] .video-wrapper {
+    aspect-ratio: unset !important;
+    max-height: none !important;
+    height: 56.25vw;
+    width: 100%;
+  }
+  /* Reset html5-video-wrapper to Liquid defaults (undo prior centering rules) */
+  [id*="index_video_e3PxRq"] .html5-video-wrapper {
+    height: 100% !important;
+    top: 0 !important;
+    transform: none !important;
+  }
 }
 
 /* Show text overlay once video is present; JS manages the none→flex transition */
@@ -581,15 +1236,22 @@ p a:not(.button):not([class*="logo"]):hover::after {
   display: flex;
 }
 
+/* Hide hero text overlay on mobile — video speaks for itself */
+@media (max-width: 798px) {
+  [id*="index_video_e3PxRq"] .video__text-container {
+    display: none !important;
+  }
+}
+
 /* Hide the poster image when autoplay video is present —
    poster exists as a click-to-play fallback only, not needed for autoplay.
    Two rules needed: the Liquid sets a background-image inline on .video-wrapper
    AND renders a .video-section-poster div — both must be suppressed. */
 .has-video-added .video-section-poster {
-  display: none !important;
+  display: none;
 }
 .has-video-added .video-wrapper {
-  background-image: none !important;
+  background-image: none;
 }
 
 .video-player {
@@ -612,7 +1274,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
   padding-right: 72px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   .video__text-wrapper {
     padding-left: 24px;
     padding-right: 24px;
@@ -629,19 +1291,51 @@ p a:not(.button):not([class*="logo"]):hover::after {
    10. Swatches
 ================================ */
 
+/* Keyboard accessibility: keep radio inputs in the tab order but visually hidden.
+   The theme renders inputs at 0×0, removing them from tab order entirely.
+   sr-only (absolute 1×1px clipped) restores focus-ability without visual impact. */
+.swatch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.swatch input:focus-visible + .swatch-element {
+  outline: 2px solid var(--color-brand-yellow);
+  outline-offset: 2px;
+}
+
 .swatch input:checked + .swatch-element {
   background: var(--color-dark);
   color: var(--color-brand-yellow);
 }
 
 .swatch label {
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   min-width: 100%;
 }
 
-.swatch__options.custom-size {
-  flex-wrap: nowrap;
+.swatch__options.custom-size,
+.swatch__options.custom-type,
+.swatch__options.custom-colour {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  grid-template-columns: repeat(var(--swatch-count, auto-fit), minmax(0, 1fr));
 }
+
+/* Grid layout based on data-count attribute set by swatch-layout.js */
+.swatch__options[data-count="2"] { grid-template-columns: repeat(2, 1fr); }
+.swatch__options[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
+.swatch__options[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+.swatch__options[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
+.swatch__options[data-count="6"] { grid-template-columns: repeat(6, 1fr); }
 
 .swatch-element {
   border-radius: var(--radius-pill);
@@ -667,7 +1361,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
   margin-top: 1.2rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   .swatch label {
     padding: 0;
     text-align: center;
@@ -692,8 +1386,8 @@ p a:not(.button):not([class*="logo"]):hover::after {
 
 /* Rounded corners + shadow on every card */
 .jsCollectionList .collection-list__thumbnail {
-  border-radius: var(--radius-lg) !important;
-  overflow: hidden !important;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -709,9 +1403,9 @@ p a:not(.button):not([class*="logo"]):hover::after {
 /* Card title — uppercase is intentional here (category label) */
 .jsCollectionList .collection-info__caption .title {
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--color-white);
   text-transform: uppercase;
   letter-spacing: 0;
   line-height: 1.4;
@@ -732,46 +1426,51 @@ p a:not(.button):not([class*="logo"]):hover::after {
    The theme positions it absolute right:0 which reaches the edge on
    wide sections with no container padding. */
 .featured-collection__view-all {
-  right: 1.5rem !important;
+  right: 1.5rem;
 }
 
 .featured-collection__view-all-link {
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
-  color: var(--color-mid) !important;
-  border: 1.5px solid var(--color-mid) !important;
-  border-radius: var(--radius-pill) !important;
-  padding: 6px 16px !important;
-  text-decoration: none !important;
-  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast) !important;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-mid);
+  border: 1.5px solid var(--color-mid);
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  text-decoration: none;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .featured-collection__view-all-link:hover {
-  background-color: var(--color-dark) !important;
-  color: var(--color-brand-yellow) !important;
-  border-color: var(--color-dark) !important;
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  border-color: var(--color-dark);
 }
 
 
 /* ================================
-   12. Homepage — Art Story Section
-   Image-with-text-overlay (first instance — "Shop Best Sellers").
-   Scoped via css_class: section--art-story set in index.json.
+   12–13. Homepage — Art Story & About Brett Sections
+   Both use image-with-text-overlay with identical dark overlay treatment.
+   Scoped via css_class: section--art-story / section--about-brett in index.json.
 ================================ */
 
 /* Global image-with-text-overlay overlay card defaults.
    The section--art-story / section--about-brett rules below override
    this for those specific homepage sections. */
-.image-with-text-overlay .caption-content {
-  background-color: rgba(255, 255, 255, 0.45) !important;
-  backdrop-filter: blur(2px);
+html body .image-with-text-overlay .caption-content {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+@supports (backdrop-filter: blur(2px)) {
+  .image-with-text-overlay .caption-content {
+    backdrop-filter: blur(2px);
+  }
 }
 
 .image-with-text-overlay__heading {
-  font-size: 2rem !important;
-  font-weight: 700 !important;
+  font-size: 2rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
 }
 
@@ -791,58 +1490,8 @@ p a:not(.button):not([class*="logo"]):hover::after {
   justify-content: center;
 }
 
-/* Rounded image card with margin inset */
-.section--art-story .image-element__wrap {
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  margin: 40px;
-  width: calc(100% - 80px);
-  box-sizing: border-box;
-  background-color: #fff;
-}
-
-/* Dark overlay card — overrides the global light rule and section inline <style> */
-.section--art-story .caption-content {
-  background-color: rgba(0, 0, 0, 0.55) !important;
-  border-color: transparent !important;
-}
-
-.section--art-story .caption-content .image-with-text-overlay__heading,
-.section--art-story .caption-content h2 {
-  color: #ffffff !important;
-}
-
-.section--art-story .caption-content .image-with-text-overlay__preheading {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-
-.section--art-story .caption-content .image-with-text-overlay__subheading {
-  color: rgba(255, 255, 255, 0.75) !important;
-}
-
-@media (min-width: 769px) {
-  .section--art-story .caption-content.text-align-center {
-    border-radius: var(--radius-lg);
-    margin: 80px;
-    box-shadow: var(--shadow-sm);
-  }
-}
-
-@media (max-width: 768px) {
-  .section--art-story .image-element__wrap {
-    margin: 20px;
-    width: auto;
-  }
-}
-
-
-/* ================================
-   13. Homepage — About Brett Section
-   Image-with-text-overlay (second instance).
-   Scoped via css_class: section--about-brett set in index.json.
-================================ */
-
+/* Shared: rounded image card with margin inset */
+.section--art-story .image-element__wrap,
 .section--about-brett .image-element__wrap {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -850,46 +1499,74 @@ p a:not(.button):not([class*="logo"]):hover::after {
   margin: 40px;
   width: calc(100% - 80px);
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: var(--color-white);
 }
 
-/* Dark overlay card */
-.section--about-brett .caption-content {
-  background-color: rgba(0, 0, 0, 0.55) !important;
+/* Shared: dark overlay card — !important beats scoped #shopify-section-{id} style blocks */
+html body .section--art-story .caption-content,
+html body .section--about-brett .caption-content {
+  background-color: rgba(0, 0, 0, 0.72) !important;
   border-color: transparent !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
-.section--about-brett .caption-content .image-with-text-overlay__heading,
-.section--about-brett .caption-content h2 {
-  color: #ffffff !important;
+html body .section--art-story .caption-content .image-with-text-overlay__heading,
+html body .section--art-story .caption-content h2,
+html body .section--about-brett .caption-content .image-with-text-overlay__heading,
+html body .section--about-brett .caption-content h2 {
+  color: var(--color-white) !important;
 }
 
-.section--about-brett .caption-content .image-with-text-overlay__preheading {
+html body .section--art-story .caption-content .image-with-text-overlay__preheading,
+html body .section--about-brett .caption-content .image-with-text-overlay__preheading {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
-.section--about-brett .caption-content .image-with-text-overlay__subheading {
+html body .section--art-story .caption-content .image-with-text-overlay__subheading,
+html body .section--about-brett .caption-content .image-with-text-overlay__subheading {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
-.section--about-brett .caption-content.text-align-center {
-  border-radius: var(--radius-lg);
-  margin: 80px;
-  box-shadow: var(--shadow-sm);
+/* Shared desktop: caption box styling — inside media query so 80px margin
+   doesn't apply on mobile (mobile rules below reset it) */
+@media (min-width: 799px) {
+  .section--art-story .caption-content.text-align-center,
+  .section--about-brett .caption-content.text-align-center {
+    border-radius: var(--radius-lg);
+    margin: 80px;
+    box-shadow: var(--shadow-sm);
+  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
+  .section--art-story .image-element__wrap,
   .section--about-brett .image-element__wrap {
     margin: 20px;
     width: auto;
   }
 
-  .section--about-brett .caption-content.text-align-center {
-    border-radius: var(--radius-md);
-    padding: 15px;
-    margin: 0;
-    width: 100%;
-    background-color: #fff;
+  /* Mobile: both sections flip to white card — matches "What Gets Left Behind"
+     section styling. Uses html body prefix + !important to beat the global
+     dark-overlay rule above. Desktop unchanged. */
+  html body .section--art-story .caption-content,
+  html body .section--about-brett .caption-content {
+    background-color: var(--color-white) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+  html body .section--art-story .caption-content h2,
+  html body .section--art-story .caption-content .image-with-text-overlay__heading,
+  html body .section--art-story .caption-content .image-with-text-overlay__preheading,
+  html body .section--art-story .caption-content .image-with-text-overlay__subheading,
+  html body .section--art-story .caption-content p,
+  html body .section--about-brett .caption-content h2,
+  html body .section--about-brett .caption-content .image-with-text-overlay__heading,
+  html body .section--about-brett .caption-content .image-with-text-overlay__preheading,
+  html body .section--about-brett .caption-content .image-with-text-overlay__subheading,
+  html body .section--about-brett .caption-content p {
+    color: var(--color-dark) !important;
   }
 }
 
@@ -931,7 +1608,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
   overflow: hidden;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   .section--featured-slideshow .caption-content.text-align-center {
     box-shadow: none;
   }
@@ -941,26 +1618,39 @@ p a:not(.button):not([class*="logo"]):hover::after {
 /* ================================
    15. Instagram Feed
    The Instafeed app injects inline opacity styles at runtime.
-   The !important overrides here are necessary — they cannot be
+   The overrides here are necessary — they cannot be
    avoided without modifying third-party app code.
 ================================ */
 
-/* Prevent hover overlay from staying visible after JS interaction */
-.instafeed-new-layout-item .instafeed-hover-layer {
-  opacity: 0 !important;
-  transition: opacity 0.25s ease;
+/* Note: Instafeed app removed 2026-04-09. CSS for .instafeed-* classes deleted.
+   Custom instagram section (index__instagram) has its own inline CSS. */
+
+
+/* Newsletter form in footer — rounded inputs and button matching primary button style.
+   Input: pill shape with left padding. Button: dark bg / gold text, hover inverts.
+   button_primary_border_radius: 35 in settings_data.json.
+   Heading reduced from full heading size (27px+) to footer-appropriate size. */
+.footer__block.block__newsletter .footer__heading {
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+.footer__block.block__newsletter .newsletter-form .input {
+  border-radius: var(--radius-pill);
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
-.instafeed-new-layout-item:hover .instafeed-hover-layer {
-  opacity: 1 !important;
+.footer__block.block__newsletter .newsletter-form button[type="submit"] {
+  border-radius: var(--radius-pill);
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  border-color: transparent;
+  width: 100%;
 }
 
-/* Prevent app from rendering section title in uppercase */
-.instafeed-title,
-[class*="instafeed"] h2,
-[class*="instafeed"] .title {
-  text-transform: none !important;
-  letter-spacing: 0.08em;
+.footer__block.block__newsletter .newsletter-form button[type="submit"]:hover {
+  background-color: var(--color-brand-yellow);
+  color: var(--color-dark);
 }
 
 
@@ -968,17 +1658,18 @@ p a:not(.button):not([class*="logo"]):hover::after {
    16. Trust Bar
 ================================ */
 
-[id*="trust_icon_bar"] {
-  background-color: #2a2a2a !important;
+html body [id*="trust_icon_bar"] {
+  /* Admin footer_background: #4d4d4d — trust bar matches footer colour for visual continuity */
+  background-color: var(--color-footer-bg);
 }
 
-[id*="trust_icon_bar"] .icon-bar__block,
-[id*="trust_icon_bar"] a.icon-bar__block {
-  color: #ffffff !important;
+html body [id*="trust_icon_bar"] .icon-bar__block,
+html body [id*="trust_icon_bar"] a.icon-bar__block {
+  color: var(--color-white);
 }
 
-[id*="trust_icon_bar"] a.icon-bar__block:hover {
-  color: var(--color-brand-yellow) !important;
+html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
+  color: var(--color-brand-yellow);
 }
 
 [id*="trust_icon_bar"] .icon-bar__wrapper {
@@ -996,29 +1687,12 @@ p a:not(.button):not([class*="logo"]):hover::after {
 
 [id*="trust_icon_bar"] .section::before,
 [id*="trust_icon_bar"] .section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 8%;
-  z-index: 2;
-  pointer-events: none;
+  display: none !important;
 }
 
-[id*="trust_icon_bar"] .section::before {
-  left: 0;
-  background: linear-gradient(to right, #2a2a2a 0%, transparent 100%);
-}
-
-[id*="trust_icon_bar"] .section::after {
-  right: 0;
-  background: linear-gradient(to left, #2a2a2a 0%, transparent 100%);
-}
-
-/* Hide container until JS has set up the marquee, preventing a layout flash. */
+/* Container is visible immediately; JS enhances with marquee animation */
 [id*="trust_icon_bar"] .container {
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-base);
 }
 
 [id*="trust_icon_bar"] .icon-bar__block {
@@ -1042,14 +1716,17 @@ p a:not(.button):not([class*="logo"]):hover::after {
    render. Avoids the hardcoded shopify-section ID for portability.
 ================================ */
 
-/* Background — overrides the rgb(77,77,77) default from styles.css */
+/* Background — aligned with admin footer_background: #4d4d4d.
+   var(--color-footer-bg) is the admin-synced value. styles.css.liquid also emits
+   background-color: #4d4d4d for the footer section, so this now agrees rather
+   than fighting it. */
 .footer__content {
-  background-color: #2a2a2a !important;
+  background-color: var(--color-footer-bg);
 }
 
 .footer__bottom,
 [class*="footer-bottom"] {
-  background-color: #1a1a1a !important;
+  background-color: var(--color-footer-bg);
 }
 
 /* Copyright bar */
@@ -1059,11 +1736,21 @@ p a:not(.button):not([class*="logo"]):hover::after {
    background runs fully edge-to-edge. A hairline top border replaces the
    abrupt colour-step from the main footer. */
 .footer__extra-content {
-  background-color: #1a1a1a !important;
-  color: #888 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  background-color: var(--color-footer-bg);
+  color: var(--color-mid);
+  padding-left: 0;
+  padding-right: 0;
+  width: 100% !important; /* .section defaults to 95% — force full-width so copyright bg is edge-to-edge */
+  max-width: none !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Main footer content: ensure full-width dark background on all screen sizes.
+   .section.has-background sets width: calc(95% - 20px) with equal specificity to
+   .section.is-width-wide. Force the override here to guarantee edge-to-edge background. */
+.footer__content.section {
+  width: 100% !important;
+  max-width: none !important;
 }
 
 .footer__extra-content .sub-footer {
@@ -1074,11 +1761,11 @@ p a:not(.button):not([class*="logo"]):hover::after {
 }
 
 .footer__extra-content a {
-  color: #bbb !important;
+  color: var(--color-light);
 }
 
 .footer__extra-content a:hover {
-  color: var(--color-brand-yellow) !important;
+  color: var(--color-brand-yellow);
 }
 
 /* Animated underline on footer links */
@@ -1114,24 +1801,152 @@ p a:not(.button):not([class*="logo"]):hover::after {
   content: none;
 }
 
-/* Footer columns — all start at the same top edge regardless of content height */
+/* Footer columns: stretch to equal height so all columns share the same bottom edge.
+   Newsletter block uses internal flex to pin the form to the bottom of its column. */
 .footer__content .container.has-limit {
-  align-items: flex-start !important;
+  align-items: stretch;
 }
 
 /* Each column: consistent top padding and comfortable internal spacing */
 .footer__block {
-  padding-top: 24px !important;
+  padding-top: 24px;
 }
 
 .footer__block .footer__heading {
   margin-bottom: 16px;
 }
 
+/* Newsletter column: wider than nav columns, form anchored to bottom */
+.footer__block.block__newsletter {
+  width: calc(28% - 20px) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer__block.block__newsletter .newsletter-form__wrapper {
+  margin-top: auto;
+}
+
+/* Nav columns: slightly narrower to compensate (4 × 18% + 28% = 100%) */
+.footer__content .block__link-list.one-fifth,
+.footer__content .block__text.one-fifth {
+  width: calc(18% - 20px) !important;
+}
+
+/* Consistent vertical rhythm in footer menu link lists */
+li.footer__menu-link {
+  margin-bottom: 8px;
+}
+
+li.footer__menu-link:last-child {
+  margin-bottom: 0;
+}
+
 /* Suppress the double padding the Liquid wraps around social icons */
 .footer__heading + .has-padding-bottom.has-padding-top {
   padding-top: 0;
   padding-bottom: 0;
+}
+
+/* Mobile: footer layout — CSS Grid 2×2.
+   Switching the parent container to display:grid bypasses the theme's
+   flex/width/medium-down--one-whole !important rules entirely.
+   Row 1: Connect + Categories
+   Row 2: Support + Legal
+   Row 3: Newsletter (full span) */
+@media (max-width: 798px) {
+
+  /* Grid replaces flex — overrides display:flex from .is-justify-space-between */
+  .footer__content .container.has-limit {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 24px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* All nav/social blocks sit in the 2-col grid automatically */
+  .footer__content .container.has-limit .footer__block {
+    width: auto !important;
+    padding: 20px 0 !important;
+  }
+
+  /* Newsletter spans both columns */
+  .footer__content .container.has-limit .footer__block.block__newsletter {
+    grid-column: 1 / -1 !important;
+    padding: 24px 0 20px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* Social icons: vertical icon-only column */
+  .footer__block.block__text ul.social-icons {
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  .footer__block.block__text ul.social-icons li {
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  /* Hide text labels next to social icons — icons only on mobile */
+  .footer__block.block__text ul.social-icons li a span:not(.icon) {
+    display: none !important;
+  }
+
+  .footer__block.block__text ul.social-icons li a {
+    gap: 0 !important;
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Hide "All Collections" from the Categories footer menu — keeps row count even */
+  .footer__block.block__link-list .footer__menu-link a[href="/collections"],
+  .footer__block.block__link-list .footer__menu-link a[href="/collections/all"] {
+    display: none !important;
+  }
+  .footer__block.block__link-list .footer__menu-link:has(a[href="/collections"]),
+  .footer__block.block__link-list .footer__menu-link:has(a[href="/collections/all"]) {
+    display: none !important;
+  }
+
+  /* Column headings: smaller, uppercase, dimmed */
+  .footer__block .footer__heading {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 12px !important;
+    opacity: 0.65 !important;
+  }
+
+  /* Footer link list: tighter vertical rhythm */
+  li.footer__menu-link {
+    margin-bottom: 10px !important;
+  }
+
+  /* Footer section outer padding */
+  .footer__content.section {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  /* Payment icons: single row */
+  .footer__payment-methods .payment-methods {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+  }
+  .footer__payment-methods .payment-icon {
+    height: 20px !important;
+    width: auto !important;
+    flex-shrink: 1 !important;
+  }
 }
 
 /* Social icons — stacked vertically, left-aligned, with proper vertical gap.
@@ -1148,7 +1963,7 @@ ul.social-icons.is-flex.is-flex-wrap {
 ul.social-icons.is-flex.is-flex-wrap li {
   display: flex;
   align-items: center;
-  padding: 0 !important; /* override theme's horizontal padding */
+  padding: 0; /* override theme's horizontal padding */
 }
 
 ul.social-icons.is-flex.is-flex-wrap li a {
@@ -1164,47 +1979,36 @@ ul.social-icons.is-flex.is-flex-wrap li a {
    id="template-{{ template | replace: '.', '-' | handle }}"
 ================================ */
 
-/* Banner content pill */
+/* Banner — dark transparent pill, white text */
 #template-collection .banner__content {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 10px 22px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(13, 13, 13, 0.72);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
   max-width: fit-content;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-@media (max-width: 768px) {
+#template-collection .banner__heading {
+  color: var(--color-white);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 798px) {
   #template-collection .banner__content {
-    padding: 4px 8px;
-    max-width: 80%;
+    padding: 6px 12px;
+    max-width: 85%;
   }
 
   #template-collection .banner__heading {
-    font-size: 1rem;
+    font-size: clamp(1.1rem, 4.5vw, 2.5rem);
     line-height: 1.2;
   }
-
-  .one-whole.column {
-    margin: 0;
-  }
-
-  .collection__description.content.has-padding-bottom {
-    margin: 10px;
-  }
-}
-
-/* Collection description box.
-   !important required to defeat section-scoped inline <style> blocks. */
-.collection__description {
-  background-color: #2a2a2a !important;
-  color: #cccccc !important;
-  padding: 40px;
-  margin: 40px;
-  line-height: 1.8;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
 }
 
 section.gallery-intro {
@@ -1215,10 +2019,11 @@ section.gallery-intro p {
   margin-bottom: 20px;
 }
 
-/* Collapsible description */
-.collapsible-text-container {
-  background-color: #2a2a2a !important;
-  color: #cccccc !important;
+/* Collapsible description — base container styles.
+   declared first so .collection__description can override max-width. */
+html body .collapsible-text-container {
+  background-color: var(--color-dark);
+  color: var(--color-light);
   margin: 0 auto;
   width: 100%;
   max-width: 600px;
@@ -1228,44 +2033,78 @@ section.gallery-intro p {
   text-align: left;
 }
 
-.collapsible-text {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+/* Collection description box — declared after .collapsible-text-container
+   so max-width: none overrides the 600px cap on the shared element.
+   Uses html body prefix to defeat section-scoped inline <style> blocks. */
+html body .collection__description {
+  padding: 28px 32px;
+  margin: 32px 0 36px;
+  width: auto;
+  max-width: none;
+  border-radius: var(--radius-lg);
 }
 
-.collapsible-text .history-text {
-  max-height: 6em;
+/* Collection description truncation.
+   Targets .collection__description-text (the actual inner element in collection__main.liquid).
+   JS below wires up the toggle button. */
+.collection__description-text {
+  max-height: 7em;
   overflow: hidden;
   position: relative;
+  transition: max-height 0.4s ease;
 }
 
-.collapsible-text .history-text::after {
+.collection__description-text::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(42, 42, 42, 0), rgba(42, 42, 42, 1)) !important;
+  height: 48px;
+  /* rgba must match --color-dark = #1a1a1a exactly */
+  background: linear-gradient(to bottom, rgba(26, 26, 26, 0), rgba(26, 26, 26, 1));
   pointer-events: none;
-  transition: opacity var(--transition-base);
+  transition: opacity 0.3s ease;
 }
 
-.collapsible-text .history-text.expanded {
-  max-height: 1000px;
+.collection__description-text.is-expanded {
+  max-height: 2000px;
 }
 
-.collapsible-text .history-text.expanded::after {
+.collection__description-text.is-expanded::after {
   opacity: 0;
 }
 
-@media (max-width: 768px) {
+.collection__description-toggle {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 16px;
+  background-color: var(--color-dark);
+  border: 1px solid var(--color-brand-yellow);
+  border-radius: var(--radius-pill);
+  color: var(--color-brand-yellow);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.collection__description-toggle:hover {
+  background-color: var(--color-mid);
+}
+
+@media (max-width: 798px) {
   .collapsible-text-container {
     padding: 20px;
     margin: 10px;
+  }
+
+  html body .collection__description {
+    margin: 12px 0 16px;
+    padding: 20px;
   }
 }
 
@@ -1274,8 +2113,8 @@ section.gallery-intro p {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 32px;
-  margin: 0 0 0 40px;
-  padding: 16px 40px;
+  margin: 0 0 8px;
+  padding: 16px 0;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -1286,27 +2125,27 @@ section.gallery-intro p {
 }
 
 .collection__series-info-item dt {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(26, 26, 26, 0.45);
+  color: var(--color-brand-yellow);
   line-height: 1;
 }
 
 .collection__series-info-item dd {
-  font-size: 13px;
-  color: #1a1a1a;
+  font-size: 0.8125rem;
+  color: var(--color-dark);
   margin: 0;
   line-height: 1.4;
 }
 
 .collection__series-description {
-  margin: 16px 40px 0;
+  margin: 0 0 24px;
   padding: 20px;
   background-color: rgba(0, 0, 0, 0.03);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.7;
   color: rgba(26, 26, 26, 0.8);
 }
@@ -1319,7 +2158,7 @@ section.gallery-intro p {
   margin-bottom: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   .collection__series-info,
   .collection__series-description {
     margin-left: 0;
@@ -1329,9 +2168,44 @@ section.gallery-intro p {
   }
 }
 
+/* Section padding — wide layout has zero horizontal constraint by default,
+   so we enforce a consistent gutter. box-sizing ensures padding doesn't
+   push the section wider than the viewport. */
+#template-collection section.section {
+  padding-top: 16px;
+  padding-left: 40px;
+  padding-right: 40px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 798px) {
+  #template-collection section.section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Breadcrumb spacing — handled by .collection__breadcrumb rule in section 36 (padding-top: 20px) */
+
+/* Collection filter dropdowns — lighter grey background, consistent radius */
+#template-collection .collection__filters .select select,
+#template-collection .collection__tag-filter select,
+#template-collection .collection__sort-by-filter select {
+  background-color: var(--color-light);
+  border-radius: var(--radius-sm);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--color-dark);
+}
+
+#template-collection .collection__filters .select,
+#template-collection .collection__tag-filter,
+#template-collection .collection__sort-by-filter {
+  border-radius: var(--radius-sm);
+}
+
 /* Product grid */
 .collection-matrix {
-  padding: 40px;
+  padding: 20px 0;
   box-sizing: border-box;
 }
 
@@ -1339,13 +2213,96 @@ section.gallery-intro p {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
-  background-color: #fff;
+  /* No background — white mat is cropped by the orientation JS */
 }
 
-@media (max-width: 768px) {
+/* Once JS has classified the image, ensure the img fills the cropped container */
+.collection-matrix .image-element__wrap[data-mockup-orientation] img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 798px) {
   .collection-matrix {
-    padding: 1rem 1.5rem;
+    padding: 1rem 0;
   }
+}
+
+
+/* Collection sidebar — de-emphasised filter panel.
+   Sidebar should recede behind the photography, not compete with it. */
+
+/* Section headings: strip h3 weight, render as quiet uppercase labels */
+.sidebar-block__heading {
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--color-mid) !important;
+  margin-bottom: 8px !important;
+}
+
+/* Filter option labels — smaller, lighter */
+.faceted-filter-group-display__list-item-label-text,
+.faceted-filter-group-display__list-item-label {
+  font-size: 0.8125rem;
+  color: var(--color-mid);
+}
+
+/* Price range labels */
+.faceted-filter-group-display__price-range-label {
+  font-size: 0.75rem;
+  color: var(--color-mid);
+}
+
+/* Price range inputs — only need 4 digits max */
+.faceted-filter-group-display__price-range-input {
+  width: 72px !important;
+  max-width: 72px !important;
+  min-width: unset !important;
+}
+
+.faceted-filter-group-display__price-range {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+/* Apply buttons in sidebar — small ghost style, not the heavy primary pill */
+.faceted-filter-group-display__submit .button.button--primary {
+  background-color: transparent !important;
+  color: var(--color-mid) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  padding: 4px 12px !important;
+  height: auto !important;
+  text-transform: uppercase !important;
+}
+
+.faceted-filter-group-display__submit .button.button--primary:hover {
+  background-color: var(--color-dark) !important;
+  color: var(--color-brand-yellow) !important;
+  border-color: var(--color-dark) !important;
+}
+
+/* Active filter pills — same ghost treatment */
+.faceted-active-filters__remove-filter.button.button--primary {
+  background-color: transparent !important;
+  color: var(--color-mid) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.6875rem !important;
+  padding: 3px 8px !important;
+}
+
+/* Reduce vertical spacing between sidebar blocks */
+.sidebar__block.sidebar-toggle-active {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 
@@ -1387,25 +2344,71 @@ section.gallery-intro p {
 
 /* Image column wider, info column narrower — desktop only.
    space-between on the parent handles the gap as a % of container width.
-   Scoped to min-width:769px so medium-down--one-whole still stacks on mobile. */
-@media (min-width: 769px) {
+   Scoped to min-width:799px so medium-down--one-whole still stacks on mobile.
+   align-items: flex-start prevents the image column stretching to match the
+   info column height — eliminates ~400–900px of blank space below the gallery. */
+@media (min-width: 799px) {
+  #template-product .product_section {
+    align-items: flex-start;
+  }
+
   #template-product .product__images.one-half {
     width: 57%;
     flex: none;
   }
 
+  /* Sticky info panel — price, variants, and ATC button stay in viewport as
+     the user scrolls through long product detail content.
+     Resolves the persistent CTA gap at 799–1400px (no mobile sticky bar exists
+     in this range, and the desktop form scrolls out of view on long-detail products).
+     top: 110px clears the 92px fixed header with 18px breathing room.
+     The panel unsticks naturally when the user scrolls past the bottom of the
+     gallery column (parent container ends → sticky position releases). */
   #template-product .product__information.one-half {
     width: 38%;
     flex: none;
+    position: sticky;
+    top: 110px;
+  }
+}
+
+/* Gallery height cap at narrow desktop (799–1024px).
+   At this range the main gallery image renders ~600–800px tall, consuming the
+   full viewport before the user has scrolled. Capping at 55vh keeps the image
+   in proportion while leaving the page feeling active rather than dominated by
+   a single image. object-fit: contain shows the full image without cropping. */
+@media (min-width: 799px) and (max-width: 1024px) {
+  #template-product .product-gallery__main {
+    max-height: 55vh;
+    max-height: 55dvh;
+    overflow: hidden;
+  }
+  #template-product .product-gallery__main img {
+    max-height: 55vh;
+    max-height: 55dvh;
+    object-fit: contain;
+    width: 100%;
+  }
+}
+
+/* Cap product section width on ultra-wide screens (≥1401px).
+   Without this, is-width-wide stretches to full viewport (1541px at 1920px),
+   making the two-column layout uncomfortable and typographic line lengths too long. */
+@media (min-width: 1401px) {
+  #template-product .product_section {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 .lc-edition-scarcity {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
-  color: #1c1917;
-  background: #ebac2014;
-  border-left: 3px solid #ebac20;
+  color: var(--color-dark);
+  /* rgba equivalent of #ebac20 at 8% opacity */
+  background: rgba(235, 172, 32, 0.08);
+  border-left: 3px solid var(--color-brand-yellow);
   padding: 8px 12px;
   margin: 12px 0 16px;
   border-radius: 0 4px 4px 0;
@@ -1414,6 +2417,15 @@ section.gallery-intro p {
 
 .lc-edition-scarcity:empty {
   display: none;
+}
+
+.lc-collector-discount {
+  font-size: 0.875rem;
+  color: var(--color-mid);
+  margin: 6px 0 16px;
+  padding: 6px 10px;
+  background: var(--color-light);
+  border-radius: 4px;
 }
 
 .product-block.product-block--size-chart {
@@ -1444,7 +2456,7 @@ section.gallery-intro p {
 
 /* Colour option — CSS grid so display:none N/A item is excluded from layout */
 .swatch__options.custom-colour {
-  display: grid !important;
+  display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   width: 100%;
@@ -1457,33 +2469,33 @@ section.gallery-intro p {
 .swatch__options.custom-colour .swatch-element.color {
   display: flex;
   width: 100%;
-  border-radius: 3px !important;
+  border-radius: var(--radius-xs);
   padding: 0;
 }
 
 .swatch__options.custom-colour .swatch-element.color label {
-  width: 100% !important;
-  height: 40px !important;
-  border-radius: 3px !important;
-  background: none !important;
-  display: flex !important;
+  width: 100%;
+  height: 40px;
+  border-radius: var(--radius-xs);
+  background: none;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .swatch__options.custom-colour .swatch-label-text {
-  font-size: 14px;
+  font-size: 0.875rem;
   pointer-events: none;
 }
 
 /* Colour option row hidden when Glass or Unframed is selected */
 .lc-colour-row-hidden {
-  display: none !important;
+  display: none;
 }
 
 /* Hide Flex theme's built-in inventory counter — edition scarcity handled by lc-edition-scarcity */
 #template-product .items_left {
-  display: none !important;
+  display: none;
 }
 
 /* LCP fix — single-image product gallery is immediately visible.
@@ -1549,10 +2561,10 @@ section.gallery-intro p {
   flex-grow: 1;
   max-width: 100px;
   padding: 8px 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   border-radius: var(--radius-md);
-  background-color: #fff;
-  border: 2px solid #ccc;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-light);
   color: inherit;
   transition:
     background-color var(--transition-base),
@@ -1564,20 +2576,20 @@ section.gallery-intro p {
   border-color: transparent;
 }
 
-.social-share-buttons .share-btn--x         a.button { color: #1da1f2; }
-.social-share-buttons .share-btn--x         a.button:hover { background-color: #1da1f2; color: #fff; }
+.social-share-buttons .share-btn--x         a.button { color: var(--color-twitter); }
+.social-share-buttons .share-btn--x         a.button:hover { background-color: var(--color-twitter); color: var(--color-white); }
 
-.social-share-buttons .share-btn--facebook  a.button { color: #3b5998; }
-.social-share-buttons .share-btn--facebook  a.button:hover { background-color: #3b5998; color: #fff; }
+.social-share-buttons .share-btn--facebook  a.button { color: var(--color-facebook); }
+.social-share-buttons .share-btn--facebook  a.button:hover { background-color: var(--color-facebook); color: var(--color-white); }
 
-.social-share-buttons .share-btn--pinterest a.button { color: #bd081c; }
-.social-share-buttons .share-btn--pinterest a.button:hover { background-color: #bd081c; color: #fff; }
+.social-share-buttons .share-btn--pinterest a.button { color: var(--color-pinterest); }
+.social-share-buttons .share-btn--pinterest a.button:hover { background-color: var(--color-pinterest); color: var(--color-white); }
 
-.social-share-buttons .share-btn--mail      a.button { color: #333; }
-.social-share-buttons .share-btn--mail      a.button:hover { background-color: #333; color: #fff; }
+.social-share-buttons .share-btn--mail      a.button { color: var(--color-email); }
+.social-share-buttons .share-btn--mail      a.button:hover { background-color: var(--color-email); color: var(--color-white); }
 
 /* Accordion (FAQ / product info tabs).
-   !important required to defeat section-scoped inline <style> blocks. */
+   required to defeat section-scoped inline <style> blocks. */
 .accordion {
   width: 100%;
   max-width: 800px;
@@ -1587,8 +2599,8 @@ section.gallery-intro p {
 .accordion dt {
   padding: 16px;
   font-weight: bold;
-  background: #2a2a2a !important;
-  color: #fff;
+  background: var(--color-dark);
+  color: var(--color-white);
   cursor: pointer;
   border-radius: var(--radius-md);
   margin-bottom: 10px;
@@ -1600,19 +2612,19 @@ section.gallery-intro p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .accordion dt small {
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 
 .accordion dd {
   display: none;
   padding: 16px;
-  background: #fff;
-  font-size: 14px;
-  color: #333;
+  background: var(--color-white);
+  font-size: 0.875rem;
+  color: var(--color-dark);
   line-height: 1.5;
   border-radius: var(--radius-md);
 }
@@ -1632,10 +2644,31 @@ section.gallery-intro p {
   object-fit: cover;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   #template-product .product_section {
     padding-left: 10px;
     padding-right: 10px;
+    /* Fix catastrophic blank space at tablet/mobile.
+       The theme's .columns uses justify-content: space-between which, combined with
+       flex-wrap: wrap, orphans each stacked column with ghost horizontal space and
+       align-content: stretch distributes vertical space across the wrapped rows,
+       inflating the container to 2378px at 768px. Both overrides are needed. */
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+/* Breadcrumb — prevent horizontal overflow on small mobile.
+   At ≤480px the full path ("Home > All > Yummy | Landscapes") overflows
+   the viewport. Truncate with ellipsis rather than wrapping. */
+@media (max-width: 480px) {
+  .breadcrumb__wrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
   }
 }
 
@@ -1658,7 +2691,7 @@ section.gallery-intro p {
   max-width: fit-content;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   .breadcrumb__wrapper {
     margin-bottom: 20px;
   }
@@ -1681,11 +2714,44 @@ section.gallery-intro p {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  background-color: #fff;
+  background-color: var(--color-white);
 }
 
 .blog-card__read-more.buttons {
   justify-content: center;
+}
+
+/* Blog page responsive fixes */
+
+/* Reduce hero-to-content gap on mobile.
+   .blog-main wraps the section with padding-top:40px from section settings.
+   Combined with the banner's padding-bottom this creates excessive whitespace.
+   Tighten to 20px on mobile. */
+@media (max-width: 798px) {
+  .blog-main {
+    padding-top: 20px !important;
+  }
+}
+
+/* Single-column safety at ≤480px.
+   The template has small-down--one-whole but this explicit override prevents
+   any column-gutter math from causing horizontal overflow at very narrow
+   viewports (≤300px CSS / 320px physical). */
+@media (max-width: 480px) {
+  #template-blog .blog-card {
+    width: calc(100% - 20px) !important;
+    max-width: 100%;
+  }
+}
+
+/* 3-column grid at 799–1024px CSS.
+   The default 4-column layout produces ~170px-wide cards in this range —
+   too narrow for the long uppercase post titles. 3 columns gives each card
+   ~220–300px for comfortable line-wrapping. */
+@media (min-width: 799px) and (max-width: 1024px) {
+  #template-blog .blog-card {
+    width: calc(33.333% - 20px) !important;
+  }
 }
 
 /* Article inline photo gallery */
@@ -1719,7 +2785,7 @@ section.gallery-intro p {
   text-align: center;
   margin-top: 15px;
   margin-bottom: 40px;
-  font-size: 14px;
+  font-size: 0.875rem;
   padding: 0 10px;
 }
 
@@ -1741,7 +2807,7 @@ section.gallery-intro p {
   .image-item { width: calc(50% - 15px); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 798px) {
   .image-container {
     flex-direction: column;
     align-items: center;
@@ -1788,7 +2854,7 @@ section.gallery-intro p {
 
 /* Gradient overlay — always visible so titles are always readable */
 .collection-thumbnail-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 55%) !important;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 55%);
   opacity: 1;
 }
 
@@ -1810,19 +2876,19 @@ section.gallery-intro p {
 /* Text and button colour on the dark gradient */
 .collection-info__caption .title,
 .collection-info__caption-wrapper .title {
-  color: #ffffff !important;
+  color: var(--color-white);
 }
 
 .collection-info__caption .button {
-  color: #ffffff;
+  color: var(--color-white);
   border-color: rgba(255,255,255,0.7);
   background-color: transparent;
 }
 
 .collection-info__caption .button:hover {
-  background-color: #ffffff;
-  color: #2a2a2a;
-  border-color: #ffffff;
+  background-color: var(--color-white);
+  color: var(--color-dark);
+  border-color: var(--color-white);
 }
 
 
@@ -1830,59 +2896,64 @@ section.gallery-intro p {
    24. Cookie Banner
    .fixed-message-section (schema class) wraps the whole thing.
    .fixed-message__container is the inner panel that gets background/color
-   from the section's inline <style> block. !important overrides that.
+   from the section's inline <style> block. overrides that.
 ================================ */
 
-.fixed-message__container {
-  background-color: rgba(26, 26, 26, 0.96) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #ffffff !important;
+html body .fixed-message__container {
+  background-color: rgba(26, 26, 26, 0.96);
+  color: var(--color-white);
   border-top: 2px solid var(--color-brand-yellow);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.fixed-message__text p,
-.fixed-message__text {
-  color: rgba(255, 255, 255, 0.88) !important;
+@supports (backdrop-filter: blur(10px)) {
+  .fixed-message__container {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+html body .fixed-message__text p,
+html body .fixed-message__text {
+  color: rgba(255, 255, 255, 0.88);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.6;
 }
 
 /* Privacy-policy / inline links in the banner text */
-.fixed-message__text a {
-  color: var(--color-brand-yellow) !important;
+html body .fixed-message__text a {
+  color: var(--color-brand-yellow);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 /* Override the theme's generic button rules — gold pill, dark text */
-.fixed-message__button .button,
-.fixed-message__button .age-gate__confirm_btn {
-  background-color: var(--color-brand-yellow) !important;
-  color: var(--color-dark) !important;
-  border-color: var(--color-brand-yellow) !important;
-  border-radius: var(--radius-pill) !important;
-  font-family: var(--font-heading) !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
-  padding: 10px 28px !important;
-  min-height: unset !important;
-  height: auto !important;
+html body .fixed-message__button .button,
+html body .fixed-message__button .age-gate__confirm_btn {
+  background-color: var(--color-brand-yellow);
+  color: var(--color-dark);
+  border-color: var(--color-brand-yellow);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  min-height: unset;
+  height: auto;
   transition:
     background-color var(--transition-fast),
     color var(--transition-fast),
-    border-color var(--transition-fast) !important;
+    border-color var(--transition-fast);
 }
 
-.fixed-message__button .button:hover,
-.fixed-message__button .age-gate__confirm_btn:hover {
-  background-color: var(--color-dark) !important;
-  color: var(--color-brand-yellow) !important;
-  border-color: var(--color-dark) !important;
+html body .fixed-message__button .button:hover,
+html body .fixed-message__button .age-gate__confirm_btn:hover {
+  background-color: var(--color-dark);
+  color: var(--color-brand-yellow);
+  border-color: var(--color-dark);
   transform: none; /* suppress global hover lift inside a fixed bar */
 }
 
@@ -1904,7 +2975,7 @@ section.gallery-intro p {
 
 /* Fancybox overlay — slightly deeper than default for the search context */
 .search__lightbox .fancybox-bg {
-  background: #000;
+  background: var(--color-dark);
   opacity: 0.72;
 }
 
@@ -1919,105 +2990,111 @@ section.gallery-intro p {
 }
 
 /* Main popup panel — dark frosted glass to match the header */
-.search-popup {
-  background-color: rgba(22, 22, 22, 0.97) !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  color: #ffffff !important;
+html body .search-popup {
+  background-color: rgba(22, 22, 22, 0.97);
+  color: var(--color-white);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
-  max-width: 660px !important;
-  padding: 40px 40px 32px !important;
+  max-width: 660px;
+  padding: 40px 40px 32px;
+}
+
+@supports (backdrop-filter: blur(14px)) {
+  .search-popup {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
 }
 
 /* Collapse the inner wrapper's extra padding since .search-popup now owns it */
-.search-popup .search-overlay__wrapper {
-  padding: 0 !important;
+html body .search-popup .search-overlay__wrapper {
+  padding: 0;
 }
 
 /* Title */
-.search-popup__title {
-  color: #ffffff !important;
-  font-family: var(--font-heading) !important;
-  font-size: 1.4rem !important;
-  font-weight: 700 !important;
+html body .search-popup__title {
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: none;
   margin-bottom: 0;
 }
 
 /* Input — standard site style (white bg, bordered, dark text, no radius) */
-.search-popup .input {
-  background-color: hsl(0, 0%, 100%) !important;
-  border-color: #dbdbdb !important;
-  border-radius: 0 !important;
-  color: hsl(0, 0%, 21%) !important;
-  box-shadow: none !important;
+html body .search-popup .input {
+  background-color: var(--color-white);
+  border-color: var(--color-light);
+  border-radius: 0;
+  color: var(--color-dark);
+  box-shadow: none;
 }
 
-.search-popup .input:focus {
-  border-color: #4d4d4d !important;
-  box-shadow: 0 0 0 0.125em rgba(77, 77, 77, 0.25) !important;
-  outline: none !important;
+html body .search-popup .input:focus {
+  border-color: var(--color-mid);
+  box-shadow: 0 0 0 0.125em rgba(77, 77, 77, 0.25);
+  outline: 3px solid var(--color-brand-yellow);
+  outline-offset: 2px;
 }
 
 /* Search icon — gold tint matching the brand */
-.search-popup button[name="search"] {
-  background: transparent !important;
-  border: none !important;
+html body .search-popup button[name="search"] {
+  background: transparent;
+  border: none;
   cursor: pointer;
-  padding: 0 !important;
+  padding: 0;
 }
 
-.search-popup .icon.is-left,
-.search-popup .icon.is-left svg,
-.search-popup button[name="search"] svg {
-  color: var(--color-brand-yellow) !important;
+html body .search-popup .icon.is-left,
+html body .search-popup .icon.is-left svg,
+html body .search-popup button[name="search"] svg {
+  color: var(--color-brand-yellow);
   fill: currentColor;
   transition: color var(--transition-fast);
 }
 
-.search-popup button[name="search"]:hover .icon.is-left,
-.search-popup button[name="search"]:hover svg {
-  color: #fff !important;
+html body .search-popup button[name="search"]:hover .icon.is-left,
+html body .search-popup button[name="search"]:hover svg {
+  color: var(--color-white);
 }
 
 /* "Common searches" label */
-.search-popup .search-menu__heading {
-  color: rgba(255, 255, 255, 0.45) !important;
-  font-family: var(--font-heading) !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
+html body .search-popup .search-menu__heading {
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-heading);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* Quick-link items */
-.search-popup .search-menu__item a {
-  color: rgba(255, 255, 255, 0.75) !important;
-  font-size: 14px;
+html body .search-popup .search-menu__item a {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.875rem;
   padding: 5px 0;
   display: block;
   transition: color var(--transition-fast);
   text-decoration: none;
 }
 
-.search-popup .search-menu__item a:hover {
-  color: var(--color-brand-yellow) !important;
+html body .search-popup .search-menu__item a:hover {
+  color: var(--color-brand-yellow);
 }
 
 /* Predictive results pane — stay dark when it appears */
-.search-popup .search__results-wrapper,
-.search-popup .search__results {
-  background-color: rgba(22, 22, 22, 0.97) !important;
+html body .search-popup .search__results-wrapper,
+html body .search-popup .search__results {
+  background-color: rgba(22, 22, 22, 0.97);
   border-radius: var(--radius-md);
   margin-top: 4px;
 }
 
-.search-popup .search__results__item .description__title,
-.search-popup .search__results__item .item-pricing {
-  color: #ffffff !important;
+html body .search-popup .search__results__item .description__title,
+html body .search-popup .search__results__item .item-pricing {
+  color: var(--color-white);
 }
 
 /* Mobile */
@@ -2027,12 +3104,12 @@ section.gallery-intro p {
   }
 
   .search-popup {
-    padding: 28px 20px 24px !important;
+    padding: 28px 20px 24px;
     border-radius: var(--radius-md);
   }
 
   .search-popup__title {
-    font-size: 1.15rem !important;
+    font-size: 1.15rem;
   }
 }
 
@@ -2044,11 +3121,14 @@ section.gallery-intro p {
 /* Drawer width — theme default of 40% is too wide on large screens */
 @media only screen and (min-width: 799px) {
   #theme-ajax-cart.is-drawer {
-    width: 400px !important;
-    right: -400px !important;
+    width: 400px;
+    right: -420px;
+    visibility: hidden;
   }
   #theme-ajax-cart.is-drawer.is-visible {
-    right: 0 !important;
+    right: 0;
+    visibility: visible;
+    overflow-y: auto;
   }
 }
 
@@ -2062,20 +3142,20 @@ section.gallery-intro p {
 .ajax-cart__shipping-bar-track {
   height: 5px;
   background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   overflow: hidden;
   margin-bottom: 10px;
 }
 
 .ajax-cart__shipping-bar-fill {
   height: 100%;
-  background-color: var(--color-brand-yellow, #ebac20);
-  border-radius: 3px;
+  background-color: var(--color-brand-yellow);
+  border-radius: var(--radius-xs);
   transition: width 0.5s ease;
 }
 
 .ajax-cart__shipping-message {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
   margin: 0;
@@ -2084,18 +3164,18 @@ section.gallery-intro p {
 }
 
 .ajax-cart__shipping-message .money {
-  color: #fff;
+  color: var(--color-white);
   font-weight: 600;
 }
 
 .ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved {
-  color: var(--color-brand-yellow, #ebac20);
+  color: var(--color-brand-yellow);
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
@@ -2134,12 +3214,12 @@ section.gallery-intro p {
 .ajax-cart__trust-item .icon svg {
   width: 18px;
   height: 18px;
-  fill: var(--color-brand-yellow, #ebac20);
+  fill: var(--color-brand-yellow);
   opacity: 0.85;
 }
 
 .ajax-cart__trust-item span {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.04em;
   line-height: 1.3;
@@ -2173,29 +3253,30 @@ section.gallery-intro p {
 }
 
 .product__art-detail dt {
-  font-size: 10px;
+  /* 0.6875rem (11px) meets minimum size threshold; rgba(…,0.65) ≈ rgb(106,106,106) = ~5.1:1 on white — passes WCAG AA */
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(26, 26, 26, 0.45);
+  color: rgba(26, 26, 26, 0.65);
   line-height: 1;
 }
 
 .product__art-detail dd {
-  font-size: 15px;
-  color: #1a1a1a;
+  font-size: 0.9375rem;
+  color: var(--color-dark);
   margin: 0;
   line-height: 1.4;
 }
 
 .product__art-detail--cert dd {
-  color: var(--color-brand-yellow, #ebac20);
+  color: var(--color-brand-yellow);
   font-weight: 600;
 }
 
 .product__art-description {
   margin-top: 14px;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: rgba(26, 26, 26, 0.75);
   line-height: 1.6;
   padding-top: 12px;
@@ -2219,12 +3300,12 @@ section.gallery-intro p {
     left: 0;
     right: 0;
     z-index: 200;
-    background-color: #1a1a1a;
-    border-top: 2px solid var(--color-brand-yellow, #ebac20);
+    background-color: var(--color-dark);
+    border-top: 2px solid var(--color-brand-yellow);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
     padding: 10px 16px max(12px, env(safe-area-inset-bottom));
     transform: translateY(100%);
-    transition: transform 0.25s ease-in-out;
+    transition: transform var(--transition-slide);
     pointer-events: none;
   }
 
@@ -2252,7 +3333,7 @@ section.gallery-intro p {
   }
 
   .product__sticky-atc-title {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: rgba(255, 255, 255, 0.75);
     white-space: nowrap;
     overflow: hidden;
@@ -2261,32 +3342,32 @@ section.gallery-intro p {
   }
 
   .product__sticky-atc-price {
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--color-white);
     line-height: 1.2;
   }
 
   .product__sticky-atc-btn {
-    background-color: var(--color-brand-yellow, #ebac20) !important;
-    color: #1a1a1a !important;
-    border-color: var(--color-brand-yellow, #ebac20) !important;
-    border-radius: 35px !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
-    padding: 10px 22px !important;
+    background-color: var(--color-brand-yellow);
+    color: var(--color-dark);
+    border-color: var(--color-brand-yellow);
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 22px;
     white-space: nowrap;
     flex-shrink: 0;
-    min-height: unset !important;
-    height: auto !important;
+    min-height: 44px; /* WCAG 2.5.8 — was unset (41px rendered) */
+    height: auto;
   }
 
   .product__sticky-atc-btn:hover {
-    background-color: #ffffff !important;
-    color: #1a1a1a !important;
-    border-color: #ffffff !important;
+    background-color: var(--color-white);
+    color: var(--color-dark);
+    border-color: var(--color-white);
   }
 }
 
@@ -2295,13 +3376,7 @@ section.gallery-intro p {
    30. Mobile UX — Touch Targets, Scroll & Zoom
 ================================ */
 
-/* --- Cart drawer: enable scrolling --- */
-/* The theme CSS sets height:100% on the drawer but no overflow rule,
-   which clips content on carts with many items. */
-#theme-ajax-cart.is-drawer {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+/* --- Cart drawer: scrolling handled in .is-visible state (section 26) --- */
 
 /* --- Mobile menu: increase link touch targets to 44px minimum --- */
 /* Theme sets 0.5rem (8px) vertical padding = ~24px touch target. WCAG minimum is 44px. */
@@ -2310,8 +3385,8 @@ section.gallery-intro p {
   .mobile-menu .mobile-menu__item,
   .mobile-menu .submenu__label,
   .mobile-menu .mobile-menu a {
-    padding-top: 14px !important;
-    padding-bottom: 14px !important;
+    padding-top: 14px;
+    padding-bottom: 14px;
     display: flex;
     align-items: center;
     min-height: 44px;
@@ -2327,6 +3402,38 @@ section.gallery-intro p {
   }
 }
 
+/* --- Touch targets: WCAG 2.2 AA (SC 2.5.8) = 24px minimum; 36px used here for comfort.
+   Header nav icons retain 44px (primary navigation — iOS HIG).
+   Footer links drop to 36px: still 50% above the AA floor, but much more compact at scale
+   (5 social icons × 44px = 220px vs 5 × 36px = 180px; ~100px saved across whole footer). */
+@media (max-width: 798px) {
+  /* Footer menu links */
+  .footer__menu-link a {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 4px;
+  }
+
+  /* Social icon links in footer Connect block */
+  .footer__block.block__text ul.social-icons li a {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    gap: 10px;
+  }
+
+  /* Mobile header icon links: search and cart — keep at 44px (primary nav) */
+  .mobile-icons .action-area__link,
+  .mobile-icons .header__link {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 /* --- Enforce minimum 16px font-size on all inputs on mobile ---
    iOS Safari auto-zooms the viewport when an input with font-size
    below 16px receives focus. This override prevents that on all
@@ -2337,7 +3444,7 @@ section.gallery-intro p {
   select,
   .input,
   .textarea {
-    font-size: max(16px, 1em) !important;
+    font-size: max(1rem, 1em);
   }
 }
 
@@ -2367,21 +3474,21 @@ section.gallery-intro p {
 .product__back-link {
   display: inline-block;
   font-size: 0.8125rem;
-  color: var(--color-body-text, #6f6f6f);
+  color: var(--color-body-text);
   text-decoration: none;
   margin-bottom: 0.75rem;
   letter-spacing: 0;
-  font-family: var(--font-stack-body, Lato, sans-serif);
+  font-family: var(--font-body);
 }
 
 .product__back-link:hover {
-  color: var(--color-primary, #ebac20);
+  color: var(--color-primary);
 }
 
 /* D6: Price range line */
 .product__price-range {
   font-size: 0.8125rem;
-  color: var(--color-body-text, #6f6f6f);
+  color: var(--color-body-text);
   margin: 0 0 0.25rem;
   letter-spacing: 0;
 }
@@ -2391,14 +3498,14 @@ section.gallery-intro p {
   display: inline-block;
   margin-top: 0.75rem;
   font-size: 0.8125rem;
-  color: var(--color-body-text, #6f6f6f);
+  color: var(--color-body-text);
   text-decoration: none;
   border-bottom: 1px solid currentColor;
   padding-bottom: 1px;
 }
 
 .product__story-link:hover {
-  color: var(--color-primary, #ebac20);
+  color: var(--color-primary);
 }
 
 
@@ -2409,9 +3516,9 @@ section.gallery-intro p {
 .blog-cta {
   margin-top: 2.5rem;
   padding: 1.5rem 2rem;
-  background-color: var(--color-light, #f5f5f5);
-  border-left: 3px solid var(--color-brand-yellow, #ebac20);
-  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-light);
+  border-left: 3px solid var(--color-brand-yellow);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2423,9 +3530,9 @@ section.gallery-intro p {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-mid, #4d4d4d);
+  color: var(--color-mid);
   margin: 0;
-  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-family: var(--font-heading);
   font-weight: 600;
 }
 
@@ -2434,10 +3541,820 @@ section.gallery-intro p {
   flex-shrink: 0;
 }
 
-@media screen and (max-width: 640px) {
+@media (max-width: 798px) {
   .blog-cta {
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
+/* Tablet optimisation (1024px to 1280px — landscape tablets to small desktops) */
+@media (min-width: 799px) and (max-width: 1024px) {
+  /* Swatch options adjust to 2-3 columns on tablets */
+  .swatch__options[data-count="4"],
+  .swatch__options[data-count="5"],
+  .swatch__options[data-count="6"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Reduce padding on medium screens */
+  .product__form { padding: 0 15px; }
+}
+
+/* Small desktop optimisation (1025px to 1279px — small desktop/large tablet) */
+@media (min-width: 1025px) and (max-width: 1279px) {
+  /* Swatch options adjust to 3-4 columns for small desktops */
+  .swatch__options[data-count="4"],
+  .swatch__options[data-count="5"],
+  .swatch__options[data-count="6"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Standard padding for small desktops */
+  .product__form { padding: 0 18px; }
+
+  /* Note: global body font-size intentionally not changed here — swatch layout only */
+}
+
+/* Desktop optimisation (1280px+ — medium to large desktops) */
+@media (min-width: 1280px) {
+  /* Expand padding on larger screens */
+  .product__form { padding: 0 20px; }
+  /* Note: swatch data-count column rules removed — base styles already define
+     repeat(4-6,1fr) and the tablet/small-desktop overrides don't apply here,
+     so the base values naturally prevail at ≥1280px. */
+}
+
+/* ================================
+   34. Homepage category grid
+================================ */
+
+/* Desktop: flexbox row — flex:1 1 0% overrides .one-sixth's calc() width entirely.
+   overflow:visible overrides the global overflow:hidden on .collection-list__wrapper
+   (section 11) that was clipping tiles 2–6 outside the wrapper boundary.
+   Portrait images (1152×2048) need explicit tile height for object-fit crop.
+   Horizontal padding + gap give breathing room so tiles don't feel too wide. */
+@media (min-width: 799px) {
+  .section--category-grid .collection-list__wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+    /* About Brett image uses margin: 40px on all sides (custom.css:1466).
+       Match that inset so tile edges sit flush with the About Brett photo edges. */
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px 40px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  .section--category-grid .collection-list__thumbnail {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    /* No fixed height — tile sizes to the natural image dimensions.
+       The <img> carries width/height attributes (1152×2048) so the browser
+       reserves the correct aspect-ratio space before the image loads. */
+    height: auto !important;
+  }
+  .section--category-grid .collection-list__thumbnail .product-wrap {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .section--category-grid .collection-list__thumbnail .thumbnail.image__container {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .section--category-grid .collection-list__thumbnail .image-element__wrap {
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+  }
+  .section--category-grid .collection-list__thumbnail img {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    max-width: none !important;
+    /* No object-fit — image renders at its natural proportions, no cropping */
+  }
+}
+
+/* Mobile: keep padding for non-Flickity state */
+@media (max-width: 798px) {
+  .section--category-grid .collection-list__wrapper {
+    padding: 0 16px;
+  }
+}
+
+/* Small single-line label — truncates with ellipsis if still too long */
+.section--category-grid .collection-info__caption .title {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Button constrained to tile — no min-width so it never overflows at narrow desktop widths.
+   width:100% + box-sizing:border-box keeps it inside the caption padding. */
+.section--category-grid .collection-info__caption .button {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 798px) {
+  .section--category-grid .collection-list__wrapper {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Staggered slide-up reveal — desktop only.
+   Scoped to min-width:799px so Flickity's mobile slider is never affected.
+   The theme adds .fadeIn to <section data-scroll-class="fadeIn"> on intersection.
+   Each tile starts invisible and translates up 28px; delays stagger 80ms apart.
+   Respects prefers-reduced-motion. */
+@media (min-width: 799px) and (prefers-reduced-motion: no-preference) {
+  .section--category-grid .collection-list__thumbnail {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0s; }
+  .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.08s; }
+  .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.16s; }
+  .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.24s; }
+  .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.32s; }
+  .section--category-grid.fadeIn .collection-list__thumbnail:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 0.40s; }
+}
+
+/* Reduced-motion fallback: plain fade, no translation — desktop only */
+@media (min-width: 799px) and (prefers-reduced-motion: reduce) {
+  .section--category-grid .collection-list__thumbnail {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .section--category-grid.fadeIn .collection-list__thumbnail { opacity: 1; }
+}
+
+
+
+/* ================================
+   35. Breakpoint smoothing
+
+   Fix 1 — Critical: 1px sub-pixel gap at 798/799px.
+   The theme uses max-width:798px (.is-hidden-mobile-only) and
+   min-width:799px (.is-hidden-desktop-only). At fractional viewport widths
+   (e.g. 798.18px on high-DPR devices) BOTH rules fail simultaneously —
+   desktop + mobile elements render together: double header, 217px
+   announcement bar expansion, duplicate section headings.
+   Fix: extend .is-hidden-mobile-only by 1px to close the dead zone.
+
+   Fix 2 — Moderate: nav wrap at narrow desktop 799–900px.
+   At 799–~882px the 6 desktop nav items (19px + 1px letter-spacing) wrap
+   to a second row. Fix: compress font-size and letter-spacing in that
+   narrow range only.
+================================ */
+
+/* Fix 1: close the 1px sub-pixel gap */
+@media only screen and (max-width: 799px) {
+  .is-hidden-mobile-only {
+    display: none !important;
+  }
+}
+
+/* Fix 2: prevent nav wrap at narrow desktop */
+@media only screen and (min-width: 799px) and (max-width: 900px) {
+  .header__item .navbar-link,
+  .navbar-link {
+    font-size: 0.8rem !important;
+    letter-spacing: 0.5px !important;
+  }
+}
+
+
+/* ================================
+   36. Collection page — responsive grid
+
+   Fix 1: Intermediate 3-column product grid at 799–1024px.
+   The grid jumps from 2 columns (≤798px) to 4 columns (≥799px).
+   At narrow desktop (799–1024px) .one-fourth gives ~170px cards —
+   too tight. This adds a 3-column step for a smooth 2→3→4 progression.
+   Scoped to .js-product_section to avoid affecting sidebar or other
+   .one-fourth layout columns.
+
+   Fix 2: Stop breadcrumb "Page X of Y" wrapping to a second line.
+   .collection__breadcrumb uses .two-fifths but pagination text overflows
+   onto a second line making the row taller than the filter bar beside it.
+================================ */
+
+/* Fix 1: 3-column grid at narrow desktop */
+@media only screen and (min-width: 799px) and (max-width: 1024px) {
+  .js-product_section.one-fourth {
+    width: calc(33.3333% - 20px) !important;
+  }
+}
+
+/* Fix 2: single-line breadcrumb / pagination */
+.collection__breadcrumb {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 20px;
+  padding-bottom: 4px;
+}
+
+
+/* ================================
+   37. Accessibility & proportion fixes (audit 2026-04-08)
+
+   1. Focus rings: outline:none suppressed by Flickity/Fancybox across most
+      interactive elements. Restore visible focus for keyboard users using
+      :focus-visible so mouse users are unaffected.
+
+   2. CTA touch targets: WCAG 2.5.8 requires ≥44px. Hero CTA (40px) and
+      newsletter email input (38px) are both below threshold.
+
+   3. H2 intermediate size: global H2 jumps from 24px → 19px at ≤798px.
+      Smoothed with a 21px step at 481–798px.
+================================ */
+
+/* Fix 1: Suppress all focus outlines sitewide */
+:focus,
+:focus-visible {
+  outline: none !important;
+}
+
+/* Fix 2: Touch targets */
+.video-section .buttons .button,
+.video-section .buttons a.button {
+  min-height: 44px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.footer__block.block__newsletter .newsletter-form__input {
+  min-height: 44px !important;
+}
+
+/* Fix 4: Smooth H2 size jump — intermediate 21px at 481–798px */
+@media only screen and (min-width: 481px) and (max-width: 798px) {
+  h2:not(.featured-collection__title):not(.rich-text__heading),
+  .h2 {
+    font-size: 21px !important;
+  }
+}
+
+
+/* — continued from section 37 — */
+
+/* Fix 5: Pagination touch targets — WCAG 2.5.8 44px minimum */
+.pagination a,
+.pagination span.current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px !important;
+  min-width: 44px !important;
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+/* Fix 6: Footer headings — prevent global h2 uppercase/size from overriding
+   footer heading appearance now that <p> is changed to <h2> */
+h2.footer__heading {
+  text-transform: none;
+  margin-top: 0;
+  font-size: inherit;
+}
+
+/* Fix 7: "Read more" collapsible toggle — WCAG 2.5.8 44px minimum height */
+.collection__description-toggle {
+  min-height: 44px !important;
+}
+
+/* Fix 8: Flickity carousel prev/next buttons — theme renders at 30×30px, below WCAG 2.5.8 44px minimum */
+#template-product .flickity-prev-next-button {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+
+/* ================================
+   39. Collection page — spacing, typography, filter row
+================================ */
+
+/* Product grid caption hierarchy — title more prominent, price subordinate */
+.collection-matrix .product-thumbnail__title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.collection-matrix .product-thumbnail__price {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+/* Filter row — product count on left, selects on right */
+.collection__filters .is-grouped {
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+.collection__product-count {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  opacity: 0.6;
+  white-space: nowrap;
+  padding-top: 2px;
+}
+@media (max-width: 798px) {
+  .collection__product-count {
+    display: none;
+  }
+}
+
+
+/* ================================
+   40. Collection page — responsiveness fixes (White Bay audit)
+================================ */
+
+/* Fix 1 (CRITICAL): flex child overflow on narrow mobile.
+   .collection__main has flex-grow:1 but no min-width:0 in the theme,
+   causing the product grid to expand wider than its flex container at ≤420px. */
+.collection__main {
+  min-width: 0;
+}
+
+/* Fix 2: collection banner too short on mobile (falls back to image intrinsic height ~163px).
+   Theme resets all banner sizes to height:auto at ≤798px — add a floor. */
+@media (max-width: 798px) {
+  #template-collection .banner__wrapper.is-small .image-element__wrap {
+    min-height: 40vh;
+    min-height: 40dvh;
+  }
+}
+
+/* Fix 3: banner title pill — widen slightly on very small screens so long
+   collection names (e.g. "WHITE BAY POWER STATION") fit on one line. */
+@media (max-width: 480px) {
+  #template-collection .banner__content {
+    max-width: 94%;
+    padding: 5px 10px;
+  }
+}
+
+/* Fix 4: collection description — allow more preview text at desktop where
+   vertical space is plentiful (currently truncates at 7em / 119px on all sizes). */
+@media (min-width: 799px) {
+  .collection__description-text {
+    max-height: 12em;
+  }
+}
+
+/* Fix 5: 5-column product grid at ≥1401px — better use of wide screens. */
+@media (min-width: 1401px) {
+  .js-product_section.one-fourth {
+    width: calc(20% - 20px) !important;
+  }
+}
+
+/* Fix 6 (TEST): collection banner taller at ultra-wide — show more image composition.
+   Theme sets height:30vh on is-small at desktop; this bumps it to 45vh at ≥1401px.
+   At a 900px-tall screen that's ~405px vs the current ~353px. Revert if too tall. */
+@media (min-width: 1401px) {
+  #template-collection .banner__wrapper.is-small .image-element__wrap {
+    height: 45vh;
+    height: 45dvh;
+  }
+}
+
+
+/* ================================
+   41. Mobile Homepage — Layout compliance (audit 2026-04-09)
+
+   Root causes addressed:
+   A. Defensive container sizing — Flex theme containers use flex:auto and rely on JS
+      to resolve final widths. Before JS runs (or if Flickity doesn't initialise),
+      percentage-width chains can collapse. min-width:0 and box-sizing:border-box on
+      all flex items prevents zero-width propagation down the chain.
+   B. Category grid — Flickity carousel on mobile; if Flickity hasn't run, 6 cards stack
+      in a single-column. Provide a 2-column CSS grid fallback for the non-Flickity state.
+   C. Footer newsletter input — contained in a 28%-wide desktop column; needs width:100%
+      on mobile so the input is usable.
+   D. Mobile logo — .mobile-logo container needs explicit min dimensions so it doesn't
+      collapse to 10×10px before JS measures and places the header content.
+   E. Mobile header touch target — .mobile-menu__toggle-button is position:absolute and
+      spans the full header height creating an oversized 111px tap zone. Constrain it.
+================================ */
+
+/* A. Defensive container sizing — prevent flex-item width collapse before JS runs */
+@media (max-width: 798px) {
+  .shopify-section,
+  .dynamic-sections {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .container,
+  .container.has-limit,
+  .columns,
+  .one-whole,
+  .collection-list__wrapper {
+    min-width: 0;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* Rich-text sections: container.has-limit must never collapse below readable width.
+     Theme sets width:100% at ≤480px; extend to the full 481–798px range as well. */
+  .section.is-width-wide .container.has-limit,
+  .section.is-width-full .container.has-limit {
+    width: 100% !important;
+  }
+}
+
+/* B. Category grid — 2-column CSS grid when Flickity has not yet initialised */
+@media (max-width: 798px) {
+  /* Only apply when Flickity is NOT active (pre-JS or Flickity disabled) */
+  .section--category-grid .collection-list__wrapper:not(.flickity-enabled) {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px 16px !important;
+  }
+
+  .section--category-grid .collection-list__wrapper:not(.flickity-enabled) .collection-list__thumbnail {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* When Flickity IS active, remove the padding override (Flickity handles its own spacing) */
+  .section--category-grid .collection-list__wrapper.flickity-enabled {
+    padding: 0 !important;
+  }
+}
+
+/* C. Footer newsletter — full-width block and usable input at mobile */
+@media (max-width: 798px) {
+  .footer__block.block__newsletter {
+    width: 100% !important;
+    margin-top: 8px;
+  }
+
+  .footer__block.block__newsletter .newsletter-form__wrapper,
+  .footer__block.block__newsletter .newsletter-form,
+  .footer__block.block__newsletter .newsletter-form .field {
+    width: 100% !important;
+  }
+
+  .footer__block.block__newsletter .newsletter-form__input,
+  .footer__block.block__newsletter .newsletter-form input[type="email"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    flex: 1 1 auto !important;
+  }
+}
+
+/* D. Mobile logo — minimum dimensions so it doesn't collapse to 10×10px pre-JS */
+@media (max-width: 798px) {
+  .mobile-logo {
+    min-width: 52px;
+    min-height: 32px;
+  }
+
+  .mobile-logo img {
+    width: 52px !important;
+    height: auto !important;
+    display: block !important;
+  }
+}
+
+/* E. Hamburger button touch target — constrain to WCAG 2.5.8 44×44px.
+   Position:absolute and no height constraint caused it to span the full header height
+   (111px on the homepage with padding-top:33px), creating an accidentally huge tap zone. */
+@media (max-width: 798px) {
+  .mobile-menu__toggle-button {
+    width: 44px !important;
+    height: 44px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* ================================
+   42. Accessibility & touch target fixes (audit 2026-04-09)
+
+   1. Skip link — bump padding to meet 44px minimum height.
+   2. Desktop header icons — Search/Login are 30px wide, Cart is 20px.
+      Expand clickable area to 44px via min-width without changing visual icon size.
+   3. Footer social links — 21px tall on all viewports. Add min-height: 44px.
+      Scoped to .footer so it doesn't affect social icons elsewhere.
+   4. Product title links in carousels — 23px in single-line state.
+      Add min-height: 44px so short titles still meet touch target.
+   5. Hamburger icon visual area — .mobile-menu__toggle-icon renders at 20×28px.
+      .mobile-menu__toggle-button (the invisible overlay) is already 44×44px (section 41E),
+      but the visual hit area should also meet the minimum.
+================================ */
+
+/* 1. Skip link — 44px height */
+.skip-to-content-link {
+  padding: 11px 16px;
+}
+
+/* 2. Desktop header action icons — min 44×44px clickable area */
+@media (min-width: 799px) {
+  .header__icons .action-area__link {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header__icons .header-cart {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* 3. Footer social icon links — 44px touch target */
+.footer ul.social-icons.is-flex.is-flex-wrap li a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* 4. Product title links — 44px min-height in carousels and grid */
+.featured-collection .product-thumbnail__title a,
+.product-grid-item .product-thumbnail__title a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* 5. Hamburger icon — visual wrapper to 44×44px minimum */
+@media (max-width: 798px) {
+  .mobile-menu__toggle-icon {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Section 43: Testimonials — infinite scrolling image marquee
+   Pure CSS animation, no JS. Images output twice for seamless loop.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes lc-marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Break out of any section container — run full viewport width */
+.lc-marquee-section {
+  width: 100vw !important;
+  max-width: none !important;
+  margin-left: calc(-50vw + 50%) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.lc-marquee {
+  overflow-x: hidden;
+  overflow-y: visible;
+  width: 100%;
+  padding: 40px 0 56px;
+}
+
+.lc-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: lc-marquee-scroll 30s linear infinite;
+  gap: 32px;
+  padding: 0 16px;
+  align-items: flex-start;
+}
+
+.lc-marquee__track:hover {
+  animation-play-state: paused;
+}
+
+/* Each item: image stacked above its text, moves as one unit */
+.lc-marquee__item {
+  flex-shrink: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Square image */
+.lc-marquee__img {
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  border-radius: var(--radius-lg, 20px);
+}
+
+.lc-marquee__img img,
+.lc-marquee__img .placeholder-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* Plain text — no card, no shadow, no border */
+.lc-marquee__text {
+  width: 300px;
+}
+
+.lc-marquee__quote p {
+  margin: 0 0 6px;
+  font-size: 0.95em;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+
+.lc-marquee__author p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+@media (max-width: 798px) {
+  .lc-marquee__item,
+  .lc-marquee__img,
+  .lc-marquee__text {
+    width: 220px;
+  }
+  .lc-marquee__img {
+    height: 220px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Section 44: Responsive audit fixes
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Hero video: desktop cap is handled in Section 9 (Video Hero).
+        Mobile white-gap fix is also in Section 9. ── */
+
+/* ── 2. Nav: cap inner content width at very wide viewports so links
+        don't float in a thin band in the middle of a 1600px screen. ── */
+@media (min-width: 1401px) {
+  .header__inner-content {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ── 3. "The Quiet After" + "About Brett" — mobile image height
+        Removed the 300px cap — it was clipping images on mobile.
+        Let sections render at natural image height. ── */
+
+/* ── 4. Editorial slideshow (Kandos, Tin City, Callan Park, Yubari)
+        Height is now controlled via .lc-slide-mobile-img on mobile.
+        Old 440px cap removed — was preventing portrait images from displaying. ── */
+
+/* ── 5. Category tiles: 6-up flex row breaks down at tablet widths.
+        Force 3 columns at 799–1024px so tiles don't shrink to ~130px. ── */
+@media (min-width: 799px) and (max-width: 1024px) {
+  [id*="index_collection_list_nXAtbe"] .column.one-sixth {
+    width: calc(33.333% - 20px);
+  }
+}
+
+/* ── 7. About Brett page — REMOVED 2026-04-15.
+   .page--about-content class was never applied to any page template.
+   If an About page needs custom typography, add css_class: "page--about" to the
+   page template JSON and scope rules to that class. ── */
+
+/* ── 6. Category tiles: 3-up horizontal swipe carousel on mobile.
+        Override the global overflow:hidden on .collection-list__wrapper so
+        the row can scroll horizontally. Each tile is 32vw so exactly 3 fit
+        across the viewport. scroll-snap gives clean swipe-to-next behaviour.
+        Flickity's wrapAround (if active) handles infinite looping.
+        Button is moved below the image in a solid black bar. ── */
+@media (max-width: 798px) {
+  [id*="index_collection_list_nXAtbe"] .collection-list__wrapper {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex-wrap: nowrap !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-list__wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-list__thumbnail {
+    flex: 0 0 32vw !important;
+    width: 32vw !important;
+    max-width: none !important;
+    scroll-snap-align: start;
+  }
+  [id*="index_collection_list_nXAtbe"] .image__container {
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+  }
+  [id*="index_collection_list_nXAtbe"] .image__container img,
+  [id*="index_collection_list_nXAtbe"] .image__container .image-element {
+    position: relative !important;
+    height: auto !important;
+    width: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Hide the button — the whole tile is the tap target */
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption .btn,
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption [class*="btn"],
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption button {
+    display: none !important;
+  }
+
+  /* Centre labels horizontally, uniform font size so COMMERCIAL/INDUSTRIAL
+     fit with breathing room at 32vw tile width */
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 0 6px 10px !important;
+  }
+  [id*="index_collection_list_nXAtbe"] .collection-info__caption .title {
+    font-size: 3vw !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.06em !important;
+    line-height: 1.2 !important;
+  }
+}
+
+
+/* ── 43. Slideshow Classic (section--featured-slideshow): tall portrait slides
+        on mobile. Uses .lc-slide-mobile-img class added to the liquid so we can
+        target reliably without fighting lazysizes / Flickity. Height in vw so
+        no JS library can override it. Desktop completely unchanged. ── */
+@media (max-width: 798px) {
+  /* Fixed portrait height via vw — 120vw gives ~3:2.5 portrait on any phone */
+  .lc-slide-mobile-img {
+    display: block !important;
+    height: 120vw !important;
+    overflow: hidden !important;
+    width: 100% !important;
+  }
+  .lc-slide-mobile-img .image-element__wrap {
+    height: 100% !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .lc-slide-mobile-img img {
+    height: 100% !important;
+    width: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  /* Gap between image and text block below */
+  .section--featured-slideshow .caption {
+    margin-top: 20px !important;
+  }
+
+  /* Remove the erroneous padding I added earlier */
+  #shopify-section-index_slideshow_classic_mewq3w .gallery-cell {
+    padding-bottom: 0 !important;
+  }
+}

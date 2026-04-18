@@ -72,76 +72,32 @@ context: <string>
       {% endif %}
 
     {% else %}
-
-  {% comment %}
       <nav class="pagination {% if paginate.previous and paginate.next %}paginate--both{% endif %}" role="navigation" aria-label="pagination">
         {%- if paginate.previous-%}
-          <a href="{{ paginate.previous.url}}" class="pagination-previous" rel="prev">{{ 'general.pagination.previous' | t }}</a>
+          <a href="{{ paginate.previous.url }}" class="pagination-previous">{{ 'general.pagination.previous' | t }}</a>
         {% endif %}
 
-        
-         <ul class="pagination-list">
-        {% for part in paginate.parts %}
-            <li>
-                {% if part.is_link %}
-                    <a class="pagination-link" href="{{ part.url }}">{{ part.title }}</a>
-                {% else %}
-                    <a class="pagination-link is-current" href=" {{ paginate.current.url }}" aria-current="page">{{ part.title }}</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-
-        
+        <ul class="pagination-list">
+          {%- for part in paginate.parts -%}
+            {% if part.is_link %}
+              <li>
+                <a class="pagination-link" href="{{ part.url }}">{{ part.title }}</a>
+              </li>
+            {% elsif part.title == '&hellip;' %}
+              <li>
+                <a class="pagination-ellipsis">&hellip;</a>
+              </li>
+            {% else %}
+              <li>
+                <a class="pagination-link is-current">{{ part.title }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
         {%- if paginate.next-%}
-          <a href="{{ paginate.next.url }}" class="pagination-next" rel="next">{{ 'general.pagination.next' | t }}</a>
+          <a href="{{ paginate.next.url }}" class="pagination-next">{{ 'general.pagination.next' | t }}</a>
         {% endif %}
       </nav>
-{% endcomment %}
-
-
-<nav class="pagination">
-    
-    {%- if paginate.previous -%}
-      <a href="{% if paginate.current_page == 2 %}{{ collection.url }}{% else %}{{ collection.url }}?page={{ paginate.current_page | minus: 1 }}{% endif %}" class="prev" rel="prev">Prev</a>
-    {%- endif -%}
-
-    {%- for i in (1..paginate.pages) -%}
-      {%- if i == paginate.current_page -%}
-        <span class="current">{{ i }}</span>
-      {%- else -%}
-        <a href="{% if i == 1 %}{{ collection.url }}{% else %}{{ collection.url }}?page={{ i }}{% endif %}">{{ i }}</a>
-      {%- endif -%}
-    {%- endfor -%}
-
-    {%- if paginate.next -%}
-      <a href="{{ collection.url }}?page={{ paginate.current_page | plus: 1 }}" class="next" rel="next">Next</a>
-    {%- endif -%}
-
-  </nav>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-
-      
     {% endif %}
   </div>
 {% endif %}

@@ -5,6 +5,7 @@ window.PXUTheme.jsPopup = {
 
     // Add settings from schema to current object
     window.PXUTheme.jsPopup = $.extend(this, window.PXUTheme.getSectionData($section));
+    if (window.Shopify && window.Shopify.designMode) return;
 
     const cookieValue = Cookies.get('popup');
     const cookieEnabled = this.popup_days_to_hide != 0 ? true : false;
