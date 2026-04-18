@@ -1,0 +1,14 @@
+# Baseline hex counts in assets/custom.css (pre-Phase-2, excluding /* comments */):
+#   #ebac20: 1 occurrences (4 raw incl. comments)
+#   #4d4d4d: 2 occurrences (9 raw incl. comments)
+#   #6f6f6f: 1 occurrences (2 raw incl. comments)
+#   #f5f5f5: 1 occurrences (3 raw incl. comments)
+#
+# Columns: hex\tfile\tline\tselector\tproperty\tclassification\traw_line
+#
+hex	file	line	selector	property	classification	raw_line
+#ebac20	assets/custom.css	65	* ================================ Custom CSS — Lost Collective Shopify Flex Theme v5.2.1 Last restructured: 2026-04-02 Structure: 1. CSS Cu	--color-brand-yellow	token_declaration	--color-brand-yellow: #ebac20;
+#f5f5f5	assets/custom.css	67	* ================================ Custom CSS — Lost Collective Shopify Flex Theme v5.2.1 Last restructured: 2026-04-02 Structure: 1. CSS Cu	--color-light	token_declaration	--color-light:        #f5f5f5;
+#6f6f6f	assets/custom.css	68	* ================================ Custom CSS — Lost Collective Shopify Flex Theme v5.2.1 Last restructured: 2026-04-02 Structure: 1. CSS Cu	--color-body-text	token_declaration	--color-body-text:    #6f6f6f;
+#4d4d4d	assets/custom.css	69	* ================================ Custom CSS — Lost Collective Shopify Flex Theme v5.2.1 Last restructured: 2026-04-02 Structure: 1. CSS Cu	--color-footer-bg	token_declaration	--color-footer-bg:    #4d4d4d;
+#4d4d4d	assets/custom.css	101	* ================================ Custom CSS — Lost Collective Shopify Flex Theme v5.2.1 Last restructured: 2026-04-02 Structure: 1. CSS Cu	--color-header-bg	token_declaration	--color-header-bg: #4d4d4d;

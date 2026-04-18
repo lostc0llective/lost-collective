@@ -54,19 +54,27 @@
 ================================ */
 
 :root {
-  /* Brand colours — all values aligned with Shopify admin settings_data.json.
-     --color-brand-yellow = admin link_hover_color / header_link_hover_color (#ebac20)
-     --color-body-text    = admin regular_color (#6f6f6f)
-     --color-light        = admin dropdown_background (#f5f5f5)
-     --color-footer-bg    = admin footer_background (#4d4d4d)
-     --color-dark is NOT overridden by admin — used only for custom non-admin-controlled
-     elements (cookie banner, search popup, mobile sticky ATC, cart drawer, art description
-     boxes, accordion headers). These are intentionally near-black for design. */
-  --color-brand-yellow: #ebac20;
+  /* LC brand + surface tokens.
+     --color-dark is intentionally LC-owned (cookie banner, search popup, mobile
+     sticky ATC, cart drawer, art description boxes, accordion headers — should
+     not track admin heading/body colour).
+     Phase 2 token prep: --color-brand-gold was renamed to --color-brand-gold.
+     Phase 4 will re-wire --color-footer-bg and --color-header-bg through Liquid
+     so admin's footer_background / a new mobile_header_background flow through. */
+
+  /* Brand colour */
+  --color-brand-gold:   #ebac20;
   --color-dark:         #1a1a1a;
-  --color-light:        #f5f5f5;
   --color-body-text:    #6f6f6f;
   --color-footer-bg:    #4d4d4d;
+
+  /* LC surface tokens — neutral fills used across custom components */
+  --lc-surface-light:   #f5f5f5;
+  --lc-surface-slate:   #4d4d4d;
+  --color-light:        var(--lc-surface-light);
+
+  /* Hover colour — Brett 2026-04-18 decision: gold is the primary accent */
+  --lc-color-hover:     var(--color-brand-gold);
 
   /* Social brand colours */
   --color-twitter:      #1da1f2;
@@ -103,7 +111,7 @@
   /* Spacing scale — use these instead of hardcoded px values */
 
   /* Primary action colour alias (used for hover/focus states) */
-  --color-primary: var(--color-brand-yellow);
+  --color-primary: var(--color-brand-gold);
 }
 
 
@@ -146,7 +154,7 @@ h1, h2, h3, h4 {
   position: absolute;
   top: -9999px;
   left: 16px;
-  background: var(--color-brand-yellow);
+  background: var(--color-brand-gold);
   color: var(--color-dark);
   padding: 8px 16px;
   border-radius: var(--radius-sm);
@@ -618,8 +626,8 @@ html body .header .header__link:hover,
 html body .header .navbar-item:hover > .navbar-link,
 html body .mobile-header .navbar-link:hover,
 html body .mobile-header .header__link:hover {
-  color: var(--color-brand-yellow);
-  fill: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
+  fill: var(--color-brand-gold);
 }
 
 /* Header icons (cart, search, account) — .header__icon class is explicitly passed for these */
@@ -804,7 +812,7 @@ html body .mobile-menu__toggle-icon .icon {
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--transition-fast), visibility 0s var(--transition-fast);
-  box-shadow: inset 0 3px 0 var(--color-brand-yellow);
+  box-shadow: inset 0 3px 0 var(--color-brand-gold);
 }
 
 /* Show in both hover-mode and click-mode */
@@ -818,7 +826,7 @@ html body .mobile-menu__toggle-icon .icon {
 
 .navbar-dropdown .navbar-item:hover {
   background-color: rgba(235, 172, 32, 0.12);  /* Subtle gold tint on dark bg */
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 /* Mega menu full-width positioning.
@@ -992,7 +1000,7 @@ html body .mobile-menu__toggle-icon .icon {
 }
 
 .mega-menu a:hover {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 } /* end @media (min-width: 799px) */
@@ -1034,7 +1042,7 @@ a.button {
 
 .purchase-details__buttons .action_button.action_button--secondary:hover {
   background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 /* Dynamic checkout (Shopify Payments — Shop Pay, Apple Pay, etc.) */
@@ -1053,7 +1061,7 @@ button.button--primary-action,
   justify-content: center;
   height: auto;
   background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   border-radius: var(--radius-pill);
   font-weight: 700;
   font-size: 1rem;
@@ -1070,7 +1078,7 @@ button.button--primary-action,
 
 .button--primary-action:hover {
   background-color: var(--color-body-text);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1098,7 +1106,7 @@ button.button--secondary.button,
 /* "Read more" collapsible toggle (collection descriptions) */
 .toggle-text {
   display: inline-block;
-  background: var(--color-brand-yellow);
+  background: var(--color-brand-gold);
   color: var(--color-dark);
   font-size: 1rem;
   font-weight: 600;
@@ -1113,13 +1121,13 @@ button.button--secondary.button,
 }
 
 .toggle-text:focus {
-  outline: 3px solid var(--color-brand-yellow);
+  outline: 3px solid var(--color-brand-gold);
   outline-offset: 2px;
 }
 
 .toggle-text:hover {
   background: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 /* Consistent button--primary styling across the site.
@@ -1129,7 +1137,7 @@ button.button--secondary.button,
 a.button.button--primary,
 button.button--primary {
   background-color: var(--color-dark) !important;
-  color: var(--color-brand-yellow) !important;
+  color: var(--color-brand-gold) !important;
   border-color: var(--color-dark) !important;
   border-radius: var(--radius-pill) !important;
   font-weight: 700;
@@ -1140,7 +1148,7 @@ button.button--primary {
 a.button.button--primary:hover,
 button.button--primary:hover {
   background-color: var(--color-body-text) !important;
-  color: var(--color-brand-yellow) !important;
+  color: var(--color-brand-gold) !important;
   border-color: var(--color-body-text) !important;
 }
 
@@ -1287,13 +1295,13 @@ p a:not(.button):not([class*="logo"]):hover::after {
 }
 
 .swatch input:focus-visible + .swatch-element {
-  outline: 2px solid var(--color-brand-yellow);
+  outline: 2px solid var(--color-brand-gold);
   outline-offset: 2px;
 }
 
 .swatch input:checked + .swatch-element {
   background: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 .swatch label {
@@ -1327,7 +1335,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
 
 .swatch-element:hover {
   background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -1424,7 +1432,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
 
 .featured-collection__view-all-link:hover {
   background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   border-color: var(--color-dark);
 }
 
@@ -1623,13 +1631,13 @@ html body .section--about-brett .caption-content .image-with-text-overlay__subhe
 .footer__block.block__newsletter .newsletter-form button[type="submit"] {
   border-radius: var(--radius-pill);
   background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   border-color: transparent;
   width: 100%;
 }
 
 .footer__block.block__newsletter .newsletter-form button[type="submit"]:hover {
-  background-color: var(--color-brand-yellow);
+  background-color: var(--color-brand-gold);
   color: var(--color-dark);
 }
 
@@ -1649,7 +1657,7 @@ html body [id*="trust_icon_bar"] a.icon-bar__block {
 }
 
 html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 [id*="trust_icon_bar"] .icon-bar__wrapper {
@@ -1744,7 +1752,7 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
 }
 
 .footer__extra-content a:hover {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 /* Animated underline on footer links */
@@ -1766,7 +1774,7 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
 }
 
 .footer a:hover {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 .footer a:hover::after {
@@ -2059,9 +2067,9 @@ html body .collection__description {
   align-items: center;
   margin-top: 16px;
   background-color: var(--color-dark);
-  border: 1px solid var(--color-brand-yellow);
+  border: 1px solid var(--color-brand-gold);
   border-radius: var(--radius-pill);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -2108,7 +2116,7 @@ html body .collection__description {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   line-height: 1;
 }
 
@@ -2264,7 +2272,7 @@ html body .collection__description {
 
 .faceted-filter-group-display__submit .button.button--primary:hover {
   background-color: var(--color-dark) !important;
-  color: var(--color-brand-yellow) !important;
+  color: var(--color-brand-gold) !important;
   border-color: var(--color-dark) !important;
 }
 
@@ -2387,7 +2395,7 @@ html body .collection__description {
   color: var(--color-dark);
   /* rgba equivalent of #ebac20 at 8% opacity */
   background: rgba(235, 172, 32, 0.08);
-  border-left: 3px solid var(--color-brand-yellow);
+  border-left: 3px solid var(--color-brand-gold);
   padding: 8px 12px;
   margin: 12px 0 16px;
   border-radius: 0 4px 4px 0;
@@ -2504,7 +2512,7 @@ html body .collection__description {
 }
 
 .product-block.product-block--size-chart .product__size-chart:hover {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 .product-block.product-block--size-chart .product__size-chart:hover::after,
@@ -2845,7 +2853,7 @@ html body .collection__description {
 html body .fixed-message__container {
   background-color: rgba(26, 26, 26, 0.96);
   color: var(--color-white);
-  border-top: 2px solid var(--color-brand-yellow);
+  border-top: 2px solid var(--color-brand-gold);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -2866,7 +2874,7 @@ html body .fixed-message__text {
 
 /* Privacy-policy / inline links in the banner text */
 html body .fixed-message__text a {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -2874,9 +2882,9 @@ html body .fixed-message__text a {
 /* Override the theme's generic button rules — gold pill, dark text */
 html body .fixed-message__button .button,
 html body .fixed-message__button .age-gate__confirm_btn {
-  background-color: var(--color-brand-yellow);
+  background-color: var(--color-brand-gold);
   color: var(--color-dark);
-  border-color: var(--color-brand-yellow);
+  border-color: var(--color-brand-gold);
   border-radius: var(--radius-pill);
   font-family: var(--font-heading);
   font-weight: 700;
@@ -2895,7 +2903,7 @@ html body .fixed-message__button .age-gate__confirm_btn {
 html body .fixed-message__button .button:hover,
 html body .fixed-message__button .age-gate__confirm_btn:hover {
   background-color: var(--color-dark);
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   border-color: var(--color-dark);
   transform: none; /* suppress global hover lift inside a fixed bar */
 }
@@ -2978,7 +2986,7 @@ html body .search-popup .input {
 html body .search-popup .input:focus {
   border-color: var(--color-body-text);
   box-shadow: 0 0 0 0.125em rgba(77, 77, 77, 0.25);
-  outline: 3px solid var(--color-brand-yellow);
+  outline: 3px solid var(--color-brand-gold);
   outline-offset: 2px;
 }
 
@@ -2993,7 +3001,7 @@ html body .search-popup button[name="search"] {
 html body .search-popup .icon.is-left,
 html body .search-popup .icon.is-left svg,
 html body .search-popup button[name="search"] svg {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   fill: currentColor;
   transition: color var(--transition-fast);
 }
@@ -3024,7 +3032,7 @@ html body .search-popup .search-menu__item a {
 }
 
 html body .search-popup .search-menu__item a:hover {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
 }
 
 /* Predictive results pane — stay dark when it appears */
@@ -3092,7 +3100,7 @@ html body .search-popup .search__results__item .item-pricing {
 
 .ajax-cart__shipping-bar-fill {
   height: 100%;
-  background-color: var(--color-brand-yellow);
+  background-color: var(--color-brand-gold);
   border-radius: var(--radius-xs);
   transition: width 0.5s ease;
 }
@@ -3112,7 +3120,7 @@ html body .search-popup .search__results__item .item-pricing {
 }
 
 .ajax-cart__shipping-progress--achieved .ajax-cart__shipping-message--achieved {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -3157,7 +3165,7 @@ html body .search-popup .search__results__item .item-pricing {
 .ajax-cart__trust-item .icon svg {
   width: 18px;
   height: 18px;
-  fill: var(--color-brand-yellow);
+  fill: var(--color-brand-gold);
   opacity: 0.85;
 }
 
@@ -3213,7 +3221,7 @@ html body .search-popup .search__results__item .item-pricing {
 }
 
 .product__art-detail--cert dd {
-  color: var(--color-brand-yellow);
+  color: var(--color-brand-gold);
   font-weight: 600;
 }
 
@@ -3244,7 +3252,7 @@ html body .search-popup .search__results__item .item-pricing {
     right: 0;
     z-index: 200;
     background-color: var(--color-dark);
-    border-top: 2px solid var(--color-brand-yellow);
+    border-top: 2px solid var(--color-brand-gold);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
     padding: 10px 16px max(12px, env(safe-area-inset-bottom));
     transform: translateY(100%);
@@ -3292,9 +3300,9 @@ html body .search-popup .search__results__item .item-pricing {
   }
 
   .product__sticky-atc-btn {
-    background-color: var(--color-brand-yellow);
+    background-color: var(--color-brand-gold);
     color: var(--color-dark);
-    border-color: var(--color-brand-yellow);
+    border-color: var(--color-brand-gold);
     border-radius: var(--radius-pill);
     font-size: 0.8125rem;
     font-weight: 700;
@@ -3460,7 +3468,7 @@ html body .search-popup .search__results__item .item-pricing {
   margin-top: 2.5rem;
   padding: 1.5rem 2rem;
   background-color: var(--color-light);
-  border-left: 3px solid var(--color-brand-yellow);
+  border-left: 3px solid var(--color-brand-gold);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
