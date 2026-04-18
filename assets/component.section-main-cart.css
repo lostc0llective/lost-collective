@@ -87,7 +87,6 @@
 }
 
 .cart__checkout-wrapper {
-  --button-width: 100%;
 
   & .additional-checkout-buttons,
   & .cart__continue {

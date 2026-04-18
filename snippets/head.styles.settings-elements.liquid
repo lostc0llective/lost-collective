@@ -48,11 +48,9 @@
 
     {%- if edges == 'round' -%}
       --roundness: var(--radius-xl);
-      --chip-radius: var(--radius-full);
       --input-radius: min(24px, var(--radius-full));
     {%- elsif edges == 'square' -%}
       --roundness: var(--radius-none);
-      --chip-radius: var(--radius-none);
       --input-radius: var(--radius-none);
     {%- endif -%}
 

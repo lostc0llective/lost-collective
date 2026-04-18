@@ -94,7 +94,6 @@
 
   /* Transitions */
   --transition-fast: 0.2s ease-in-out;
-  --transition-mid:  0.25s ease;
   --transition-slide: 0.25s ease-in-out;
   --transition-base: 0.3s ease;
 
@@ -102,13 +101,6 @@
   --color-header-bg: #4d4d4d;
 
   /* Spacing scale — use these instead of hardcoded px values */
-  --space-xs:   4px;
-  --space-sm:   8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  32px;
-  --space-2xl: 40px;
-  --space-3xl: 80px;
 
   /* Primary action colour alias (used for hover/focus states) */
   --color-primary: var(--color-brand-yellow);

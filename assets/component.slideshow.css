@@ -72,10 +72,7 @@
 
 :root {
   --z-index-hero-image: 1;
-  --z-index-hero-video: 2;
-  --z-index-hero-image-overlay: 3;
   --z-index-hero-text: 4;
-  --slideshow-image-animation-amount: 200px;
   --slideshow-image-animation-speed: 0.5s;
 }
 

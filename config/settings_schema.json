@@ -4,8 +4,8 @@
     "theme_name": "Flex",
     "theme_author": "Out of the Sandbox",
     "theme_version": "5.5.1",
-    "theme_documentation_url": "https:\/\/help.outofthesandbox.com/",
-    "theme_support_url": "https:\/\/help.outofthesandbox.com\/hc\/en-us\/requests/new"
+    "theme_documentation_url": "https://help.outofthesandbox.com/",
+    "theme_support_url": "https://help.outofthesandbox.com/hc/en-us/requests/new"
   },
   {
     "name": "t:settings_schema.age_gate.name",
@@ -1394,22 +1394,6 @@
         ]
       },
       {
-        "type": "select",
-        "id": "media_share_style_link",
-        "label": "Social media share icon border",
-        "options": [
-          {
-            "value": "squared",
-            "label": "Squared"
-          },
-          {
-            "value": "rounded",
-            "label": "Rounded"
-          }
-        ],
-        "default": "squared"
-      },
-      {
         "type": "header",
         "content": "Breadcrumbs"
       },
@@ -1833,7 +1817,7 @@
         "type": "checkbox",
         "id": "collection_swatches",
         "label": "Show color swatches",
-        "info": "[Learn more](https:\/\/help.outofthesandbox.com\/hc\/en-us\/articles\/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
+        "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
         "default": true
       },
       {
@@ -1949,7 +1933,7 @@
         "type": "checkbox",
         "id": "enable_swatches",
         "label": "Show color swatches",
-        "info": "[Learn more](https:\/\/help.outofthesandbox.com\/hc\/en-us\/articles\/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
+        "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360024080613) or manage your custom color swatches for all products by [viewing your uploaded files](/admin/settings/files).",
         "default": false
       },
       {
@@ -2014,7 +1998,7 @@
         "type": "page",
         "id": "size_chart",
         "label": "Size chart",
-        "info": "[Learn more](https:\/\/help.outofthesandbox.com\/hc\/en-us\/articles\/115006910707-Using-the-Size-Chart-Sections-themes-)"
+        "info": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/115006910707-Using-the-Size-Chart-Sections-themes-)"
       }
     ]
   },
@@ -2421,14 +2405,14 @@
       {
         "type": "checkbox",
         "id": "disqus_enabled",
-        "label": "Enable [DISQUS](http:\/\/disqus.com\/) comments",
+        "label": "Enable [DISQUS](http://disqus.com/) comments",
         "info": "Replaces Shopify's default comments.",
         "default": false
       },
       {
         "type": "text",
         "id": "disqus_shortname",
-        "label": "[DISQUS](http:\/\/help.disqus.com/en/articles/1717111-what-s-a-shortname\/) shortname"
+        "label": "[DISQUS](http://help.disqus.com/en/articles/1717111-what-s-a-shortname/) shortname"
       }
     ]
   }
