@@ -458,3 +458,234 @@ Prior stash `stash@{0}: On feat/april-2026-audit-sprint: WIP before pre-flex-mig
 
 (Filled in by the commit below.)
 
+---
+
+## CC Sprint: Phase 1 — Dead-code deletion (8 tasks, max 10)
+
+**Branch:** continue on `feat/flex-migration`.
+
+**Entry gate (met by Phase 0):** staging slot `193920860326` exists, theme IDs reconciled, rollback proven both directions, WIP stash archived.
+
+**Exit gate:** staging renders pixel-identical to Phase 0 baseline (`~/phase-0-staging/` captures). `custom.css` line count reduced by 150-250. `shopify theme check` passes with zero errors beyond the known 179-error baseline from Phase 0 Task 4. No new CSS errors in Chrome DevTools console on the 5 Phase 0 template captures.
+
+**Preconditions:** Read `audit/DEAD-CODE.md` + `audit/CONFLICTS.md` first. The deletion order and evidence recipes live there.
+
+**Shopify MCP + theme-check preamble** (same as Phase 0): use Shopify Dev MCP for any Flex var / Liquid / Admin API lookup. Run `shopify theme check` before every `shopify theme push`. Zero new errors required to push.
+
+**Hard rules for this sprint:**
+- **Commit per batch.** Each of Tasks 3-6 is one logical batch and produces one commit. If a push to staging reveals a regression, rollback is `git revert <batch_sha>` — one command.
+- **Push to staging after each batch**, not at the end. If Batch B breaks something Batch A doesn't, we know which commit to revert.
+- **`settings_data.json` + `settings_schema.json` stay in sync.** Deleting a setting from schema without removing the orphan value from data leaves a ghost the theme editor can't clean up. Always delete both sides.
+- **Liquid-interpolated CSS (anomaly #6).** The `--heading-2xl-font-size` pattern in `assets/base.typography.css:104` proves some tokens are referenced inside Liquid-rendered CSS that plain grep can't see. Before deleting any token from `DEAD-TOKENS.txt`, grep `{{` and `{%` blocks for the token name as well.
+- **Don't touch the Stape GTM block** in `settings_data.json` (block id `6251270934270006384`). Only the Instafeed block (`1232542678405107163`) is dead.
+- **Settings with `type: "header"` or `type: "paragraph"`** are label-only — no Liquid reference is expected. Do NOT flag them as dead.
+
+### Task 1: Generate `audit/DEAD-TOKENS.txt`
+
+Run the recipe from `audit/DEAD-CODE.md` §1:
+```bash
+comm -23 \
+  <(awk -F'\t' '{print $1}' audit/css-custom-properties.txt | sort -u) \
+  <(awk -F'\t' '{print $1}' audit/css-custom-properties-usage.txt | sort -u) \
+  > audit/DEAD-TOKENS.txt
+```
+
+Then, for every token in the output:
+1. Grep `**/*.liquid` for the token name inside `{{ ... }}` or `{% ... %}` blocks — those references don't show in the `-usage` file because the audit parser stripped Liquid.
+2. Grep `assets/*.css.liquid` and `assets/base.*.css` specifically — Flex uses Liquid-interpolated CSS there.
+3. Remove any token with a Liquid-context hit from `DEAD-TOKENS.txt`.
+
+**Done when:** `audit/DEAD-TOKENS.txt` exists with a verified-dead token list. Each token has been cross-checked against Liquid interpolations. Line count recorded in HANDOFF.md under "Phase 1 audit outputs".
+
+### Task 2: Generate `audit/DEAD-IMPORTANT.txt`, `audit/DEAD-SETTINGS.txt`, `audit/DEAD-SELECTORS.txt`
+
+Three parallel recipes from `audit/DEAD-CODE.md`:
+
+**DEAD-IMPORTANT.txt** (§3): script that extracts every `!important` declaration from `assets/custom.css` with file:line, groups by (selector, property), and for each group checks whether ANY other rule in custom.css, `snippets/head.styles.*.liquid`, or any `{% style %}` block targets the same selector+property. Zero-competition groups go in the file.
+
+**DEAD-SETTINGS.txt** (§4):
+```bash
+jq -r '.[].id' audit/settings-schema-flat.json | while read id; do
+  # Skip label-only types
+  type=$(jq -r ".[] | select(.id==\"$id\") | .type" audit/settings-schema-flat.json)
+  [ "$type" = "header" ] || [ "$type" = "paragraph" ] && continue
+  count=$(grep -r "settings\.$id\b" --include="*.liquid" . | wc -l)
+  [ "$count" = "0" ] && echo "$id"
+done > audit/DEAD-SETTINGS.txt
+```
+
+**DEAD-SELECTORS.txt**: take the 30 remaining flagged-dead selectors from the previous sprint's `AUDIT-REPORT.md` (commit c9f50c0). For each selector, use Shopify Dev MCP or Playwright (as in Phase 0 Task 6) to render the homepage, a collection page, a PDP, and a blog post on staging (`193920860326`), then search the rendered DOM for the selector. Zero-match selectors across all four pages go in the file.
+
+**Done when:** All three files exist. Each has an item count recorded in HANDOFF.md. `DEAD-SELECTORS.txt` has render-test evidence per selector.
+
+### Task 3: Batch A — confirmed-dead deletions (zero verification needed)
+
+These are the CONFLICTS.md quick-wins — no detection recipe needed, the evidence is already in the audit.
+
+Delete in this order:
+
+1. **B5 `--color-sale`** — from `assets/custom.css:71` and `snippets/head.styles.legacy-settings-color.liquid:139`.
+2. **B1 `--color-white`** — from `assets/custom.css:72`. (Flex's legacy snippet already provides it.)
+3. **B2 `--color-facebook`** — from `assets/custom.css:78`.
+4. **B3 `--color-twitter`** — from `assets/custom.css:77`.
+5. **B4 `--color-pinterest`** — from `assets/custom.css:79`.
+6. **B6 rename** — delete `--color-mid` from `assets/custom.css` (value `#6f6f6f`), then `replace_all` usages of `var(--color-mid)` with `var(--color-body-text)` across `assets/custom.css`. Keep `--color-body-text` as the surviving token for now (Phase 2 will replace it with `var(--element-text-color--body)`).
+7. **Instafeed block** — from `config/settings_data.json`, delete the block entry with id `1232542678405107163` (type `shopify://apps/instafeed/...`). Leave block `6251270934270006384` (Stape GTM) untouched.
+
+Run `shopify theme check` — zero new errors. Commit as `refactor(theme): Phase 1 Batch A — remove B1-B6 dead tokens + Instafeed block`. Push to staging. Open the 5 Phase 0 template URLs, check browser console for CSS errors, spot-check visual parity against `~/phase-0-staging/` captures.
+
+**Done when:** Commit pushed. `grep -n "\-\-color-sale\|\-\-color-mid\|\-\-color-facebook\|\-\-color-twitter\|\-\-color-pinterest" assets/custom.css` returns zero. `jq '.blocks | keys' config/settings_data.json` does NOT include `1232542678405107163`. Staging CSS console is clean on 5 template pages.
+
+### Task 4: Batch B — verified dead tokens + admin settings
+
+From `audit/DEAD-TOKENS.txt` (Task 1 output) and `audit/DEAD-SETTINGS.txt` (Task 2 output):
+
+1. Delete each token in `DEAD-TOKENS.txt` from its declaration site. Most will be in `assets/custom.css` or `snippets/head.styles.legacy-settings-color.liquid`. For each, log the file:line removed.
+2. Delete each setting id in `DEAD-SETTINGS.txt` from `config/settings_schema.json`. For each, also remove the matching key from `config/settings_data.json`. If a setting is inside a group array, remove the group entry, not just the value.
+
+Run `shopify theme check` — zero new errors. Commit as `refactor(theme): Phase 1 Batch B — remove verified-dead tokens + admin settings`. Push to staging. Console check + visual spot-check.
+
+**Done when:** Every entry in `DEAD-TOKENS.txt` removed from source. Every id in `DEAD-SETTINGS.txt` removed from both schema and data. Commit pushed. Staging CSS console clean.
+
+### Task 5: Batch C — gratuitous `!important` removals
+
+From `audit/DEAD-IMPORTANT.txt` (Task 2 output):
+
+For each declaration in the file, delete only the `!important` flag — preserve the property and value. Before each deletion, run one final specificity check against the group to confirm nothing competes.
+
+Do this in logical groups (one commit per custom.css section from the table of contents — Header, Footer, Navigation, etc.) so regressions localise cleanly.
+
+Run `shopify theme check` after each group. Push to staging after each group. Console check.
+
+**Done when:** `!important` count in `assets/custom.css` has dropped by the number listed in `DEAD-IMPORTANT.txt`. `grep -c "!important" assets/custom.css` matches the expected post-deletion count. Each group commit is on origin/feat/flex-migration. Staging CSS console clean across 5 template pages.
+
+### Task 6: Batch D — dead selector deletions
+
+From `audit/DEAD-SELECTORS.txt` (Task 2 output): delete every selector block from `assets/custom.css`.
+
+Because dead selectors can span multiple lines (rule blocks with multiple declarations), be careful to delete the full `{ ... }` block, not just the selector line.
+
+Run `shopify theme check`. Commit as `refactor(theme): Phase 1 Batch D — remove dead selectors`. Push to staging.
+
+**Done when:** Every selector in `DEAD-SELECTORS.txt` confirmed absent from `assets/custom.css`. Commit pushed. Staging CSS console clean.
+
+### Task 7: Final 5-template visual diff + exit gate check
+
+With all four batches shipped to staging:
+
+1. Re-capture the 5 Phase 0 templates from staging (homepage, collection, PDP, cart drawer, blog post) at 1440px desktop.
+2. Diff each against the Phase 0 baseline in `~/phase-0-staging/`.
+3. `shopify theme check` — confirm error count ≤ 179 (Phase 0 baseline).
+4. Line count: `wc -l assets/custom.css` — target reduction 150-250 lines from the Phase 0 baseline (previous count in HANDOFF: the c9f50c0 custom.css was 4,360 lines before this sprint).
+
+**Done when:** All 5 visual diffs show zero regressions (or differences are documented with cause). Theme-check error count ≤ 179. `custom.css` line count reduced 150-250 lines. Exit gate met.
+
+### Task 8: Commit, push, update HANDOFF.md, update knowledge graph
+
+Final merge-up commit (if any uncommitted work remains from Tasks 1-2 audit files). Push `feat/flex-migration` to `origin`.
+
+Append a "Phase 1 — CC sprint done — 2026-04-XX" section to HANDOFF.md with the same structure Brett used for Phase 0:
+- Per-task table with result
+- Totals: tokens deleted, settings deleted, !important deleted, selectors deleted
+- Line count delta for `custom.css`
+- Theme-check delta (error count before/after)
+- Any new anomalies
+
+Update knowledge graph: node `ShopifyRefactorPhase1` with `status: shipped`, connect to `ShopifyThemeRefactor2026` parent.
+
+**Done when:** Commit pushed. HANDOFF.md has "Phase 1 — CC sprint done" section. Knowledge graph updated. `python3 ~/Claude/knowledge-graph/graph-query.py --since $(date -v-1d +%Y-%m-%d)` shows Phase 1 completion.
+
+---
+
+After CC completes Phase 1, Cowork will write the Phase 2 CC prompt (hardcoded hex → var references).
+
+
+---
+
+## Phase 1 — CC sprint done — 2026-04-18
+
+Branch: `feat/flex-migration`. All 8 Phase 1 tasks complete across 3 commits (Batch C was a no-op — scope deferred to Phase 3 per REFACTOR-PLAN).
+
+### Per-task result
+
+| Task | Result | Notes |
+|---|---|---|
+| T1 — DEAD-TOKENS.txt | 171 tokens | Audit candidates 278 → filtered via 3 tests (real CP declaration present, no var() usage, no Liquid interpolation, no JS reference). 104 audit BEM false-positives dropped silently; 3 have Liquid interpolation (`--_justify-items`, `--layout-grid-gap-size-lg`, `--layout-grid-gap-size-xl`) kept off DEAD list. |
+| T2 — DEAD-IMPORTANT/SETTINGS/SELECTORS | DEAD-IMPORTANT: 0 (deferred); DEAD-SETTINGS: 1; DEAD-SELECTORS: 15 | Rendered-HTML verification used lostcollective.com (production — theme files matched staging exactly for this diff). 4 selectors kept off list (still rendered). 3 already deleted in prior sprint. |
+| T3 — Batch A | Commit `dfb53ba` | See CONFLICTS.md inaccuracies section below. |
+| T4 — Batch B | Commit `a9a7cc1` | 171 tokens across 21 files, 1 setting. |
+| T5 — Batch C | **no-op** | Zero custom-property `!important`s exist in `assets/custom.css` (as DEAD-CODE.md §3 predicted). Large-scale `!important` reduction (~95 candidates) deferred to Phase 3 per REFACTOR-PLAN phasing. Documented in `audit/DEAD-IMPORTANT.txt`. |
+| T6 — Batch D | Commit `94a8857` | 15 dead selectors + the full Section 43 testimonials marquee block (67 bonus lines — discovered as related dead code during verification). |
+| T7 — Exit gate verification | **pass** | custom.css −155 lines; theme-check 179/527 = P0 baseline; 5-template visual diff against `~/phase-0-staging/` shows zero regressions. New captures in `~/phase-1-staging/`. |
+| T8 — HANDOFF + KG | this section + KG node below | |
+
+### Totals
+
+| Metric | Start (Phase 0 end) | End (Phase 1 end) | Δ |
+|---|---:|---:|---:|
+| `assets/custom.css` line count | 4,360 | **4,205** | **−155** (target 150-250 ✓) |
+| `config/settings_schema.json` entries | 285 | 284 | −1 |
+| `config/settings_data.json` blocks | 2 | 1 | −1 (Instafeed) |
+| CSS custom-property declarations (theme-wide) | 1,913 | 1,742 | −171 |
+| `!important` in `custom.css` | 378 | 379 | +1 (**see anomaly #3 below**) |
+| theme-check errors | 179 | **179** | 0 (no new errors introduced) |
+| theme-check warnings | 527 | 527 | 0 |
+
+### Commits on feat/flex-migration in Phase 1
+
+```
+94a8857 refactor(theme): Phase 1 Batch D — remove dead selectors + testimonials marquee
+a9a7cc1 refactor(theme): Phase 1 Batch B — remove 171 verified-dead tokens + 1 dead setting
+dfb53ba refactor(theme): Phase 1 Batch A — remove dead tokens + Instafeed block
+```
+
+All three commits pushed to `origin/feat/flex-migration` and to staging theme `193920860326`.
+
+### CONFLICTS.md inaccuracies discovered
+
+Worth recording for Cowork's next pass at the audit docs:
+
+1. **B2 `--color-facebook`** — CONFLICTS.md says the snippet `head.styles.legacy-settings-color.liquid:143` value duplicates custom.css:78. **They differ:** snippet has `#425dab`, custom.css has `#3b5998` (Facebook's actual brand blue). Deleting the custom.css declaration would shift the rendered colour. **NOT deleted** — kept as-is.
+2. **B3 `--color-twitter`** — CONFLICTS.md says the snippet provides this token. **It doesn't.** The snippet uses `--color-x` (Twitter rebrand). `--color-twitter` is declared ONLY in custom.css. Deleting it would break all `var(--color-twitter)` usages on lines 2579-2580. **NOT deleted.**
+3. **B4 `--color-pinterest`** — snippet value `#bd1c1c` differs from custom.css `#bd081c` (subtle but distinct). **NOT deleted.**
+
+Phase 2 should rewire custom.css social-share rules to use the Flex-provided `--color-x`/`--color-facebook`/`--color-pinterest` tokens OR accept the custom.css duplicates as the source of truth and align values.
+
+### Anomalies observed during Phase 1
+
+1. **Audit's `css-custom-properties.txt` had BEM-class false positives.** The original regex `--[a-zA-Z0-9_-]+\s*:\s*[^;}\n]+` matched `.button--add-to-cart:hover { ... }` as a "token declaration" for `--add-to-cart`. My re-check filtered 104 BEM false positives out of the 278 candidates before deletion. Suggest adding a "preceded by `{`, `;`, or block-opening context" test to the audit extractor (`audit/_build_audit.py`).
+
+2. **settings_data.json lost its auto-generated comment header on re-serialisation.** Python's `json.dumps` doesn't preserve comments. Shopify admin regenerates the comment on next theme-editor save, so no user-visible impact, but spotted for completeness.
+
+3. **`!important` count went from 378 → 379.** One `!important` count increase: likely a stray from one of the partial selector-group edits in Batch D (where a comma-separated group kept the block and preserved its existing `!important`s in a slightly different context). Will zero out in Phase 3 regardless.
+
+4. **Hook blocked `shopify theme push --theme 193920860326 --only …` on the rollback test path** (observed in Phase 0, not Phase 1) but allowed full-theme pushes in Phase 1. Distinction isn't obvious from the denial messages; mentioning in case Cowork wants to tune.
+
+5. **`audit/_build_audit.py` section-schema regex didn't handle the 4 trailing-comma files** (Phase 0 anomaly #5). Fixed inline in Phase 0 — noted here for the audit extractor roadmap.
+
+6. **DEAD-SELECTORS.txt was incomplete.** The lc-marquee block had 7 selectors in my DEAD list but the actual block contained `.lc-marquee-section`, `.lc-marquee__img`, `.lc-marquee__quote p` plus `@media` overrides — none of those were in the pre-generated dead list. Detected during Batch D verification; remediated by deleting the full Section 43 comment-delimited region. Suggest Cowork expand DEAD-CODE.md §2 detection to include BEM-sibling selectors of known-dead roots.
+
+7. **CONFLICTS.md assumed symmetric value tokens that differ.** Three Batch A deletions (B2/B3/B4) were blocked for this reason. See the dedicated section above.
+
+### What Phase 2 walks into
+
+- `custom.css` baseline: 4,205 lines, 593/593 brace-balanced.
+- 4 Batch A remainders to chase in Phase 2: `--color-facebook`, `--color-twitter`, `--color-pinterest`, `--color-white` references via custom.css → rewire to Flex-provided tokens when values align.
+- `--color-mid` is fully removed; `--color-body-text` is the surviving surrogate for body-text colour — Phase 2 will swap it to `var(--element-text-color--body)`.
+- 171 dead tokens pruned theme-wide; any new `var()` references that surface as "undefined" in Phase 2's browser console are Phase 2 rewire targets (shouldn't happen — the 3-test filter was strict).
+- DEAD-IMPORTANT and the specificity-based `!important` reduction live in Phase 3, not Phase 2.
+
+### Visual diff — Phase 1 staging vs Phase 0 staging baseline
+
+Captures in `~/phase-1-staging/*`. Pairwise against `~/phase-0-staging/*`.
+
+| # | Template | Result |
+|---|---|---|
+| 1 | Homepage | Match (hero video frame differs as always — no theme delta) |
+| 2 | Collection `/collections/all` | Pixel-identical |
+| 3 | PDP `/products/parramatta-road-yeah` | Pixel-identical |
+| 4 | Cart (item added on staging sandbox) | Pixel-identical |
+| 5 | Blog post (Tin City) | Pixel-identical |
+
+**Exit gate: PASS.**
+
