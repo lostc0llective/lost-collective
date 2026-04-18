@@ -146,11 +146,6 @@
     "klaviyo_popup_body": "New work goes to subscribers first — the series story, the location, the images. Before anyone else sees them.",
     "klaviyo_popup_button": "Get early access",
     "blocks": {
-      "1232542678405107163": {
-        "type": "shopify://apps/instafeed/blocks/head-block/c447db20-095d-4a10-9725-b5977662c9d5",
-        "disabled": false,
-        "settings": {}
-      },
       "6251270934270006384": {
         "type": "shopify://apps/stape-server-gtm/blocks/gtm/7e13c847-7971-409d-8fe0-29ec14d5f048",
         "disabled": false,

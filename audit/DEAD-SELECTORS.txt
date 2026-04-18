@@ -1,0 +1,15 @@
+.lc-marquee
+.lc-marquee__track
+.lc-marquee__item
+.lc-marquee__text
+.lc-marquee__author
+.footer__bottom
+.rich-text__title
+.mega-menu__heading
+.product-grid-item
+#shopify-section-index_slideshow_classic_mewq3w
+.product-block--share
+.product-gallery--media-amount-1
+.image-item
+.kandos-gallery
+.index-json

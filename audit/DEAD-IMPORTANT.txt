@@ -1,0 +1,13 @@
+# DEAD-IMPORTANT — Phase 1 Batch C candidates
+#
+# Scope for Phase 1 (narrow, high confidence only):
+#   1. `!important` on custom-property declarations (--foo: value !important;)
+#      — always safe to drop per DEAD-CODE.md §3
+#   2. (Deferred to Phase 3.) Specificity-based reconciliation of the ~95 C-3
+#      gratuitous `!important` declarations identified in CONFLICTS.md.
+#
+# Phase 1 result: 0 custom-property !importants found in assets/custom.css.
+# Total !important count in custom.css: 379 (starting baseline for Phase 3).
+#
+# REFACTOR-PLAN.md explicitly assigns the large-scale !important reduction
+# to Phase 3 — "!important scope-tightening". Phase 1 Batch C is a no-op.

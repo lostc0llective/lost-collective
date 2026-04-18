@@ -56,20 +56,15 @@
 :root {
   /* Brand colours — all values aligned with Shopify admin settings_data.json.
      --color-brand-yellow = admin link_hover_color / header_link_hover_color (#ebac20)
-     --color-mid          = admin regular_color (#6f6f6f)
-     --color-light        = admin dropdown_background (#f5f5f5)
-     --color-sale         = admin sale_color (#d32f2f)
      --color-body-text    = admin regular_color (#6f6f6f)
+     --color-light        = admin dropdown_background (#f5f5f5)
      --color-footer-bg    = admin footer_background (#4d4d4d)
      --color-dark is NOT overridden by admin — used only for custom non-admin-controlled
      elements (cookie banner, search popup, mobile sticky ATC, cart drawer, art description
      boxes, accordion headers). These are intentionally near-black for design. */
   --color-brand-yellow: #ebac20;
   --color-dark:         #1a1a1a;
-  --color-mid:          #6f6f6f;
   --color-light:        #f5f5f5;
-  --color-sale:         #d32f2f;
-  --color-white:        #ffffff;
   --color-body-text:    #6f6f6f;
   --color-footer-bg:    #4d4d4d;
 
@@ -1089,7 +1084,7 @@ button.button--primary-action,
 }
 
 .button--primary-action:hover {
-  background-color: var(--color-mid);
+  background-color: var(--color-body-text);
   color: var(--color-brand-yellow);
 }
 
@@ -1159,9 +1154,9 @@ button.button--primary {
 .button.button--primary:hover,
 a.button.button--primary:hover,
 button.button--primary:hover {
-  background-color: var(--color-mid) !important;
+  background-color: var(--color-body-text) !important;
   color: var(--color-brand-yellow) !important;
-  border-color: var(--color-mid) !important;
+  border-color: var(--color-body-text) !important;
 }
 
 /* Button containers — gap between body copy and CTA
@@ -1192,7 +1187,7 @@ p a:not(.button):not([class*="logo"])::after {
   bottom: -2px;
   width: 0;
   height: 2px;
-  background-color: var(--color-mid);
+  background-color: var(--color-body-text);
   transition: width var(--transition-base);
   pointer-events: none;
 }
@@ -1434,8 +1429,8 @@ p a:not(.button):not([class*="logo"]):hover::after {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-mid);
-  border: 1.5px solid var(--color-mid);
+  color: var(--color-body-text);
+  border: 1.5px solid var(--color-body-text);
   border-radius: var(--radius-pill);
   padding: 6px 16px;
   text-decoration: none;
@@ -1737,7 +1732,7 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
    abrupt colour-step from the main footer. */
 .footer__extra-content {
   background-color: var(--color-footer-bg);
-  color: var(--color-mid);
+  color: var(--color-body-text);
   padding-left: 0;
   padding-right: 0;
   width: 100% !important; /* .section defaults to 95% — force full-width so copyright bg is edge-to-edge */
@@ -2093,7 +2088,7 @@ html body .collection__description {
 }
 
 .collection__description-toggle:hover {
-  background-color: var(--color-mid);
+  background-color: var(--color-body-text);
 }
 
 @media (max-width: 798px) {
@@ -2239,7 +2234,7 @@ html body .collection__description {
   font-weight: 700 !important;
   letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
-  color: var(--color-mid) !important;
+  color: var(--color-body-text) !important;
   margin-bottom: 8px !important;
 }
 
@@ -2247,13 +2242,13 @@ html body .collection__description {
 .faceted-filter-group-display__list-item-label-text,
 .faceted-filter-group-display__list-item-label {
   font-size: 0.8125rem;
-  color: var(--color-mid);
+  color: var(--color-body-text);
 }
 
 /* Price range labels */
 .faceted-filter-group-display__price-range-label {
   font-size: 0.75rem;
-  color: var(--color-mid);
+  color: var(--color-body-text);
 }
 
 /* Price range inputs — only need 4 digits max */
@@ -2272,7 +2267,7 @@ html body .collection__description {
 /* Apply buttons in sidebar — small ghost style, not the heavy primary pill */
 .faceted-filter-group-display__submit .button.button--primary {
   background-color: transparent !important;
-  color: var(--color-mid) !important;
+  color: var(--color-body-text) !important;
   border: 1px solid rgba(0, 0, 0, 0.2) !important;
   border-radius: var(--radius-sm) !important;
   font-size: 0.6875rem !important;
@@ -2292,7 +2287,7 @@ html body .collection__description {
 /* Active filter pills — same ghost treatment */
 .faceted-active-filters__remove-filter.button.button--primary {
   background-color: transparent !important;
-  color: var(--color-mid) !important;
+  color: var(--color-body-text) !important;
   border: 1px solid rgba(0, 0, 0, 0.2) !important;
   border-radius: var(--radius-sm) !important;
   font-size: 0.6875rem !important;
@@ -2421,7 +2416,7 @@ html body .collection__description {
 
 .lc-collector-discount {
   font-size: 0.875rem;
-  color: var(--color-mid);
+  color: var(--color-body-text);
   margin: 6px 0 16px;
   padding: 6px 10px;
   background: var(--color-light);
@@ -2521,7 +2516,7 @@ html body .collection__description {
   bottom: 0;
   width: 0;
   height: 2px;
-  background-color: var(--color-mid);
+  background-color: var(--color-body-text);
   transition: width var(--transition-base);
   pointer-events: none;
 }
@@ -3033,7 +3028,7 @@ html body .search-popup .input {
 }
 
 html body .search-popup .input:focus {
-  border-color: var(--color-mid);
+  border-color: var(--color-body-text);
   box-shadow: 0 0 0 0.125em rgba(77, 77, 77, 0.25);
   outline: 3px solid var(--color-brand-yellow);
   outline-offset: 2px;
@@ -3530,7 +3525,7 @@ html body .search-popup .search__results__item .item-pricing {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-mid);
+  color: var(--color-body-text);
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 600;
