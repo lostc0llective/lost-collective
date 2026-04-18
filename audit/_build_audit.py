@@ -78,8 +78,19 @@ def task_4b() -> None:
 # ── 4c + 4d: CSS custom properties ────────────────────────────────────────────
 CSS_SEARCH_DIRS = ["assets", "snippets", "sections", "layout"]
 CSS_SEARCH_EXTS = (".css", ".liquid")
-DEFINE_RE = re.compile(r"(--[a-zA-Z0-9_-]+)\s*:\s*([^;}\n]+)")
-USE_RE = re.compile(r"var\(\s*(--[a-zA-Z0-9_-]+)")
+# Phase 5 T5 bug fix: anchor the define regex to a declaration-starting context.
+# The old regex (r"(--[a-zA-Z0-9_-]+)\s*:\s*([^;}\n]+)") matched BEM class
+# modifiers like `.btn--primary:hover { ... }` because the `--primary:hover`
+# substring satisfies the pattern — producing ~104 false positives in the
+# Phase 1 run. Fix: require the `--` to be preceded by either start-of-line-
+# with-only-whitespace (true declaration line), `;` (previous decl end), or
+# `{` (first decl after selector block open). The multiline flag + anchored
+# lookbehind does the work without false-matching BEM suffixes.
+DEFINE_RE = re.compile(
+    r"(?:^|[;{])\s*(--[a-zA-Z_][a-zA-Z0-9_-]*)\s*:\s*([^;}\n]+)",
+    re.MULTILINE,
+)
+USE_RE = re.compile(r"var\(\s*(--[a-zA-Z_][a-zA-Z0-9_-]*)")
 SELECTOR_RE = re.compile(r"([^{}]+)\{")
 
 
