@@ -245,9 +245,11 @@ html body .announcement-container {
 html body .announcement-bar {
   position: relative;
   background-color: var(--color-header-bg);
+  /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
   overflow: hidden !important; /* W3C: prevent 2280px marquee track from contributing to page scroll width */
 }
 .announcement-bar__shadow {
+  /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
   display: none !important;
 }
 
@@ -389,6 +391,7 @@ html body .featured-collection__title.title {
    font-family:Arial !important overrides theme's font-family:"flex-icon" !important (line 2263
    of styles.css.liquid) — eliminates FOIT delay where browser held ::after rendering until
    the flex-icon webfont resolved. Arial is always available locally, so chevron renders instantly.
+   /* WHY: beats Flex {% style %} block scoped to #shopify-section-{id} */
    position/content also require !important to beat theme defaults.
 
    The mega-menu parent (SHOP) renders with is-arrowless in HTML because the Shopify nav has
@@ -413,6 +416,7 @@ html body .mobile-menu-link::after {
   transform: rotate(45deg);
   margin-left: 7px;
   vertical-align: 0.1em;
+  /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
   opacity: 0.55 !important;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
   pointer-events: none;
@@ -420,12 +424,14 @@ html body .mobile-menu-link::after {
 
 /* Hover: brighten */
 .navbar-item:hover > .navbar-link:not(.is-arrowless)::after {
+  /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
   opacity: 1 !important;
 }
 
 /* Open: flip to point UP (click-mode regular dropdowns) */
 html body .navbar-item.is-opened > .navbar-link:not(.is-arrowless)::after {
   transform: rotate(-135deg);
+  /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
   opacity: 1 !important;
 }
 
@@ -449,18 +455,21 @@ html body .header__item[data-navlink-handle="shop"] .navbar-link::after {
     transform: rotate(45deg);
     margin-left: 7px;
     vertical-align: 0.1em;
+    /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
     opacity: 0.55 !important;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
     pointer-events: none;
   }
 
   .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
+    /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
     opacity: 1 !important;
   }
 
   .dropdown-click--false .navbar-item.has-mega-menu:hover > .navbar-link:not(.is-arrowless)::after,
 html body .dropdown-click--false .header__item[data-navlink-handle="shop"]:hover .navbar-link::after {
     transform: rotate(-135deg);
+    /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
     opacity: 1 !important;
   }
 }
@@ -541,6 +550,7 @@ html body #mobile-header-sticky-wrapper {
 @media (max-width: 798px) {
   .header-sticky-wrapper:has(#mobile-header) {
     height: 0;
+    /* WHY: defends against runtime class toggles on drawer/mobile nav */
     overflow: visible !important;
   }
 }
@@ -660,10 +670,12 @@ html body .mobile-menu__toggle-icon .icon {
   /* Fixed header for all mobile pages.
      z-index 9999 ensures it clears the video section and any other positioned elements. */
   #mobile-header {
+    /* WHY: defends against runtime class toggles on drawer/mobile nav */
     position: fixed !important;
     top: 0;
     left: 0;
     right: 0;
+    /* WHY: defends against runtime class toggles on sticky/fixed elements */
     z-index: 9999 !important;
     min-height: 56px;
   }
@@ -764,6 +776,7 @@ html body [id*="trust_icon_bar"] .icon-bar__block svg {
    creating a phantom white gap between the header and the first page section. */
 @media (max-width: 798px) {
   .announcement-bar__shadow {
+    /* WHY: defends against video-player library inline styles (Plyr/HTML5 video) */
     display: none !important;
   }
 }
@@ -775,6 +788,7 @@ html body [id*="trust_icon_bar"] .icon-bar__block svg {
    normal document flow so it scrolls away with the page.
    The wrapper height is reset to auto so no phantom gap remains. */
 .announcement-bar__container {
+  /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{footer-id} */
   position: relative !important;
   top: auto;
   width: 100%;
@@ -880,6 +894,7 @@ html body .mega-menu {
   pointer-events: none;
   position: absolute;
   left: 50%;
+  /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
   transform: translateX(-50%) !important;
   width: max-content;
   min-width: 0;
@@ -1220,6 +1235,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
   [id*="index_video_e3PxRq"] .html5-video-wrapper {
     height: 100%;
     top: 0;
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     transform: none !important;
   }
 }
@@ -1232,6 +1248,7 @@ p a:not(.button):not([class*="logo"]):hover::after {
 /* Hide hero text overlay on mobile — video speaks for itself */
 @media (max-width: 798px) {
   [id*="index_video_e3PxRq"] .video__text-container {
+    /* WHY: defends against video-player library inline styles (Plyr/HTML5 video) */
     display: none !important;
   }
 }
@@ -1891,6 +1908,7 @@ html body .footer__block.block__text ul.social-icons li a span:not(.icon) {
 html body .footer__block.block__text ul.social-icons li a {
     gap: 0;
     min-height: 36px;
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{footer-id} */
     display: flex !important;
     align-items: center;
   }
@@ -1927,6 +1945,7 @@ html body .footer__block .footer__heading {
 
   /* Payment icons: single row */
   .footer__payment-methods .payment-methods {
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{footer-id} */
     display: flex !important;
     flex-wrap: nowrap;
     align-items: center;
@@ -3551,6 +3570,7 @@ html body .search-popup .search__results__item .item-pricing {
    Horizontal padding + gap give breathing room so tiles don't feel too wide. */
 @media (min-width: 799px) {
   .section--category-grid .collection-list__wrapper {
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     display: flex !important;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -3562,6 +3582,7 @@ html body .search-popup .search__results__item .item-pricing {
     max-width: 100%;
     padding: 20px 40px;
     box-sizing: border-box;
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     overflow: visible !important;
   }
   .section--category-grid .collection-list__thumbnail {
@@ -3590,6 +3611,7 @@ html body .section--category-grid .collection-list__thumbnail .image-element__wr
   .section--category-grid .collection-list__thumbnail img {
     width: 100%;
     height: auto;
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     display: block !important;
     max-width: none;
     /* No object-fit — image renders at its natural proportions, no cropping */
@@ -3681,6 +3703,7 @@ html body .section--category-grid .collection-list__thumbnail .image-element__wr
 /* Fix 1: close the 1px sub-pixel gap */
 @media only screen and (max-width: 799px) {
   .is-hidden-mobile-only {
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     display: none !important;
   }
 }
@@ -3940,6 +3963,7 @@ html body .section.is-width-full .container.has-limit {
 @media (max-width: 798px) {
   /* Only apply when Flickity is NOT active (pre-JS or Flickity disabled) */
   .section--category-grid .collection-list__wrapper:not(.flickity-enabled) {
+    /* WHY: defends against third-party carousel library inline styles (Flickity/Slick) */
     display: grid !important;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
@@ -4001,6 +4025,7 @@ html body .mobile-menu__toggle-button {
     width: 44px;
     height: 44px;
     top: 50%;
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     transform: translateY(-50%) !important;
     display: flex;
     align-items: center;
@@ -4164,6 +4189,7 @@ html body [id*="index_collection_list_nXAtbe"] .collection-info__caption {
   }
   [id*="index_collection_list_nXAtbe"] .collection-info__caption-wrapper {
     width: 100%;
+    /* WHY: defends against Flex {% style %} block scoped to #shopify-section-{id} */
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -4186,8 +4212,10 @@ html body [id*="index_collection_list_nXAtbe"] .collection-info__caption .title 
 @media (max-width: 798px) {
   /* Fixed portrait height via vw — 120vw gives ~3:2.5 portrait on any phone */
   .lc-slide-mobile-img {
+    /* WHY: defends against third-party carousel library inline styles (Flickity/Slick) */
     display: block !important;
     height: 120vw;
+    /* WHY: defends against third-party carousel library inline styles (Flickity/Slick) */
     overflow: hidden !important;
     width: 100%;
   }
