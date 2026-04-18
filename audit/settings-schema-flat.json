@@ -163,6 +163,15 @@
   },
   {
     "group": "Colors",
+    "label": "Mobile header background",
+    "id": "mobile_header_background",
+    "type": "color",
+    "default": "#4d4d4d",
+    "info": "Sets the header colour on mobile. Desktop header uses the Background above.",
+    "options": null
+  },
+  {
+    "group": "Colors",
     "label": "Links",
     "id": "header_link_color",
     "type": "color",
@@ -1803,24 +1812,6 @@
       {
         "value": "carets",
         "label": "Carets"
-      }
-    ]
-  },
-  {
-    "group": "Elements",
-    "label": "Social media share icon border",
-    "id": "media_share_style_link",
-    "type": "select",
-    "default": "squared",
-    "info": "",
-    "options": [
-      {
-        "value": "squared",
-        "label": "Squared"
-      },
-      {
-        "value": "rounded",
-        "label": "Rounded"
       }
     ]
   },

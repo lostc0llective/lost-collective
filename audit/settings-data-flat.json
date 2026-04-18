@@ -32,6 +32,10 @@
     "current_value": "#f5f5f5"
   },
   {
+    "id": "mobile_header_background",
+    "current_value": "#4d4d4d"
+  },
+  {
     "id": "header_link_color",
     "current_value": "#4d4d4d"
   },
@@ -277,7 +281,7 @@
   },
   {
     "id": "button_primary_bg_color",
-    "current_value": "#2a2a2a"
+    "current_value": "#EBAC20"
   },
   {
     "id": "button_primary_text_color",
@@ -546,11 +550,6 @@
   {
     "id": "blocks",
     "current_value": {
-      "1232542678405107163": {
-        "type": "shopify://apps/instafeed/blocks/head-block/c447db20-095d-4a10-9725-b5977662c9d5",
-        "disabled": false,
-        "settings": {}
-      },
       "6251270934270006384": {
         "type": "shopify://apps/stape-server-gtm/blocks/gtm/7e13c847-7971-409d-8fe0-29ec14d5f048",
         "disabled": false,

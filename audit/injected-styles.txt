@@ -1,5 +1,5 @@
 layout/quickshop.liquid:190-196 | layout/quickshop.liquid | 4 | yes
-layout/theme.liquid:413-419 | layout/theme.liquid | 4 | yes
+layout/theme.liquid:404-410 | layout/theme.liquid | 4 | yes
 sections/404__main.liquid:16-34 | 404__main | 8 | yes
 sections/account-details.liquid:14-28 | account-details | 5 | yes
 sections/announcement-bar.liquid:40-52 | announcement-bar | 2 | yes
@@ -67,14 +67,15 @@ sections/product__sidebar.liquid:18-64 | product__sidebar | 16 | yes
 sections/quickshop.liquid:2-8 | quickshop | 1 | yes
 sections/registration-form.liquid:14-25 | registration-form | 4 | yes
 sections/search__main.liquid:17-49 | search__main | 16 | yes
-snippets/head.styles.legacy-settings-color.liquid:1-148 | head.styles.legacy-settings-color | 51 | yes
+snippets/head.styles.legacy-settings-color.liquid:1-124 | head.styles.legacy-settings-color | 51 | yes
 snippets/include-mega-menu.liquid:9-45 | include-mega-menu | 28 | yes
 snippets/include-mega-menu.liquid:55-65 | include-mega-menu | 7 | yes
+snippets/lc.css-tokens.liquid:13-21 | lc.css-tokens | 3 | yes
 snippets/list.price-range.liquid:205-212 | list.price-range | 3 | yes
 snippets/newsletter-form.liquid:32-44 | newsletter-form | 5 | yes
 snippets/overlay.drawer.liquid:189-217 | overlay.drawer | 12 | yes
-snippets/product-thumbnail.liquid:29-34 | product-thumbnail | 2 | yes
-snippets/product__images.liquid:25-42 | product__images | 12 | yes
+snippets/product-thumbnail.liquid:29-33 | product-thumbnail | 2 | yes
+snippets/product__images.liquid:25-41 | product__images | 12 | yes
 snippets/section.collection-feed.liquid:667-692 | section.collection-feed | 7 | yes
 snippets/section.slideshow.liquid:923-1336 | section.slideshow | 182 | yes
 snippets/sidebar__featured-promo.liquid:12-17 | sidebar__featured-promo | 1 | yes

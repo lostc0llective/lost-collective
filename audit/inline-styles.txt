@@ -1,4 +1,4 @@
-layout/theme.liquid:458 | div | --background-color: {{ settings.shop_bg_color }}
+layout/theme.liquid:449 | div | --background-color: {{ settings.shop_bg_color }}
 sections/collection__modern.liquid:93 | div | margin-top: {{ section.settings.grid_spacing }}px; padding-top: 20px;
 sections/grid.liquid:92 | section | {{ section_css_variables }}
 sections/grid.liquid:193 | article | {{ block_css_variables }}
@@ -20,7 +20,7 @@ snippets/image-element.liquid:132 | div | {{ image_background_color }}{{ height_
 snippets/image-element.liquid:141 | img | {{ inline_style }}
 snippets/image-element.liquid:152 | div | {{ image_background_color }}{{ height_style }} {% unless stretch_width == true or object_fit %}max-width: {{ image.width }}px;{% endunless %}
 snippets/image-element.liquid:185 | img | {{ inline_style }}
-snippets/layout.grid.liquid:189 | div | {{ style }}
+snippets/layout.grid.liquid:176 | div | {{ style }}
 snippets/list.active-filters.liquid:98 | active | {{ style }}
 snippets/list.product-card-full-row.liquid:17 | div | width: 100%; border: 1px solid #ccc; padding: 10px; height: 200px;
 snippets/new-pagination.liquid:20 | ul | {% if paginate.previous and paginate.next %}               justify-content: center;             {% elsif paginate.previous %}               justify-content: flex-start;             {% elsif paginate.next %}               justify-content: flex-end;             {% endif %}
@@ -30,8 +30,8 @@ snippets/product-thumbnail__swatch.liquid:23 | span | {% if settings.swatches_op
 snippets/product__form.liquid:29 | div | display: none;
 snippets/product__form.liquid:110 | select | display: none
 snippets/product__form.liquid:154 | options | display: none;
-snippets/product__images.liquid:100 | div | max-width: {{ media.width }}px
-snippets/product__images.liquid:144 | button | display: none;
+snippets/product__images.liquid:99 | div | max-width: {{ media.width }}px
+snippets/product__images.liquid:143 | button | display: none;
 snippets/product__notify-me-form.liquid:31 | input | margin-bottom:0px
 snippets/rating-stars.liquid:14 | div | --rating-value: {{ scaled_value }};
 snippets/section.collection-feed.liquid:383 | div | display: flex; {{ drawer_toggle_flexbox }};

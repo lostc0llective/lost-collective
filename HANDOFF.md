@@ -1886,3 +1886,256 @@ b59ffce fix(css): Phase 5 T4 — force --color-dark on primary button foreground
 - `audit/` contains the full paper trail: VISUAL-QA-PLAN.md, VISUAL-QA-REPORT.md, A11Y-REPORT.md, PHASE5-RE-AUDIT.md, IMPORTANT-INVENTORY.tsv (v2), css-custom-properties.txt (v2), DEAD-SIBLINGS-v2.txt, theme-check baselines + ends.
 - Phase 6 exclusion list: variant `<select>` aria-label (upstream-flex), customer-account pages (no test session this sprint), `/pages/faq` (merchant content gap).
 
+---
+
+## Phase 6 — CC sprint — production push + 24-hour monitor
+
+Branch off `feat/flex-migration` HEAD, unchanged from Phase 5 close. This is the shortest sprint in the refactor and the first one that reaches customers. Every change from Phases 0-5 is staged and verified; the only work remaining is moving the staged theme into the published slot, confirming it holds up under real traffic, and closing out the refactor cleanly.
+
+Deployment pattern: **theme swap via publish**, not theme overwrite. Create a new unpublished theme containing `feat/flex-migration` content, verify it via preview URL, then click Publish to swap it into the active slot. The currently-live theme `193859780774` stays intact as an instant rollback — one Publish click in the admin reverts everything if a release blocker surfaces. This is safer than pushing directly into `193859780774` because the swap is atomic and reversal is one step.
+
+Scope discipline is absolute in this sprint. No new fixes, no further optimisation, no "while we're in here" edits. Anything that surfaces during the monitoring window gets logged and deferred unless it trips a pre-defined rollback trigger (see Task 4).
+
+### Preamble
+
+1. Shopify Dev MCP connected.
+2. `shopify theme check` on working tree → confirm 179/527 unchanged.
+3. `feat/flex-migration` clean, in sync with `origin/feat/flex-migration`, at the Phase 5 close commit (`2c7b389`).
+4. Verify the Phase 5 readiness checklist (the one in the HANDOFF Phase 5 done section) is still green. If anything has drifted (e.g. someone pushed to staging between Phase 5 close and Phase 6 start), resolve before Task 1.
+5. Confirm baseline metrics for post-launch comparison. Capture to `audit/PHASE6-BASELINE.md`:
+   - Orders last 24h (from Shopify admin)
+   - Orders last 7 days (daily average)
+   - Conversion rate last 7 days (Shopify analytics)
+   - Sentry error count last 24h
+   - PageSpeed scores (mobile + desktop) for homepage, one PDP, one collection
+   - GA4 sessions last 24h and bounce rate
+   These numbers are the rollback-trigger reference points for Task 5.
+6. Decide the deploy window with Brett (do not push outside agreed window). Recommended: AEST low-traffic window — weeknight 10pm–1am local. Shopify's CDN cache warms in minutes, not hours, so the window just needs to be low-traffic, not empty.
+
+### Task 1: Create pre-launch backup + pull snapshot
+
+Two parallel safety nets so rollback is instant from any direction.
+
+**Part A — duplicate the currently-live theme in Shopify:**
+Via Shopify admin or CLI, duplicate theme `193859780774` ("Lost Collective Live - 2026-04-15") to a new unpublished theme named `"LC BACKUP Pre-Phase-6 2026-04-XX"`. This is the rollback target if the Task 4 publish goes wrong and the original `193859780774` somehow gets modified during the operation. Capture the new theme ID to `audit/PHASE6-BASELINE.md`.
+
+**Part B — pull current live theme to local disk:**
+```bash
+shopify theme pull --theme 193859780774 --path backups/live-pre-phase-6-2026-04-XX/ --store lost-collective.myshopify.com
+```
+This is the "I lost the Shopify admin entirely" disaster recovery path. Commit the pulled copy to `origin/feat/flex-migration` under `backups/live-pre-phase-6-2026-04-XX/` with a commit message `chore(backup): snapshot live theme before Phase 6 publish`. Git becomes the backup of last resort.
+
+**Done when:** Backup theme exists in Shopify admin and appears in `shopify theme list`. Local `backups/live-pre-phase-6-2026-04-XX/` directory committed. IDs and paths recorded in `audit/PHASE6-BASELINE.md`.
+
+### Task 2: Create the production-candidate theme slot
+
+Push `feat/flex-migration` HEAD to a new unpublished theme:
+
+```bash
+shopify theme push --unpublished \
+  --store lost-collective.myshopify.com \
+  --allow-live
+```
+
+When prompted for a theme name, use: `LC Flex Production Candidate 2026-04-XX`. Capture the new theme ID — it will become the live theme after Task 4. Record in `audit/PHASE6-BASELINE.md`.
+
+Confirm the upload by running `shopify theme list` and verifying three themes now exist in the expected state:
+
+| Theme | Status | Role |
+|---|---|---|
+| Lost Collective Live - 2026-04-15 (`193859780774`) | Live | Current production, rollback target |
+| LC BACKUP Pre-Phase-6 2026-04-XX | Unpublished | Secondary rollback |
+| LC Flex Production Candidate 2026-04-XX | Unpublished | About to go live |
+| LC Flex Staging 2026-04-18 (`193920860326`) | Unpublished | Staging |
+
+**Done when:** Production candidate theme exists on Shopify with `feat/flex-migration` HEAD content. ID recorded. `shopify theme list` confirms the four-theme state above.
+
+### Task 3: Final verification on the production-candidate preview
+
+The candidate theme has the same content as staging, but it's a fresh upload into a fresh theme slot. Run one last verification pass against its preview URL to catch any upload-time corruption or missing-asset surprises.
+
+Preview URL pattern: `https://lost-collective.myshopify.com/?preview_theme_id={candidate-id}`
+
+Minimum verification walk (do all, do not skip any):
+
+1. Homepage desktop + mobile loads correctly.
+2. PDP — standard product: add to cart works, cart drawer opens, quantity increment works.
+3. Collection page: filters apply, products load, pagination works.
+4. Cart page: populated state renders, remove-item works, "proceed to checkout" button enabled.
+5. Checkout first step loads without console errors.
+6. Smoke test 3.0 one more time: temporarily change `button_primary_bg_color` to `#FF00FF` via `settings_data.json`, push to the CANDIDATE theme (not live), verify magenta buttons on PDP preview URL, revert to `#EBAC20`, force-recompile, verify gold restored.
+7. Spot-check the three P2/P3 items deferred in Phase 5 (homepage sparse middle, L-03 upstream variant select, `/pages/faq` content gap) — confirm they render as expected in their current "deferred" state, not worse.
+
+Capture screenshots to `~/phase-6-candidate/` — these form the final pre-publish baseline.
+
+**Done when:** All 7 verification steps pass on the candidate theme preview URL. Screenshots captured. Smoke test 3.0 round-trip clean on the candidate theme.
+
+### Task 4: The publish — go-live
+
+Tight execution. All preceding tasks must be green before running this one.
+
+**Pre-swap checklist (read through once, then execute):**
+- [ ] Brett confirmed deploy window is current
+- [ ] No active Shopify admin session editing the current live theme (would cause "unsaved changes" conflict)
+- [ ] Phase 5 readiness checklist still green
+- [ ] Tasks 1, 2, 3 all complete with artefacts committed
+- [ ] `audit/PHASE6-BASELINE.md` captured within the last hour
+
+**Swap procedure:**
+
+```bash
+# Publish the candidate theme — this is the atomic swap.
+shopify theme publish --theme {candidate-id} --store lost-collective.myshopify.com
+```
+
+Shopify will prompt for confirmation. Confirm. The swap takes a few seconds.
+
+**Immediately after publish — first 60 seconds:**
+1. Open `https://lostcollective.com/` in a fresh incognito window (no preview cookie, no theme ID in URL — real production).
+2. Confirm homepage loads, hero renders, navigation works.
+3. Open a PDP. Confirm add-to-cart button renders gold (`#EBAC20`), click it, confirm cart drawer opens.
+
+If any of these three checks fail, **immediately roll back** (run Task 5 rollback procedure). Do not investigate first — roll back first, investigate from the safe state.
+
+**Done when:** `shopify theme list` shows the former candidate theme as Live. Homepage, PDP, cart drawer all functional on `lostcollective.com` in an incognito session. Publish completion timestamp recorded in `audit/PHASE6-BASELINE.md`.
+
+### Task 5: Immediate post-publish verification (first 15 minutes)
+
+The critical-path walk. If any of these fail within 15 minutes of publish, rollback.
+
+| Check | Trigger rollback if |
+|---|---|
+| Homepage loads (desktop + mobile) | No |
+| Navigation — mega menu, search, cart icon | Any broken |
+| Collection page loads, filters work | Any broken |
+| PDP loads, add-to-cart works, cart drawer opens | Any broken |
+| Cart page — proceed-to-checkout works | Broken |
+| Checkout first step loads, payment form renders | Broken |
+| Test order completes end-to-end (use 100% discount code or manually refund after) | Test order fails |
+| GA4 receiving events (check Real-Time report) | No events 10 min after publish |
+| Meta Pixel firing (check Meta Events Manager) | No PageView events 10 min after publish |
+| Klaviyo receiving identify calls (check Real-Time subscriber feed) | No events 10 min after publish |
+| Sentry error rate first 15 min | >5× baseline (from Preamble capture) |
+
+**Rollback procedure** (execute if any above triggered):
+
+```bash
+shopify theme publish --theme 193859780774 --store lost-collective.myshopify.com
+```
+
+This re-publishes the previous live theme. Swap is instant. Then — and only then — investigate what broke.
+
+Log the rollback in `audit/PHASE6-ROLLBACK.md` with: (a) what check triggered it, (b) timestamp of publish and rollback, (c) initial diagnostic hypothesis, (d) what went to customers during the open window (check Shopify orders for any placed between publish and rollback). Ping Brett for next-step decision — do not re-attempt publish without explicit direction.
+
+**Done when:** All 15-minute checks green OR rollback executed cleanly and logged. If green, proceed to Task 6.
+
+### Task 6: 24-hour monitoring window
+
+Open a tab for each signal source. Check on the cadence below.
+
+**First 4 hours — check every 30 minutes:**
+- Sentry error count vs baseline (Preamble)
+- Shopify admin — orders received, avg order value
+- GA4 Real-Time — sessions, conversions, bounce rate
+- Support inbox — any customer issues reported
+
+**Hours 4-12 — check every 2 hours:**
+- Same signals as above, plus:
+- PageSpeed scores (re-run homepage + PDP + collection) vs baseline
+
+**Hours 12-24 — check every 4 hours:**
+- All above signals
+- Klaviyo — abandoned cart trigger rate vs 7-day average
+
+**Pre-defined rollback triggers during the 24-hour window:**
+
+| Signal | Threshold | Action |
+|---|---|---|
+| Sentry error rate | >2× baseline sustained for 2h | Rollback |
+| Conversion rate (rolling 2h window) | <50% of 7-day average sustained for 4h | Rollback |
+| Any critical path broken (add-to-cart, checkout, payment) | Single confirmed failure | Rollback |
+| Order volume (rolling 4h) | <60% of same window last week | Investigate, rollback if unexplained |
+| Multiple customer complaints on same issue | 3+ separate reports | Rollback |
+| Core Web Vitals LCP/CLS | Regressed >20% vs baseline on desktop or mobile | Investigate, rollback only if customer-facing regression confirmed |
+
+**If any trigger fires:** run the rollback command from Task 5. Document in `audit/PHASE6-ROLLBACK.md`. Bring findings to Brett.
+
+**If no trigger fires over 24h:** publish holds. Proceed to Task 7.
+
+During the window, do NOT ship any fixes to the new live theme — even small ones. If something minor surfaces that doesn't meet rollback threshold, log in `audit/PHASE6-ANOMALIES.md` for post-launch cleanup. The whole point of the window is to prove stability; new pushes invalidate the proof.
+
+**Done when:** 24 hours elapsed from publish timestamp with no rollback triggers fired. Monitor log committed to `audit/PHASE6-MONITOR.md` with one row per check interval.
+
+### Task 7: Post-launch close-out
+
+With 24h clean confirmed, tidy up and close the refactor.
+
+1. **Merge to main.** `git checkout main && git merge feat/flex-migration --no-ff -m "Merge Phase 0-6 Flex refactor"`. Push. The CI/CD pipeline on `main` is documented but not used for theme deploys — the merge is documentation, not a deploy trigger.
+
+2. **Update `~/lost-collective/CLAUDE.md`.** The live theme ID has changed. Find the line `**Live theme ID:** 193859780774 ("Lost Collective Live - 2026-04-15", Flex v5.5.1 by Out of the Sandbox)` and replace with the new theme ID and name. Commit to the lost-collective repo (not the shopify theme repo).
+
+3. **Knowledge graph updates:**
+   - Add node `ShopifyRefactorPhase6` (type: theme-refactor-phase, status: shipped). Connect: `part-of` → `ShopifyThemeRefactor2026`, `follows` → `ShopifyRefactorPhase5`.
+   - Update `ShopifyThemeRefactor2026` status to `shipped`. Add summary fields: `completed_date: 2026-04-XX`, `phases_shipped: 7`, `production_push_commit: {candidate-theme-id}`.
+   - Add `supersedes` edge from the new live theme's KG node to `193859780774`.
+
+4. **Archive the audit folder.** Move `audit/*.md` and `audit/*.txt` (except VISUAL-QA-PLAN.md and VISUAL-QA-REPORT.md, keep those available for future sprints) to `audit/archive/phase-0-6-2026-04/`. The archive keeps the paper trail without cluttering the next sprint's workspace.
+
+5. **HANDOFF retrospective section.** Append a closing section to HANDOFF.md titled `## Refactor retrospective — Phase 0-6`. Include:
+   - Total duration (first commit → Phase 6 publish)
+   - Total commits on `feat/flex-migration`
+   - Line count deltas on `assets/custom.css` (start → end)
+   - `!important` count deltas (start → end)
+   - Admin-pipeline issues fixed (A1, A5, A6, MISSING-MOBILE-HEADER-BG)
+   - The specific bug validated-as-fixed: merchant button admin colour control works for the first time in theme history
+   - What's left as post-launch follow-up (deferred accessibility items, `.button--primary-action` consistent rewiring, `vendors.js` instant.page dedup, customer-account page coverage)
+   - Three things a future theme refactor should do differently based on what was learned here
+
+6. **Leave the old themes in place for 90 days.** The two rollback targets (`193859780774` and the Pre-Phase-6 backup) stay unpublished in Shopify admin for 90 days before deletion. Belt-and-braces against a late-emerging regression that only surfaces under seasonal traffic (e.g. Black Friday patterns, end-of-month ordering spikes). After 90 days, delete via admin or CLI. Log a calendar reminder now.
+
+7. **Final push:** `git push origin feat/flex-migration`, `git push origin main`. Close any outstanding branch references.
+
+**Done when:** `main` contains merged `feat/flex-migration`. `lost-collective/CLAUDE.md` updated with new live theme ID. Knowledge graph has `ShopifyRefactorPhase6` + `ShopifyThemeRefactor2026` status updated. Audit folder archived. HANDOFF retrospective section written. 90-day cleanup reminder set.
+
+### Phase 6 exit gate
+
+| Gate criterion | Status |
+|---|---|
+| Backup theme exists in Shopify + local disk snapshot committed | |
+| Production-candidate theme uploaded and verified via preview | |
+| Publish executed during agreed window | |
+| First-15-min critical path walk clean | |
+| 24-hour monitor elapsed with zero rollback triggers | |
+| `main` branch contains merged refactor | |
+| `CLAUDE.md` updated with new live theme ID | |
+| Knowledge graph reflects refactor shipped | |
+| Retrospective committed to HANDOFF.md | |
+| 90-day cleanup reminder set | |
+
+### Rollback-trigger reference card (for fast mid-monitor decision-making)
+
+Print this section, keep it in front of you during the 24-hour window.
+
+**Immediate rollback (no discussion):**
+- Homepage fails to load on production domain
+- Add-to-cart broken on any PDP
+- Checkout init broken
+- Payment form fails to render
+- Sentry error rate >5× baseline in first 15 minutes
+
+**Rollback after 2-4h confirmation:**
+- Sentry error rate >2× baseline sustained for 2h
+- Conversion rate <50% of 7-day average sustained for 4h
+- 3+ unique customer complaints on the same issue
+
+**Investigate first, rollback if unresolved:**
+- Core Web Vitals regressed >20% vs baseline
+- Order volume <60% of same-window-last-week
+- Sentry has novel error types not seen pre-publish
+
+Everything else is logged and deferred.
+
+---
+
+After Phase 6 closes cleanly, the refactor is complete. The next Shopify theme sprint is a clean-slate planning exercise against `docs/design-tokens.md` as the new source of truth — not a continuation of this refactor's backlog.
+
