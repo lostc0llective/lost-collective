@@ -29,3 +29,11 @@ build/
 
 # Shopify CLI cache
 .shopify/
+
+# Phase 6 local-only (not theme assets)
+backups/
+audit/
+scripts/
+docs/
+HANDOFF.md
+CLAUDE.md
