@@ -267,13 +267,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Content section headings: no CSS uppercase, consistent spacing */
-.rich-text h2,
-.rich-text__title,
-.image-with-text-overlay h2,
-.banner__heading,
-.video__title,
-.slideshow-classic__preheading h2,
-.product-app--container h2 {
+.rich-text h2, .image-with-text-overlay h2, .banner__heading, .video__title, .slideshow-classic__preheading h2, .product-app--container h2 {
   text-transform: none;
   letter-spacing: 0.08em;
 }
@@ -992,7 +986,6 @@ html body .mobile-menu__toggle-icon .icon {
   color: rgba(255, 255, 255, 0.78);
 }
 
-.mega-menu .mega-menu__heading,
 .mega-menu .menu__heading {
   color: var(--color-white);
   letter-spacing: 0.04em;
@@ -1711,7 +1704,6 @@ html body [id*="trust_icon_bar"] a.icon-bar__block:hover {
   background-color: var(--color-footer-bg);
 }
 
-.footer__bottom,
 [class*="footer-bottom"] {
   background-color: var(--color-footer-bg);
 }
@@ -2489,9 +2481,7 @@ html body .collection__description {
    styles.css starts all galleries at opacity:0 waiting for Flickity init,
    but a one-image product never needs Flickity so the class never gets added.
    Override for that case so the image qualifies as the LCP candidate. */
-.product-gallery--media-amount-1 .product-gallery__main {
-  opacity: 1;
-}
+
 
 /* Size chart link — animated underline + gold hover */
 .product-block.product-block--size-chart .product__size-chart {
@@ -2523,12 +2513,7 @@ html body .collection__description {
 }
 
 /* Social share buttons */
-.product-block--share {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
+
 
 .social-share-buttons {
   display: flex;
@@ -2750,44 +2735,15 @@ html body .collection__description {
   align-items: flex-start;
 }
 
-.image-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: calc(33.333% - 20px);
-}
 
-.image-item img {
-  width: 100%;
-  height: 100%;
-  max-height: 500px;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
-  margin-bottom: 24px;
-}
 
-.image-item p {
-  max-width: 100%;
-  text-align: center;
-  margin-top: 15px;
-  margin-bottom: 40px;
-  font-size: 0.875rem;
-  padding: 0 10px;
-}
 
-.kandos-gallery {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  gap: 10px;
-}
 
-.kandos-gallery .image-item img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
+
+
+
+
+
 
 @media (max-width: 1024px) {
   .image-container { gap: 15px; }
@@ -4086,8 +4042,7 @@ h2.footer__heading {
 }
 
 /* 4. Product title links — 44px min-height in carousels and grid */
-.featured-collection .product-thumbnail__title a,
-.product-grid-item .product-thumbnail__title a {
+.featured-collection .product-thumbnail__title a {
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -4101,103 +4056,6 @@ h2.footer__heading {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   Section 43: Testimonials — infinite scrolling image marquee
-   Pure CSS animation, no JS. Images output twice for seamless loop.
-   ═══════════════════════════════════════════════════════════════════ */
-
-@keyframes lc-marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* Break out of any section container — run full viewport width */
-.lc-marquee-section {
-  width: 100vw !important;
-  max-width: none !important;
-  margin-left: calc(-50vw + 50%) !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.lc-marquee {
-  overflow-x: hidden;
-  overflow-y: visible;
-  width: 100%;
-  padding: 40px 0 56px;
-}
-
-.lc-marquee__track {
-  display: flex;
-  width: max-content;
-  animation: lc-marquee-scroll 30s linear infinite;
-  gap: 32px;
-  padding: 0 16px;
-  align-items: flex-start;
-}
-
-.lc-marquee__track:hover {
-  animation-play-state: paused;
-}
-
-/* Each item: image stacked above its text, moves as one unit */
-.lc-marquee__item {
-  flex-shrink: 0;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Square image */
-.lc-marquee__img {
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-  border-radius: var(--radius-lg, 20px);
-}
-
-.lc-marquee__img img,
-.lc-marquee__img .placeholder-svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
-  display: block;
-}
-
-/* Plain text — no card, no shadow, no border */
-.lc-marquee__text {
-  width: 300px;
-}
-
-.lc-marquee__quote p {
-  margin: 0 0 6px;
-  font-size: 0.95em;
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 6;
-  overflow: hidden;
-}
-
-.lc-marquee__author p {
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.9em;
-}
-
-@media (max-width: 798px) {
-  .lc-marquee__item,
-  .lc-marquee__img,
-  .lc-marquee__text {
-    width: 220px;
-  }
-  .lc-marquee__img {
-    height: 220px;
   }
 }
 
