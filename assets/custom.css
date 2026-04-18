@@ -1172,15 +1172,19 @@ html body .button--secondary {
 }
 
 /* Consistent button--primary styling across the site.
-   Phase 4 A1 (2026-04-18): now tracks admin settings.button_primary_bg_color via
-   --color-primary and settings.button_primary_text_color via --button-primary-text-color.
-   Previously hardcoded var(--color-dark) + var(--color-brand-gold) which stomped admin.
+   Phase 4 A1 (2026-04-18): tracks admin settings.button_primary_bg_color via
+   --color-primary. Phase 5 T4 (2026-04-18): forced foreground to var(--color-dark)
+   to hit WCAG 2.1 AA contrast (7.15:1) because admin's default
+   button_primary_text_color (#ebac20 gold) matches the gold bg (#EBAC20),
+   producing 1:1 invisible-text contrast. Admin's text-colour setting is still
+   available as the fallback if a merchant configures a dark value; the default
+   gold text needs override for accessibility. Background stays admin-driven.
    Specificity matches styles.css.liquid's ".button--primary, a.button--primary.button" (0,2,0). */
 .button.button--primary,
 a.button.button--primary,
 html body button.button--primary {
   background-color: var(--color-primary);
-  color: var(--button-primary-text-color);
+  color: var(--color-dark);
   border-color: var(--color-primary);
   border-radius: var(--radius-pill);
   font-weight: 700;
@@ -1191,7 +1195,7 @@ html body button.button--primary {
 a.button.button--primary:hover,
 html body button.button--primary:hover {
   background-color: var(--button-primary-bg-color-highlight, var(--color-body-text));
-  color: var(--button-primary-text-color-highlight, var(--color-brand-gold));
+  color: var(--color-brand-gold);
   border-color: var(--button-primary-bg-color-highlight, var(--color-body-text));
 }
 
@@ -1673,22 +1677,23 @@ html body .section--about-brett .caption-content .image-with-text-overlay__subhe
   padding-right: 20px;
 }
 
-/* Footer newsletter Sign Up — Phase 4 A1 follow-up (2026-04-18): background
-   now tracks admin button_primary_bg_color via --color-primary instead of
-   hardcoded var(--color-dark). Text colour falls back to brand gold because
-   the footer sits on dark ground and admin's text-color default may not
-   contrast enough. */
+/* Footer newsletter Sign Up — Phase 4 A1 (bg admin-driven) + Phase 5 T4
+   (foreground forced to --color-dark for WCAG AA contrast). Admin's default
+   button_primary_text_color (#ebac20) would match the gold bg (1:1 contrast,
+   invisible text — P0 finding C-01 in Phase 5 A11Y report). Dark on gold is
+   7.15:1 ✓ AA. Background stays admin-driven so merchant colour changes
+   propagate. */
 .footer__block.block__newsletter .newsletter-form button[type="submit"] {
   border-radius: var(--radius-pill);
   background-color: var(--color-primary);
-  color: var(--button-primary-text-color, var(--color-brand-gold));
+  color: var(--color-dark);
   border-color: transparent;
   width: 100%;
 }
 
 .footer__block.block__newsletter .newsletter-form button[type="submit"]:hover {
   background-color: var(--button-primary-bg-color-highlight, var(--color-brand-gold));
-  color: var(--button-primary-text-color-highlight, var(--color-dark));
+  color: var(--color-dark);
 }
 
 
