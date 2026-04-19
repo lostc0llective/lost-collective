@@ -117,6 +117,7 @@
 </script>
 
 <script src="{{ 'z__jsProduct.js' | asset_url }}"></script>
+<script src="{{ 'z__lcVariantPicker.js' | asset_url }}" defer></script>
 
 {% comment %} Shopify-XR {% endcomment %}
 {% assign model = product.media | where: 'media_type', 'model' | first %}

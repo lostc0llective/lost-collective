@@ -47,6 +47,7 @@
    41.  Mobile Homepage — Layout compliance (audit 2026-04-09)
    42.  Accessibility & touch target fixes (audit 2026-04-09)
    43.  Product Page — LC editorial metafields (Phase 7 Sprint B B1)
+   44.  Product Page — LC variant picker (Phase 7 Sprint B B2)
 ================================ */
 
 
@@ -4469,5 +4470,226 @@ html body .template-product .breadcrumb {
 
   .lc-metafields__label {
     text-align: left;
+  }
+}
+
+
+/* ================================
+   44. Product Page — LC variant picker (Phase 7 Sprint B B2)
+   Decision 3: paper-surface unselected, dark fill on selected with gold
+   hairline accent. N/A values are stripped from the DOM by Liquid (not
+   styled). Full-width grid distribution by visible-option count via
+   --lc-option-count. Colour fieldset hides on Type=Unframed/Glass via
+   z__lcVariantPicker.js toggling .is-hidden.
+================================ */
+
+.swatch-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 20px 0 12px;
+  border-top: 1px solid rgba(26, 26, 26, 0.08);
+}
+
+.swatch-fieldset.is-hidden {
+  display: none !important;
+}
+
+/* Hide the original size-chart block plain text link on PDP since the LC
+   ruler-icon affordance inside the Size fieldset replaces it. The popup
+   markup (#size-chart{product.id}) still renders so the new link can
+   target it via Fancybox. */
+.product-block--size-chart .product__size-chart {
+  display: none !important;
+}
+
+.lc-fieldset-label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-dark, #1a1a1a);
+  width: 100%;
+}
+
+.lc-fieldset-label__name {
+  display: inline-block;
+}
+
+.lc-fieldset-label__sep {
+  display: inline-block;
+  color: rgba(26, 26, 26, 0.35);
+  font-weight: 400;
+  letter-spacing: 0;
+  padding: 0 2px;
+}
+
+.lc-fieldset-label__value {
+  display: inline-block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-dark, #1a1a1a);
+}
+
+.lc-size-guide-link {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-dark, #1a1a1a);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lc-size-guide-link:hover,
+.lc-size-guide-link:focus-visible {
+  text-decoration: underline;
+  color: var(--color-dark, #1a1a1a);
+}
+
+.lc-size-guide-link__icon {
+  display: inline-block;
+  flex: 0 0 16px;
+  color: currentColor;
+}
+
+.swatch-fieldset .swatch__options {
+  display: grid;
+  grid-template-columns: repeat(var(--lc-option-count, 5), 1fr);
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 749px) {
+  .swatch-fieldset .swatch__options {
+    grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+  }
+}
+
+.swatch-fieldset .swatch__option {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.swatch-fieldset .swatch__option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.swatch-fieldset .swatch-element,
+.swatch-fieldset .swatch-element label {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.swatch-fieldset .swatch-element {
+  display: block;
+  background: #f8f6f2;
+  color: #1a1a1a;
+  border: 1px solid rgba(26, 26, 26, 0.24);
+  border-radius: 4px;
+  min-height: 48px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 200ms ease-out, transform 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out;
+  position: relative;
+}
+
+.swatch-fieldset .swatch-element label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 8px 10px;
+  margin: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.swatch-fieldset .swatch-element:hover {
+  border-color: rgba(26, 26, 26, 0.6);
+  transform: translateY(-1px);
+}
+
+.swatch-fieldset .swatch-element:active {
+  transform: scale(0.98);
+  transition-duration: 100ms;
+}
+
+.swatch-fieldset .swatch__option input[type="radio"]:checked + .swatch-element {
+  background: #1a1a1a;
+  color: #f8f6f2;
+  border-color: var(--color-brand-gold, #ebac20);
+}
+
+.swatch-fieldset .swatch__option input[type="radio"]:focus-visible + .swatch-element {
+  outline: 2px solid var(--color-brand-gold, #ebac20);
+  outline-offset: 2px;
+}
+
+.swatch-fieldset .swatch-element[data-unavailable="true"] {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+.swatch-fieldset .swatch-element[data-unavailable="true"] .crossed-out,
+.swatch-fieldset .swatch-element .crossed-out {
+  display: none !important;
+  text-decoration: none !important;
+}
+
+.swatch-fieldset .swatch-element[data-unavailable="true"] label {
+  text-decoration: none;
+}
+
+.lc-unavailable-note {
+  display: block;
+  width: 100%;
+  margin: 10px 0 0;
+  padding: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: rgba(26, 26, 26, 0.7);
+  font-style: italic;
+}
+
+.lc-unavailable-note[hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swatch-fieldset .swatch-element,
+  .swatch-fieldset .swatch-element:hover,
+  .swatch-fieldset .swatch-element:active {
+    transform: none;
+    transition: background-color 1ms, color 1ms, border-color 1ms;
   }
 }

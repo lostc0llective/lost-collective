@@ -1,7 +1,19 @@
 {% comment %}
-  Display variant options for a product
+  Display variant options for a product.
+
+  Phase 7 Sprint B - Task B2 (P0-7, P1-14):
+  - Filter N/A values out of the DOM entirely
+  - Set --lc-option-count for full-width grid distribution
+  - Editorial legend pattern (small-caps option name + mid-dot + chosen value)
+  - data-hide-on-type on Colour fieldset for the Type-driven hide handled in JS
+  - Inline unavailable-combinations note (toggled by JS in z__lcVariantPicker.js)
+  - Size-guide ruler icon affordance on the Size fieldset
 
   @param selected_variant
+  @param option
+  @param option_index
+  @param product
+  @param show_swatches
 {% endcomment %}
 
 {% assign swatch_trigger = settings.swatch_trigger | strip | downcase %}
@@ -10,28 +22,75 @@
 {% assign loop_index = option_index | plus: 1 %}
 {%- assign swatch_option_key = 'option' | append: loop_index -%}
 
-<fieldset class="swatch is-flex is-flex-wrap" data-option-index="{{ option_index }}">
-  <legend class="option-title label">
+{%- liquid
+  assign option_name_dc = option.name | downcase | strip
+  assign is_size_option = false
+  if option_name_dc == 'size'
+    assign is_size_option = true
+  endif
+  assign is_colour_option = false
+  if option_name_dc == 'colour' or option_name_dc == 'color'
+    assign is_colour_option = true
+  endif
+
+  assign visible_count = 0
+  for value in option.values
+    assign value_dc = value | downcase | strip
+    unless value_dc == 'n/a'
+      assign visible_count = visible_count | plus: 1
+    endunless
+  endfor
+-%}
+
+{%- if visible_count > 0 -%}
+<fieldset
+  class="swatch is-flex is-flex-wrap swatch-fieldset{% if is_colour_option %} swatch-fieldset--colour{% endif %}"
+  data-option-index="{{ option_index }}"
+  data-option-name="{{ option.name | escape }}"
+  {% if is_colour_option %}data-hide-on-type="Unframed,Glass"{% endif %}
+>
+  <legend class="option-title label lc-fieldset-label">
+    <span class="lc-fieldset-label__name">{{ option.name }}</span>
+    <span class="lc-fieldset-label__sep" aria-hidden="true">·</span>
     <span
-      class="options-selection__option-name"
-      data-variant-option-name="{{ 'product.variants.chosen_option_html' | t: option: option.name, value: option.selected_value | escape }}"
+      class="lc-fieldset-label__value options-selection__option-name"
+      data-variant-option-name="{{ option.selected_value | escape }}"
       data-variant-option-choose-name="{{ 'product.variants.choose_option' | t: option: option.name }}"
     >
       {% if selected_variant %}
-        {{ 'product.variants.chosen_option_html' | t: option: option.name, value: option.selected_value }}
+        {{ option.selected_value }}
       {% else %}
         {{ 'product.variants.choose_option' | t: option: option.name }}
       {% endif %}
     </span>
+    {% if is_size_option %}
+      <a
+        class="lc-size-guide-link"
+        href="javascript:;"
+        data-fancybox
+        data-src="#size-chart{{ product.id }}"
+        data-type="inline"
+      >
+        <svg class="lc-size-guide-link__icon" viewBox="0 0 24 12" width="16" height="12" aria-hidden="true" focusable="false">
+          <path fill="none" stroke="currentColor" stroke-width="1.4" d="M0.7 0.7h22.6v10.6H0.7zM4 0.7v6M8 0.7v4M12 0.7v6M16 0.7v4M20 0.7v6"/>
+        </svg>
+        <span>Size guide</span>
+      </a>
+    {% endif %}
   </legend>
+
   <div
     class="swatch__options"
+    style="--lc-option-count: {{ visible_count }};"
     data-variant-option
     data-variant-option-index="{{ option_index }}"
     data-variant-option-chosen-value="{% if selected_variant %}{{ option.selected_value }}{% else %}false{% endif %}"
   >
     {% for value in option.values %}
+      {%- assign value_dc = value | downcase | strip -%}
+      {%- if value_dc == 'n/a' -%}{%- continue -%}{%- endif -%}
       {% assign option_name = option.name | downcase %}
+      {% assign is_color = false %}
 
       {% if show_swatches and option_name == swatch_trigger %}
         {% assign is_color = true %}
@@ -68,8 +127,6 @@
         >
           {% if is_color %}
             <div class="tooltip">{{ value }}</div>
-          {% endif %}
-          {% if is_color %}
             <label
               style="
                 {% if settings.swatches_option_style == 'variant_image' and product.variants[forloop.index0].image != blank %}
@@ -92,9 +149,7 @@
               <span class="crossed-out" aria-label="{{ 'products.product.sold_out' | t }}" alt="{{ 'products.product.sold_out' | t }}"></span>
             </label>
           {% else %}
-            <label
-              data-variant-option-value-label
-            >
+            <label data-variant-option-value-label>
               {{ value }}
               <span class="crossed-out" aria-label="{{ 'products.product.sold_out' | t }}" alt="{{ 'products.product.sold_out' | t }}"></span>
             </label>
@@ -115,4 +170,9 @@
       </div>
     {% endfor %}
   </div>
+
+  <p class="lc-unavailable-note" data-lc-unavailable-note hidden>
+    Some combinations are unavailable. Choose a different Size to see options.
+  </p>
 </fieldset>
+{%- endif -%}
