@@ -48,6 +48,7 @@
    42.  Accessibility & touch target fixes (audit 2026-04-09)
    43.  Product Page — LC editorial metafields (Phase 7 Sprint B B1)
    44.  Product Page — LC variant picker (Phase 7 Sprint B B2)
+   45.  Product Page — LC price treatment (Phase 7 Sprint B B3)
 ================================ */
 
 
@@ -4692,4 +4693,47 @@ html body .template-product .breadcrumb {
     transform: none;
     transition: background-color 1ms, color 1ms, border-color 1ms;
   }
+}
+
+
+/* ================================
+   45. Product Page — LC price treatment (Phase 7 Sprint B B3)
+   Decision: PDP price emits 'From $X AUD' or '$min – $max AUD' (toggled by
+   settings.price_range_display). Tabular numerics on the inner money spans
+   so the digits don't shift width across variant changes.
+================================ */
+
+.lc-price-block {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.lc-price-block .price-ui {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.lc-price-block .price,
+.lc-price-block .price-min,
+.lc-price-block .price-max,
+.lc-price-block .money {
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-price__prefix {
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-weight: 400;
+  color: inherit;
+}
+
+.lc-price__currency {
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-weight: 400;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  color: rgba(26, 26, 26, 0.7);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }

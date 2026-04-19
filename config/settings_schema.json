@@ -1893,6 +1893,17 @@
       },
       {
         "type": "header",
+        "content": "Price display (LC)"
+      },
+      {
+        "type": "checkbox",
+        "id": "price_range_display",
+        "label": "Show price range on multi-variant products",
+        "info": "When ON, shows '$50 - $2,500 AUD'. When OFF, shows 'From $50 AUD'.",
+        "default": true
+      },
+      {
+        "type": "header",
         "content": "Options"
       },
       {
