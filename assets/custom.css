@@ -53,6 +53,7 @@
    47.  Product Page — LC sticky mobile ATC (Phase 7 Sprint B B5)
    48.  Cart Page — LC trust bar (Phase 7 Sprint B B6)
    49.  Cart Page — LC hero contrast (Phase 7 Sprint B B6)
+   50.  PDP polish — buttons + Shop Pay + spacing (post-Sprint B Brett pass)
 ================================ */
 
 
@@ -4491,8 +4492,8 @@ html body .template-product .breadcrumb {
 .swatch-fieldset {
   border: 0;
   margin: 0;
-  padding: 20px 0 12px;
-  border-top: 1px solid rgba(26, 26, 26, 0.08);
+  padding: 18px 0 14px;
+  border-top: 0;
 }
 
 /* Preserve layout space when the Colour fieldset is hidden so the ATC and
@@ -4515,15 +4516,16 @@ html body .template-product .breadcrumb {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   padding: 0;
-  font-family: var(--font-body, 'Lato', sans-serif);
-  font-size: 11px;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-dark, #1a1a1a);
   width: 100%;
+  line-height: 1.2;
 }
 
 .lc-fieldset-label__name {
@@ -4540,8 +4542,8 @@ html body .template-product .breadcrumb {
 
 .lc-fieldset-label__value {
   display: inline-block;
-  font-family: var(--font-body, 'Lato', sans-serif);
-  font-weight: 400;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
   font-size: 12px;
   letter-spacing: 0.04em;
   text-transform: none;
@@ -4553,9 +4555,9 @@ html body .template-product .breadcrumb {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-body, 'Lato', sans-serif);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-dark, #1a1a1a);
@@ -4614,12 +4616,12 @@ html body .template-product .breadcrumb {
   display: block;
   background: #ffffff;
   color: var(--color-dark, #1a1a1a);
-  border: 1px solid rgba(26, 26, 26, 0.18);
-  border-radius: var(--radius-md, 10px);
-  min-height: 48px;
+  border: 1px solid rgba(26, 26, 26, 0.2);
+  border-radius: var(--radius-pill, 35px);
+  min-height: 44px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out;
+  transition: border-color 180ms ease-out, background-color 180ms ease-out, color 180ms ease-out;
   position: relative;
 }
 
@@ -4627,13 +4629,13 @@ html body .template-product .breadcrumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
-  padding: 8px 10px;
+  min-height: 44px;
+  padding: 6px 14px;
   margin: 0;
-  font-family: var(--font-body, 'Lato', sans-serif);
-  font-size: 13px;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   text-transform: none;
   color: inherit;
   background: transparent;
@@ -4642,8 +4644,8 @@ html body .template-product .breadcrumb {
 }
 
 .swatch-fieldset .swatch-element:hover {
-  border-color: rgba(26, 26, 26, 0.5);
-  background: var(--lc-surface-light, #f5f5f5);
+  border-color: var(--color-dark, #1a1a1a);
+  background: #ffffff;
 }
 
 .swatch-fieldset .swatch__option input[type="radio"]:checked + .swatch-element {
@@ -4991,4 +4993,172 @@ body.cart .shopify-section.banner .banner__heading,
 .template-cart .shopify-section.banner .banner__heading {
   color: #ffffff;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ================================
+   50. PDP polish — buttons + Shop Pay + spacing
+   Match the home page CTA language: gold pill primary, dark pill primary,
+   Montserrat 600/700, 35px radius. Round Shop Pay's payment buttons.
+   Tighten spacing in the product info column so the swatches, prices and
+   buttons sit on a consistent rhythm.
+================================ */
+
+/* --- Add-to-cart: gold pill primary matching home page button--primary-action --- */
+.product__information .button--add-to-cart,
+.product__information .button.action_button.button--add-to-cart {
+  background: var(--color-brand-gold, #ebac20);
+  color: var(--color-dark, #1a1a1a);
+  border: 1px solid var(--color-brand-gold, #ebac20);
+  border-radius: var(--radius-pill, 35px);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 12px 28px;
+  min-height: 48px;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
+  box-shadow: none;
+}
+
+.product__information .button--add-to-cart:hover,
+.product__information .button--add-to-cart:focus-visible {
+  background: var(--color-dark, #1a1a1a);
+  color: var(--color-brand-gold, #ebac20);
+  border-color: var(--color-dark, #1a1a1a);
+}
+
+.product__information .button--add-to-cart:focus-visible {
+  outline: 2px solid var(--color-brand-gold, #ebac20);
+  outline-offset: 2px;
+}
+
+.product__information .button--add-to-cart .lc-atc-lock {
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  vertical-align: middle;
+  color: currentColor;
+}
+
+/* When ATC is in 'sold out' / 'unavailable' state Flex applies .disabled */
+.product__information .button--add-to-cart.disabled,
+.product__information .button--add-to-cart[disabled] {
+  background: rgba(26, 26, 26, 0.12);
+  color: rgba(26, 26, 26, 0.5);
+  border-color: rgba(26, 26, 26, 0.12);
+  cursor: not-allowed;
+}
+
+/* --- Shop Pay payment buttons: pill radius via inner button + iframe targeting --- */
+.product__information .shopify-payment-button,
+.purchase-details__buttons .shopify-payment-button {
+  margin-top: 10px;
+}
+
+.product__information .shopify-payment-button .shopify-payment-button__button,
+.product__information .shopify-payment-button button,
+.product__information .shopify-payment-button [role="button"],
+.purchase-details__buttons .shopify-payment-button .shopify-payment-button__button,
+.purchase-details__buttons .shopify-payment-button button,
+.purchase-details__buttons .shopify-payment-button [role="button"] {
+  border-radius: var(--radius-pill, 35px) !important;
+  min-height: 48px !important;
+  font-family: var(--font-heading, 'Montserrat', sans-serif) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  overflow: hidden !important;
+}
+
+/* Shopify renders the Shop Pay button inside an iframe wrapper with its own
+   border-radius. Wrap the iframe so the rounded corners clip cleanly. */
+.product__information .shopify-payment-button iframe,
+.purchase-details__buttons .shopify-payment-button iframe {
+  border-radius: var(--radius-pill, 35px) !important;
+}
+
+/* --- 'More payment options' link: lighten so the primary CTA leads the eye --- */
+.product__information .shopify-payment-button__more-options,
+.purchase-details__buttons .shopify-payment-button__more-options {
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 13px;
+  color: var(--color-body-text, #6f6f6f);
+  text-decoration: underline;
+  margin-top: 12px;
+}
+
+/* --- Notify-me secondary button when out of stock --- */
+.product__information .notify_me-button,
+.product__information .button--notify-me {
+  background: #ffffff;
+  color: var(--color-dark, #1a1a1a);
+  border: 1px solid var(--color-dark, #1a1a1a);
+  border-radius: var(--radius-pill, 35px);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 24px;
+  min-height: 44px;
+}
+
+/* --- Product info column rhythm: consistent vertical spacing between blocks --- */
+.product__information .product-block {
+  margin-bottom: 0;
+}
+
+.product__information .product-block--title {
+  margin-bottom: 12px;
+}
+
+.product__information .product-block--price {
+  margin-bottom: 22px;
+}
+
+.product__information .product-block--form {
+  margin-top: 8px;
+}
+
+.product__information .product-block--description {
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+/* Tighten the swatch fieldset so options breathe but don't drift apart */
+.product__information .swatch-fieldset {
+  margin-bottom: 6px;
+}
+
+/* Description hairline below form to separate variant area from copy */
+.product__information .product-block--description {
+  padding-top: 24px;
+  border-top: 1px solid rgba(26, 26, 26, 0.08);
+}
+
+/* The metafield block we added in B1 also gets the hairline pattern so the
+   info column reads as a stack of sections rather than a wall of text. */
+.product__information .product-block--lc-metafields .lc-metafields {
+  margin-top: 0;
+}
+
+/* Title breathes a touch more from the breadcrumb above (ADHD-friendly) */
+.product__information .product-block--title h1,
+.product__information .product-block--title .product__title {
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+/* Mobile: collapse vertical rhythm slightly so the page isn't excessively tall */
+@media (max-width: 749px) {
+  .product__information .product-block--price {
+    margin-bottom: 16px;
+  }
+  .product__information .product-block--description {
+    padding-top: 18px;
+    margin-top: 14px;
+    margin-bottom: 18px;
+  }
+  .product__information .button--add-to-cart {
+    width: 100%;
+  }
 }
