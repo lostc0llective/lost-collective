@@ -426,71 +426,26 @@
 </div>
 
 {%- comment -%}
-  LC PDP detail band - mirrors the description, metafields and rating blocks
-  outside the two-column row so they sit full-width below the image+buybox
-  on desktop. The originals are hidden via CSS at >=750px so this band
-  becomes the sole rendered location, eliminating the right-column overflow
-  that left a tall white void below the gallery image.
+  LC PDP detail band - holds the editorial metafields outside the two-column
+  row so they sit full-width below the image+buybox on desktop. The
+  description stays in the right column under the variant selector. The
+  index__html accordion that sits below this band is styled to share the
+  same paper background so the two read as one unified zone.
 {%- endcomment -%}
 {%- unless is_product_modal or section_onboarding -%}
-  {%- assign lc_has_detail = false -%}
+  {%- assign lc_has_meta = false -%}
   {%- for block in section.blocks -%}
-    {%- case block.type -%}
-      {%- when 'description' or 'lc_metafields' or 'rating' -%}
-        {%- assign lc_has_detail = true -%}
-    {%- endcase -%}
+    {%- if block.type == 'lc_metafields' -%}
+      {%- assign lc_has_meta = true -%}
+    {%- endif -%}
   {%- endfor -%}
 
-  {%- if lc_has_detail -%}
+  {%- if lc_has_meta -%}
     <div class="lc-pdp-detail-band">
       <div class="lc-pdp-detail-band__inner container">
-        {%- for block in section.blocks -%}
-          {%- if block.type == 'description' -%}
-            {% liquid
-              if block.settings.product_description != blank
-                assign lc_band_description = block.settings.product_description
-              elsif product.description != blank
-                assign lc_band_description = product.description | split: '<!-- split -->' | first
-              endif
-            %}
-            {%- if lc_band_description != blank -%}
-              <div class="lc-pdp-detail-band__col lc-pdp-detail-band__col--description">
-                <div class="product__description content">{{ lc_band_description }}</div>
-              </div>
-            {%- endif -%}
-
-          {%- elsif block.type == 'lc_metafields' -%}
-            <div class="lc-pdp-detail-band__col lc-pdp-detail-band__col--meta">
-              {% render 'lc-product-metafields', product: product, selected_variant: selected_variant %}
-            </div>
-
-          {%- elsif block.type == 'rating' -%}
-            {%- if product.metafields.reviews.rating.value != blank -%}
-              <div class="lc-pdp-detail-band__rating">
-                {%
-                  render 'rating-stars',
-                  value: product.metafields.reviews.rating.value.rating,
-                  scale_max: product.metafields.reviews.rating.value.scale_max,
-                %}
-                <p class="rating__text">
-                  <span aria-hidden="true">
-                    {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
-                  </span>
-                </p>
-                <p class="rating__count">
-                  <span aria-hidden="true">
-                    {{ product.metafields.reviews.rating_count }}
-                    {% if product.metafields.reviews.rating_count > 1 %}
-                      {{ "general.accessibility.star_reviews_text" | t }}
-                    {% else %}
-                      {{ "general.accessibility.star_review_text" | t }}
-                    {% endif %}
-                  </span>
-                </p>
-              </div>
-            {%- endif -%}
-          {%- endif -%}
-        {%- endfor -%}
+        <div class="lc-pdp-detail-band__col lc-pdp-detail-band__col--meta">
+          {% render 'lc-product-metafields', product: product, selected_variant: selected_variant %}
+        </div>
       </div>
     </div>
   {%- endif -%}

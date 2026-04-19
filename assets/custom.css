@@ -5014,6 +5014,27 @@ body.cart .shopify-section.banner .banner__heading,
   min-height: 48px;
   transition: background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
   box-shadow: none;
+  /* Ensure children sit on a single horizontal line. Flex theme defaults
+     the button to display:block which stacks the lock SVG, the label, and
+     the trailing cart icon vertically. */
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Strip Flex's decorative trailing cart icon - we already have the lock
+   icon as the single trust signal on the ATC button. */
+.product__information .button--add-to-cart .icon--cart,
+.product__information .button--add-to-cart .icon.icon--right {
+  display: none !important;
+}
+
+.product__information .button--add-to-cart .text {
+  display: inline-block !important;
+  width: auto !important;
 }
 
 .product__information .button--add-to-cart:hover,
@@ -5031,8 +5052,7 @@ body.cart .shopify-section.banner .banner__heading,
 .product__information .button--add-to-cart .lc-atc-lock {
   width: 14px;
   height: 14px;
-  margin-right: 8px;
-  vertical-align: middle;
+  flex-shrink: 0;
   color: currentColor;
 }
 
@@ -5143,11 +5163,56 @@ body.cart .shopify-section.banner .banner__heading,
   margin-bottom: 14px;
 }
 
-/* Title sits right under the breadcrumb without extra cushion */
+/* Title sits right under the breadcrumb without extra cushion. Weight
+   pulled down from Flex's 800 black to 700 bold so it sits comfortably
+   next to the eyebrow and price without overpowering. */
 .product__information .product-block--title h1,
 .product__information .product-block--title .product__title {
   margin: 0;
   line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* Mobile mirrors the desktop weight tweak. */
+.lc-mobile-title {
+  font-weight: 700 !important;
+  letter-spacing: -0.005em;
+}
+
+/* Price - give it room to breathe so it reads as a primary line, not a
+   trailing bit. Top breathing room separates it from the title block. */
+.product__information .product-block--price {
+  margin-top: 14px;
+  margin-bottom: 22px;
+}
+
+.product__information .modal_price {
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.lc-price-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.lc-price__currency {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(26, 26, 26, 0.6);
+  text-transform: uppercase;
+}
+
+@media (max-width: 749px) {
+  .product__information .modal_price { font-size: 22px; }
+  .product__information .product-block--price {
+    margin-top: 10px;
+    margin-bottom: 16px;
+  }
 }
 
 /* Modal price wrapper drives its own padding by default; reset it */
@@ -5209,19 +5274,28 @@ body.cart .shopify-section.banner .banner__heading,
   padding: 0;
 }
 
-/* Series eyebrow above the title - small Lato uppercase with brand-gold tint.
-   Renders both for the mobile-only title block and the desktop in-column
-   title block. */
+/* Series eyebrow above the title - editorial best-practice: muted neutral
+   so it reads as a quiet secondary line, not a gold tag competing with
+   the title. Slightly larger than a tag (12-13px) per typographic hierarchy
+   guidance. */
 .lc-title-eyebrow {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   padding: 0;
   font-family: var(--font-body, 'Lato', sans-serif);
-  font-size: 11px;
-  letter-spacing: 0.16em;
+  font-size: 13px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-brand-gold, #ebac20);
-  font-weight: 600;
-  line-height: 1.2;
+  color: rgba(26, 26, 26, 0.55);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+@media (max-width: 749px) {
+  .lc-title-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    margin: 0 0 4px;
+  }
 }
 
 @media (max-width: 749px) {
@@ -5237,15 +5311,64 @@ body.cart .shopify-section.banner .banner__heading,
   }
 }
 
-/* Breadcrumb - keep on a single line on every viewport. The current page
-   item (product title) gets ellipsis truncation so we don't wrap.
-   Override Flex's default padding-top: 132px which leaves a giant void
-   above the breadcrumb on every PDP. */
+/* Breadcrumb - keep on a single line on every viewport. Align to the
+   same left edge as the gallery image (so it sits inside the product
+   container, not the narrower default breadcrumb container). Mobile:
+   left-align, small caps-ish, smaller than the eyebrow so it reads as
+   navigational chrome rather than a heading. */
+
+/* Override Flex's default padding-top: 132px void above the breadcrumb. */
 .shopify-section.product-breadcrumb nav.breadcrumb,
 .template-product nav.breadcrumb,
 #template-product nav.breadcrumb {
-  padding-top: 16px !important;
-  padding-bottom: 8px !important;
+  padding-top: 8px !important;
+  padding-bottom: 4px !important;
+}
+
+/* Align the breadcrumb to the same left edge as the gallery image. The
+   image sits at viewport_left + 70 because the product section is
+   max-width 1400px centered with ~50px padding on a 1440 viewport. We
+   force the breadcrumb section to use the same outer width and gutters. */
+@media (min-width: 750px) {
+  .shopify-section.product-breadcrumb > .section.is-width-standard,
+  .shopify-section.product-breadcrumb > .section {
+    max-width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+  }
+  .shopify-section.product-breadcrumb .container {
+    max-width: 1400px !important;
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+  }
+  /* Strip Flex column inner gutters that push the nav 100+px right of
+     the container edge. */
+  .shopify-section.product-breadcrumb .breadcrumb__container,
+  .shopify-section.product-breadcrumb .one-whole.column {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+  /* Force smaller editorial breadcrumb size; specificity wins over Flex's
+     default .is-regular sizing rules. */
+  body.product nav.breadcrumb,
+  body.product nav.breadcrumb a,
+  body.product nav.breadcrumb li {
+    font-size: 13px !important;
+    color: rgba(26, 26, 26, 0.6);
+    line-height: 1.4;
+  }
+  body.product nav.breadcrumb .breadcrumb__current { color: rgba(26, 26, 26, 0.85); }
+  body.product nav.breadcrumb a:hover { color: var(--color-dark, #1a1a1a); }
+  body.product nav.breadcrumb .breadcrumb-separator svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0.5;
+  }
 }
 
 .breadcrumb ul {
@@ -5253,6 +5376,7 @@ body.cart .shopify-section.banner .banner__heading,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  justify-content: flex-start;
 }
 
 .breadcrumb__current {
@@ -5262,14 +5386,31 @@ body.cart .shopify-section.banner .banner__heading,
 }
 
 @media (max-width: 749px) {
+  .breadcrumb,
+  .breadcrumb a,
+  .breadcrumb li,
+  .breadcrumb__current {
+    font-size: 11px !important;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
   .breadcrumb {
-    font-size: 11px;
+    color: rgba(26, 26, 26, 0.55);
+  }
+  .breadcrumb ul {
+    padding: 0 16px;
+    justify-content: flex-start;
+  }
+  .breadcrumb-separator svg {
+    width: 8px;
+    height: 8px;
+    opacity: 0.45;
   }
   .shopify-section.product-breadcrumb nav.breadcrumb,
   .template-product nav.breadcrumb,
   #template-product nav.breadcrumb {
-    padding-top: 12px !important;
-    padding-bottom: 6px !important;
+    padding-top: 8px !important;
+    padding-bottom: 0 !important;
   }
 }
 
@@ -5284,11 +5425,12 @@ body.cart .shopify-section.banner .banner__heading,
 }
 
 /* ================================
-   52. PDP detail band - description + metafields below the image+buybox
-   row on desktop. The originals inside .product__information are hidden
-   at >=750px so this band becomes the canonical detail surface, freeing
-   the right column to size to the buy box only and eliminating the tall
-   white void below the image where the right column used to overflow.
+   52. PDP detail band - editorial metafields full-width below the image+
+   buybox row on desktop, styled to flow into the accordion section that
+   sits beneath it (same paper background, no gap). Description stays in
+   the right column under the variant selector. Originals of metafields/
+   rating are hidden in the right column on desktop so they only render
+   in the band.
 ================================ */
 
 .lc-pdp-detail-band {
@@ -5299,68 +5441,80 @@ body.cart .shopify-section.banner .banner__heading,
   .lc-pdp-detail-band {
     display: block;
     background: var(--lc-paper, #f8f6f2);
-    padding: 56px 0 64px;
-    margin: 24px 0 0;
+    padding: 48px 0 32px;
+    margin: 32px 0 0;
     border-top: 1px solid rgba(26, 26, 26, 0.08);
-    border-bottom: 1px solid rgba(26, 26, 26, 0.08);
   }
 
   .lc-pdp-detail-band__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    column-gap: 64px;
-    row-gap: 24px;
-    align-items: start;
     max-width: 1200px;
     padding: 0 24px;
   }
 
-  .lc-pdp-detail-band__col--description .product__description {
-    font-family: var(--font-body, 'Lato', sans-serif);
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--color-dark, #1a1a1a);
-  }
-
-  .lc-pdp-detail-band__col--description .product__description > * + * {
-    margin-top: 14px;
-  }
-
   .lc-pdp-detail-band__col--meta .lc-metafields {
     margin: 0;
+    max-width: 720px;
   }
 
-  .lc-pdp-detail-band__rating {
-    grid-column: 1 / -1;
-    margin-top: 8px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(26, 26, 26, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .lc-pdp-detail-band__rating .rating__text,
-  .lc-pdp-detail-band__rating .rating__count {
-    margin: 0;
-    font-size: 13px;
-    color: rgba(26, 26, 26, 0.7);
-  }
-
-  /* Hide the originals on desktop so we don't render the description twice.
-     Mobile keeps the in-column originals because the band itself is hidden. */
-  .product__information .product-block--description,
+  /* Hide the metafields and rating originals on desktop so they only render
+     in the band. Description STAYS in the right column under the variant
+     selector per the latest direction. */
   .product__information .product-block--lc-metafields,
   .product__information .product-block--rating {
     display: none;
   }
+
+  /* Style the index_html accordion section that follows the band so the
+     two read as one continuous editorial card. Override Flex's
+     is-width-half centring so the accordion fills the same container
+     width as the metafields above it. */
+  .lc-pdp-detail-band + .shopify-section.html-section,
+  .shopify-section.html-section:has(.accordion) {
+    background: var(--lc-paper, #f8f6f2);
+    border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+    margin-top: -32px; /* eat the band's bottom padding so they butt together */
+    padding-top: 8px !important;
+    padding-bottom: 56px !important;
+  }
+
+  .lc-pdp-detail-band + .shopify-section.html-section .section.is-width-half,
+  .shopify-section.html-section:has(.accordion) .section.is-width-half {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .lc-pdp-detail-band + .shopify-section.html-section .accordion,
+  .shopify-section.html-section:has(.accordion) .accordion {
+    max-width: 720px;
+  }
 }
 
-@media (min-width: 750px) and (max-width: 1024px) {
-  .lc-pdp-detail-band__inner {
-    grid-template-columns: 1fr;
-    column-gap: 0;
+@media (max-width: 749px) {
+  /* On mobile, render the metafields below the description like before -
+     the band is hidden so the in-column .product-block--lc-metafields
+     remains the visible copy. */
+  .lc-pdp-detail-band { display: none; }
+
+  /* Mobile gallery: drop the Flickity prev/next arrows entirely - swipe
+     navigation is the natural mobile gesture. Pull the thumbnails strip
+     up close to the main image to match the desktop spacing. */
+  .product-gallery .flickity-prev-next-button {
+    display: none !important;
+  }
+
+  .product-gallery__thumbnails,
+  .product-gallery .product-gallery__thumbnails-wrapper {
+    margin-top: 8px !important;
+    padding-top: 0 !important;
+  }
+
+  /* Also remove any inline padding that might be set by Flickity wrapper */
+  .product-gallery .flickity-page-dots {
+    margin-top: 6px;
   }
 }
 
