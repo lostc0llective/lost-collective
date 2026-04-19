@@ -2192,3 +2192,297 @@ If no rollback triggers fire in the 24-hour window:
    - Keep for next time: full-theme push → section-only update → force-recompile pattern documented in `scripts/_force_theme_recompile.py`, backups directory committed to git, defensive rules in section files rather than only in `theme.css.liquid`
 
 If rollback fires, HANDOFF gets a new section "Phase 6 — rolled back" with trigger details and a decision log for the next attempt.
+
+
+---
+
+## Phase 7 - Sprint B CC tasks
+
+**Designed:** 2026-04-19 (Cowork)
+**Live theme under edit:** `193925775526` (Flex v5.5.1)
+**Branch:** `feat/flex-migration` - no work on `main` this sprint
+**Preview URL (CDN-bypassed):** `https://lost-collective.myshopify.com/?preview_theme_id=193925775526&_fd=0&_ab=0`
+**Source of truth:** `audit/PHASE7-CATALOGUE.md` (P0/P1/P2 status-annotated) + `audit/PHASE7-VISUAL-AUDIT.md` (per-template findings)
+
+Aesthetic direction committed: "darkroom editorial". Deep black (`#0d0d0d`, `#1a1a1a` ink) + paper-white (`#f8f6f2`) + gold accent (`#EBAC20`). Serif display, sans body, gallery negative space, typography-led hierarchy. Existing brand identity preserved, not redesigned.
+
+### Design decisions locked (CC: do not reopen mid-sprint)
+
+**Decision 1 - PDP metafield block layout.** Two-column editorial list, always visible (not collapsible). Label column right-aligned small-caps sans (`letter-spacing: 0.08em`). Value column serif. Hairline rule above and below the block (`border-top: 1px solid rgba(26,26,26,0.12)`). Placed between the product description block and the first `collapsible-row` block in the main product column. 1440 renders two columns; 375 stacks to single column with label above value. No heading (let the list breathe); rule separators do the work. Conditionally hide any metafield that is blank on the product.
+
+**Decision 2 - Metafield field order.** Story first, craft second, provenance third, longer-form notes last.
+
+1. Series (`custom.collection_series`)
+2. Location (`custom.location`)
+3. Year Photographed (`custom.year_photographed`)
+4. Print Technique (`custom.print_technique`)
+5. Paper (`custom.paper_type`)
+6. Edition Size (`custom.edition_size_m` / `_l` / `_xl` resolved from selected variant size; fall back to defaults 100 / 50 / 25)
+7. Edition Number (only render if set per variant; open editions S and XS do not show this row)
+8. Certificate of Authenticity (`custom.certificate_included` boolean → render "Included, signed by the artist" if true; hide row if false or blank)
+9. Subject Notes (`custom.subject_description` - full paragraph below the two-column list, serif body, max 65ch)
+
+**Decision 3 - Variant picker presentation.** Paper surface default, dark fill on selected, gold hairline accent. No large gold fills (keep gold for hairlines and inline marks so it stays precious).
+
+- **Hide N/A option values.** In `snippets/options-radios.liquid`, skip the radio render entirely for any option value matching `N/A` (case-insensitive). Do not emit the input or the swatch wrapper. N/A must never appear in the DOM.
+- **Full-width grid distribution per fieldset.** `.swatch__options` is `display: grid; grid-template-columns: repeat(var(--lc-option-count), 1fr); gap: 8px; width: 100%`. `--lc-option-count` is set per fieldset in liquid from the count of VISIBLE options (post N/A filter). Size row = 5 columns, Type row = 3 columns, Colour row = 3 columns. On 375, if computed column width would fall below 44px, grid wraps to two rows (`grid-template-columns: repeat(auto-fit, minmax(56px, 1fr))`).
+- **Hide the colour fieldset when Type is Unframed or Glass.** Add `data-hide-on-type="Unframed,Glass"` to the colour fieldset wrapper. Small JS listener on Type change toggles `.is-hidden` (display:none) on the colour fieldset, and the Add-to-Cart validator treats colour as not-required when hidden. This replaces the "N/A colour shown as sold-out" misread entirely.
+- **Unselected button:** `background: #f8f6f2`, `color: #1a1a1a`, `border: 1px solid rgba(26,26,26,0.24)`, `border-radius: 4px`, `min-height: 48px`.
+- **Selected button:** `background: #1a1a1a`, `color: #f8f6f2`, `border: 1px solid #EBAC20`, `border-radius: 4px`. Gold hairline is the "chosen" mark.
+- **Hover (unselected):** `border-color: rgba(26,26,26,0.6)`, `transform: translateY(-1px)`, 200ms ease-out.
+- **Active/click:** `transform: scale(0.98)`, 100ms.
+- **Focus-visible:** `outline: 2px solid #EBAC20; outline-offset: 2px`.
+- **Unavailable (out-of-stock combination, not N/A):** `opacity: 0.32`, `cursor: not-allowed`, NO strikethrough. Inline note below the affected fieldset: `Some combinations are unavailable. Choose a different Size to see options.`
+- **Fieldset label.** Replace the plain legend with a two-part editorial label: small-caps serif option name (letter-spacing 0.12em), a mid-dot separator, then the chosen value in serif italic. Example: `SIZE · M`. Hairline `border-top: 1px solid rgba(26,26,26,0.08)` above each fieldset, 20px padding above, 12px below the label.
+- **Size guide affordance.** Current plain text link is too easy to miss. Replace with icon + text: `{% render 'icon', name: 'ruler' %}` fallback to inline 16×16 SVG if the icon library does not include `ruler`. Position top-right of the Size fieldset, vertically aligned with the label. Underline on hover.
+
+**Decision 6 - PDP interaction surface (buttons, accordion, micro-interactions).** Bring the PDP to life without redesigning it. One consistent button system, one accordion treatment, one motion language. All respect `prefers-reduced-motion: reduce`.
+
+- **Consistent button radius.** All PDP buttons (variant swatches, Add-to-Cart, notify-me, size-guide, accordion triggers) use `border-radius: 4px`. Tight and architectural, paper-like.
+- **Add-to-Cart button.** `background: #1a1a1a`, `color: #f8f6f2`, `border: 1px solid #1a1a1a`, `border-radius: 4px`, `min-height: 56px`, full-width on 375. Hover: `border-color: #EBAC20`, tiny `translateY(-1px)` 200ms ease-out. Active: `transform: scale(0.99)` 100ms. Gold lock icon inherits paper text colour (Task B4 wires this).
+- **Secondary buttons (notify-me, share, wishlist, size-guide link).** Paper background, dark ink text, 1px hairline border, same 4px radius. Hover: border intensifies, subtle translateY.
+- **Focus-visible rings.** `outline: 2px solid #EBAC20; outline-offset: 2px` on every interactive element. Do not regress Phase 5 work.
+- **Page-load reveal on PDP main column.** Fade from `opacity: 0` to `1` over 400ms ease-out, starting after the product image loads. Respects prefers-reduced-motion (render final state immediately, no animation).
+- **Accordion uplift.** Remove Flex default heavy chevron and box border. New pattern:
+  - `border-top: 1px solid rgba(26,26,26,0.12)` on every accordion row; last row gets `border-bottom`.
+  - Row trigger padding: 18px vertical, 0 horizontal.
+  - Label: small-caps serif, 14px, letter-spacing 0.12em, ink colour.
+  - Chevron: 12px gold hairline (`color: #EBAC20`), right-aligned. Rotates 180deg on open over 200ms ease-out.
+  - Content area: serif body, 16px line-height 1.6, `padding: 8px 0 20px`.
+  - Hover on trigger row: `background: rgba(26,26,26,0.02)`, 120ms transition.
+  - Multiple rows may be open at once (default Flex behaviour preserved; do not force single-select).
+
+**Decision 4 - Cart trust bar copy (AU English, three items, in order).**
+
+1. Free shipping progress. Introduce new setting `settings.free_shipping_threshold` (default `250`, type `number`, unit AUD). Copy swaps by state.
+   - Under threshold: `You're $XX away from free Australian shipping.` (XX = `settings.free_shipping_threshold | minus: cart.total_price | money_without_trailing_zeros`)
+   - At or over: `Free Australian shipping unlocked.`
+   - Progress bar fills paper-to-gold, left to right.
+2. Numbered-edition authenticity: `Every print is hand-numbered and shipped with a Certificate of Authenticity signed by the artist.`
+3. Encrypted checkout: `Encrypted checkout. Secure payment via Shopify. All prices shown in AUD.`
+
+**Decision 5 - Sticky mobile ATC trigger.** IntersectionObserver on the in-flow Add-to-Cart button. Sticky bar slides up (200ms ease) when the in-flow ATC leaves viewport; slides down when it re-enters. Mobile only (`@media (max-width: 749px)`). Contains: product title truncated to one line, variant recap (Size / Type / Colour), price, ATC button. Dark surface `#1a1a1a`, paper text `#f8f6f2`, gold button. Honours `prefers-reduced-motion: reduce` by swapping the slide for an opacity fade.
+
+### Sprint B task list
+
+Nine tasks. Each has observable done criteria, root-cause tag, and file paths. Every code-changing task requires before/after screenshots at 1440 and 375 embedded in the commit message (see Standards below).
+
+**Root-cause legend:** `FX` Flex upstream, `P2T` Phase 2 token gap, `P3I` Phase 3 !important over-delete, `P1D` Phase 1 dead-delete, `P6P` Phase 6 push damage, `PRE` pre-existing, `NEW` active uplift.
+
+#### Task B1 - PDP metafields render (P0-1)
+
+**Root cause:** `FX` + `NEW`. Admin metafield definitions exist. Render chain does not include a metafield block.
+
+**Files to touch:**
+- Create `snippets/lc-product-metafields.liquid` (new).
+- Extend `sections/product__main.liquid` schema `blocks` array with a new `lc_metafields` block type (presets included so it appears by default on the PDP).
+- Extend `snippets/product.liquid` block dispatcher with `{%- elsif block.type == 'lc_metafields' -%}` branch rendering the new snippet.
+- Add CSS to `assets/custom.css` under a new `/* === LC PDP metafields === */` section.
+- Update `templates/product.json` preset so existing product pages pick up the block.
+
+**Done criteria (observable):**
+- On `/products/hotel-motel-101-3-sisters-motel-sign` preview URL, all nine fields from Decision 2 render in the correct order between description and the first accordion.
+- Blank metafields are hidden (verify by picking a product missing `subject_description`).
+- On 375, block stacks to single column, labels on top, values below.
+- `shopify theme check` reports zero errors on the new snippet.
+- JSON-LD in `snippets/product-schema.liquid` continues to resolve (do not remove or duplicate its logic; visible render is separate from schema).
+
+#### Task B2 - Variant picker presentation (P0-7, P1-14)
+
+**Root cause:** `P3I` + `NEW`. Phase 3 scope-tightening dropped LC swatch styling. Default Flex now wins.
+
+**Files to touch:**
+- `snippets/options-radios.liquid`:
+  - Build a filtered values array `visible_values` excluding any value matching `N/A` (case-insensitive) before the render loop.
+  - Expose the visible count via an inline style `style="--lc-option-count: {{ visible_values.size }}"` on the `.swatch__options` wrapper.
+  - Replace the plain legend with the two-part editorial label pattern (small-caps serif name + mid-dot + serif-italic chosen value).
+  - Add `data-hide-on-type="Unframed,Glass"` to the Colour fieldset wrapper (detect via `option.name == 'Colour'` or `'Color'`).
+  - Append an inline unavailable-combinations note element under each fieldset, hidden by default, revealed by JS when that fieldset contains any unavailable combinations for the current selection.
+  - Add size-guide icon + text affordance to the Size fieldset top-right.
+- `assets/custom.css` new `/* === LC variant picker === */` section:
+  - `.swatch__options { display: grid; grid-template-columns: repeat(var(--lc-option-count, 5), 1fr); gap: 8px; width: 100% }`.
+  - 375 fallback: `@media (max-width: 749px) { .swatch__options { grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)) } }`.
+  - `.swatch-element` unselected, selected, hover, active, focus-visible per Decision 3.
+  - `.swatch-element[data-unavailable="true"]` opacity + cursor; remove any `.crossed-out` strikethrough styling (`text-decoration: none !important` scoped to this element).
+  - `.swatch-fieldset.is-hidden { display: none }` for the Type-driven colour hide.
+  - Fieldset editorial label styling (small-caps serif, letter-spacing 0.12em, hairline rule above, mid-dot separator).
+- `assets/z__jsProduct.js` OR new `assets/lc-variant-picker.js` (prefer new file, load `defer`):
+  - On Type option change, read the chosen value. If the Colour fieldset has `data-hide-on-type` and the value is in the hide list, add `.is-hidden` to it and remove colour from required-selection validation. Otherwise remove `.is-hidden`.
+  - On any option change, recompute which swatches are unavailable for the current partial selection and toggle `data-unavailable` and the inline-note visibility accordingly.
+- `snippets/icon.liquid` or inline fallback: add `ruler` icon if not present. 16×16 SVG.
+
+**Done criteria:**
+- N/A swatch: not present in DOM on any product where a variant option has an `N/A` value. Verify via DevTools that no input, label, or swatch element is rendered for `N/A`.
+- Size fieldset renders 5 buttons distributed evenly across the fieldset width (measured: each column width equals `(fieldset width - 32px gap) / 5`).
+- Type fieldset renders 3 buttons distributed evenly.
+- Colour fieldset renders 3 buttons distributed evenly when visible.
+- On a product where Type=Unframed is selected: Colour fieldset has `display: none` computed style. On Type=Framed: Colour fieldset visible. On Type=Glass: Colour fieldset hidden.
+- Selected button: `background: rgb(26, 26, 26)`, `color: rgb(248, 246, 242)`, `border: 1px solid rgb(235, 172, 32)`, `border-radius: 4px` verified via DevTools.
+- Hover on unselected: translateY(-1px) + border darkens within 200ms.
+- Unavailable out-of-stock combination: `opacity: 0.32`, `cursor: not-allowed`, no strikethrough line visible.
+- Inline unavailable note renders below any fieldset with unavailable combinations for the current partial selection.
+- Size-guide affordance: ruler icon + "Size guide" text, top-right of Size fieldset, clickable, opens the existing size-chart popup.
+- Fieldset label: `SIZE · M` editorial format, small-caps serif for name, serif-italic for chosen value.
+- Keyboard focus ring gold, visible on each swatch.
+- 375: minimum 48px tap height. No horizontal scroll.
+
+#### Task B3 - PDP price treatment with "From" prefix and tabular numerics (P1-6)
+
+**Root cause:** `NEW`.
+
+**Files to touch:**
+- Inspect `snippets/price-element.liquid` and `snippets/price-ui-templates.liquid` to find the PDP price call path. Whichever fires on the product template is the target.
+- Add AU-currency formatted "From $X AUD" when `product.price_varies` is true and variants span ≥2 price points. Single-price products keep plain `$X AUD`.
+- Add new setting `settings.price_range_display` (boolean, default true). When true and `price_varies`, render `$50 – $2,500 AUD` using `product.price_min` and `product.price_max`. When false, render the "From" prefix version instead.
+- CSS: `font-variant-numeric: tabular-nums` on the price element + edition-number metafield value.
+
+**Done criteria:**
+- On a multi-variant product (e.g. 3 Sisters Motel Sign, 25 variants), price reads `From $50 AUD` or `$50 – $2,500 AUD` based on the new setting.
+- Currency always reads AUD (not bare `$`). Verify on preview URL.
+- Tabular-nums computed style confirmed in DevTools.
+- Single-variant product unchanged.
+
+#### Task B4 - Wire lock icon on PDP Add-to-Cart (P1-12)
+
+**Root cause:** `FX`. `settings.show_lock_icon` already `true` in `settings_data.json` and the cart template renders it. PDP ATC does not.
+
+**Files to touch:**
+- `snippets/product__form.liquid` - add `{% if settings.show_lock_icon %}{% render 'icon', name: 'lock' %}{% endif %}` inside the `.button--add-to-cart` button, before the label span.
+- No CSS needed if the existing cart-button `.icon` styling covers it; if the icon renders oversized on PDP ATC, add a scoped rule.
+
+**Done criteria:**
+- Lock icon renders inside the PDP ATC button on preview URL. Cart-page lock still renders (no regression).
+- Icon inherits button text colour (paper on dark).
+- `shopify theme check` zero errors.
+
+#### Task B5 - Sticky mobile ATC on PDP (P1-10)
+
+**Root cause:** `NEW`.
+
+**Files to touch:**
+- Create `snippets/product__sticky-atc.liquid` (new) - dark bar with product title, variant recap, price, ATC button. Mobile-only wrapper class `.lc-sticky-atc`.
+- Include once from `sections/product__main.liquid` at section root (not inside a block).
+- Create `assets/lc-sticky-atc.js` (new) - IntersectionObserver on the in-flow ATC; toggle `.is-visible` class on `.lc-sticky-atc` when in-flow ATC leaves viewport. Load `defer`.
+- CSS in `assets/custom.css` under `/* === LC sticky ATC === */` section.
+
+**Done criteria:**
+- On 375 preview, scrolling past the in-flow ATC reveals the sticky bar within 200ms.
+- Scrolling back up to the in-flow ATC hides the sticky bar.
+- Desktop 1440: sticky bar does not render (CSS media query).
+- `prefers-reduced-motion: reduce` swaps the slide for an opacity fade (verify via DevTools emulation).
+- Tapping the sticky ATC adds the currently-selected variant to cart.
+- No layout shift on initial page load (hidden by default via `transform: translateY(100%)`).
+
+#### Task B6 - Cart trust bar plus cart hero contrast fix (P1-3, P1-2)
+
+**Root cause:** `NEW` (trust bar) + `PRE` (cart hero contrast).
+
+**Files to touch:**
+- Create `snippets/lc-cart-trust-bar.liquid` (new).
+- `sections/cart__main.liquid` - render the trust bar snippet above the line-item list.
+- `templates/cart.json` - add the new setting `free_shipping_threshold` if it belongs in section settings rather than global (decide based on where Flex conventions put shipping thresholds; prefer global `config/settings_schema.json` under a new "Cart" group so it is admin-editable without touching sections).
+- `config/settings_schema.json` - add the `free_shipping_threshold` setting (type: range, min 0, max 1000, step 25, unit "AUD", default 250).
+- `assets/custom.css` - new `/* === LC cart trust bar === */` section. Progress bar paper-to-gold fill, three-row layout on 1440, stacks on 375.
+- Cart hero: locate the banner section (likely `sections/cart__banner.liquid` or cart section block). Add dark scrim overlay (linear-gradient with 50% opacity black) and restyle title to large serif with paper text, verified against WCAG AA contrast.
+
+**Done criteria:**
+- On `/cart` preview with items below threshold: "You're $XX away from free Australian shipping." renders with correct math. Progress bar fills proportionally.
+- At or over threshold: "Free Australian shipping unlocked." Progress bar full, gold.
+- Authenticity and encrypted-checkout rows read exactly the copy in Decision 4.
+- Cart hero: title contrast at least 4.5:1 over the scrimmed background (verify with a contrast checker on the preview URL).
+- 375: trust bar stacks vertically, tap targets at least 44×44.
+
+#### Task B7 - Mobile 375 pass across five Sprint A templates
+
+**Root cause:** audit task, not a code fix per se. Any regressions introduced by tasks B1-B6 or B8 on 375 must be resolved within this task.
+
+**Files to touch:**
+- Create `audit/PHASE7-MOBILE-AUDIT.md` (new) - document findings at 375 across homepage, PDP, collection, cart, blog.
+- Fix any regressions introduced by B1-B6 or B8 within the relevant source file (do not open new buckets; if a finding is not a regression, log it in the audit doc and defer to Sprint C).
+
+**Done criteria:**
+- `audit/PHASE7-MOBILE-AUDIT.md` committed with one section per template, severity-tagged (CRITICAL / HIGH / MEDIUM / LOW), evidence columns.
+- Every B1-B6 and B8 commit previously landed renders cleanly at 375 (no horizontal scroll, no text clipped, tap targets at least 48×48 on interactive elements).
+- Screenshots at 375 captured for the five templates in a single evidence bundle.
+
+#### Task B8 - PDP interaction surface plus accordion uplift (new uplift per Decision 6)
+
+**Root cause:** `NEW`.
+
+**Files to touch:**
+- `assets/custom.css` new `/* === LC PDP interaction surface === */` section:
+  - Global PDP button radius of 4px applied to ATC, notify-me, size-guide link, share, wishlist, variant swatches (variant swatches already covered in B2 CSS block; this consolidates).
+  - ATC hover: `border-color: #EBAC20`, `transform: translateY(-1px)`, 200ms ease-out. Active: `transform: scale(0.99)`, 100ms.
+  - Secondary button pattern (paper bg, dark ink, hairline border, 4px radius, hover intensifies border).
+  - Focus-visible ring `outline: 2px solid #EBAC20; outline-offset: 2px` on all interactive PDP elements.
+  - PDP main column page-load reveal: `.product-main-column { opacity: 0; transition: opacity 400ms ease-out }` + `.product-main-column.is-loaded { opacity: 1 }`. Respect `@media (prefers-reduced-motion: reduce) { .product-main-column { opacity: 1 !important; transition: none !important } }`.
+  - Accordion uplift: target the existing Flex collapsible-row markup. Hairline top border per row, last-row bottom border, 18px vertical padding, small-caps serif 14px label, 12px gold chevron right-aligned rotating 180deg on open over 200ms, serif-body content area. Hover background `rgba(26,26,26,0.02)` 120ms.
+- `assets/lc-pdp-reveal.js` (new, tiny, load `defer`):
+  - On product image `load` event (or `DOMContentLoaded` fallback after 100ms), add `.is-loaded` to the product main column.
+  - If `prefers-reduced-motion: reduce` matches, add `.is-loaded` immediately without waiting for image load.
+- `sections/product__main.liquid`: add `class="product-main-column"` to the appropriate wrapper so the CSS and JS have a hook. Include the new `<script src="{{ 'lc-pdp-reveal.js' | asset_url }}" defer></script>` in the section asset block.
+
+**Done criteria:**
+- ATC button: `border-radius: 4px` computed. Hover raises it 1px and sets gold border within 200ms. Click briefly scales to 0.99.
+- Variant swatches, ATC, notify-me, size-guide link all share the same 4px radius (verify computed styles across all four on the preview URL).
+- Focus-visible tab-ring is gold on every interactive element on the PDP.
+- Page-load reveal: PDP main column fades from invisible to visible over 400ms on fresh load.
+- `prefers-reduced-motion: reduce` emulation: main column is visible immediately, no fade, all hover transforms become opacity fades or zero.
+- Accordion: hairline rules instead of thick borders. Chevron is small and gold, rotates on open. Label is small-caps serif. Multiple rows can be open simultaneously.
+- Hover on accordion trigger row shows subtle background tint.
+- `shopify theme check` zero errors.
+
+#### Task B9 - Theme-check gate plus Sprint B push
+
+**Root cause:** ops.
+
+**Files to touch:** none; this is a verification step.
+
+**Done criteria:**
+- `shopify theme check` reports zero errors against `feat/flex-migration` HEAD.
+- `shopify theme push --theme 193925775526 --store lost-collective.myshopify.com --allow-live` completes cleanly.
+- Final verification pass on preview URL after 30-60 minute CDN settle: B1 through B8 all render correctly at 1440 and 375.
+- Tag the final Sprint B commit `phase-7-sprint-b` on `feat/flex-migration`.
+
+### Standards CC will be held to
+
+- **Evidence before assertion.** Every P0 or P1 commit requires a before and after screenshot at both 1440 and 375, embedded in the commit message body. No "I fixed it" without visual proof or a computed-style readout.
+- **Verification URL:** `https://lost-collective.myshopify.com/?preview_theme_id=193925775526&_fd=0&_ab=0`. Do not verify against the public domain - Shopify edge-cache serves stale up to 30-60 min post-push.
+- **AU English everywhere.** "colour", "optimisation", "centred". Catch "color" and "optimize" in diff review.
+- **No em dashes.** Use hyphens, commas, or "and" instead.
+- **No AI slop.** Banned: stunning, captivating, testament to, timeless, evocative, artistry, hauntingly.
+- **`shopify theme check` zero errors** before every push, not just the Sprint B close.
+- **Commit messages scoped by root-cause bucket** (e.g. `fix(pdp-metafields): [FX] add lc-product-metafields snippet and wire into product block dispatcher`).
+- **One commit per task where practical.** B7 may span multiple commits if regressions are found. B8 may ship as one commit or split into two (interaction-surface CSS/JS and accordion uplift) if that makes the evidence bundle easier to read.
+
+### Out of scope for Sprint B
+
+- **P0-5 slideshow scrim** - merchant admin action, not theme code. In Shopify Admin → Online Store → Themes → Customize → Slideshow section, flip each slide's `background_color` to `#0d0d0d` @ 55% opacity, text to `#f8f6f2`. Tracked as HANDOFF merchant-action item; Brett to execute when ready.
+- **Design-system tokens, font loading strategy, motion system** - Sprint D uplift (P2-1 through P2-10 in the catalogue).
+- **Customer, page, search, 404, password, gift-card templates** - Sprint C audit coverage.
+- **`assets/z__jsTestimonials.js` orphan check and `console.log` cleanup** - Sprint E ops close-out.
+- **Search & Discovery faceted filters** - merchant action, Sprint C design pass.
+- **Any work on the `main` branch** - all Sprint B commits stay on `feat/flex-migration`.
+
+### Division of labour
+
+- **Cowork:** designed this sprint, locked the five decisions, reviews CC output via screenshots, never writes theme code.
+- **CC:** executes Sprint B end-to-end, one commit per task where practical, evidence-embedded, pushes to live at the Task B9 gate.
+
+### Merchant actions queued for Brett
+
+1. P0-5 slideshow scrim flip in Theme Editor (see Out of scope).
+2. Confirm `free_shipping_threshold` default of 250 AUD in Task B6 matches actual LC shipping policy. If different, adjust in Theme Editor after B9 push.
+3. Confirm `price_range_display` default of `true` in Task B3 is the preferred PDP treatment. Toggle in Theme Editor if "From $X AUD" is preferred instead of the range.
+
+### Done when
+
+CC's Sprint B output meets:
+
+- Six design decisions respected (no mid-sprint re-asks).
+- Nine tasks completed with observable done criteria met.
+- Every task evidence-embedded at 1440 and 375.
+- `shopify theme check` zero errors.
+- `phase-7-sprint-b` tag on `feat/flex-migration` pointing at the final Sprint B commit.
+- Preview URL renders all Sprint B fixes after CDN settle.
+
