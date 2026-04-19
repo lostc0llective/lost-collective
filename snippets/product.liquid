@@ -26,9 +26,24 @@
 
 {% comment %} LC mobile-only title above the image column so the product name
    is visible before the customer scrolls past the photo on small viewports.
-   The in-column title block is hidden via CSS at <=749px. {% endcomment %}
+   The in-column title block is hidden via CSS at <=749px.
+   Title format follows "Subject | Series" - we split on the pipe so the
+   series prints as a small editorial eyebrow and the subject becomes the
+   H1, removing the awkward two-line wrap on narrow info columns. {% endcomment %}
 {% unless is_product_modal or section_onboarding %}
-  <h1 class="lc-mobile-title product-title title">{{ product.title }}</h1>
+  {%- assign lc_title_parts = product.title | split: '|' -%}
+  {%- assign lc_title_subject = lc_title_parts | first | strip -%}
+  {%- if lc_title_parts.size > 1 -%}
+    {%- assign lc_title_series = lc_title_parts | last | strip -%}
+  {%- else -%}
+    {%- assign lc_title_series = '' -%}
+  {%- endif -%}
+  <div class="lc-mobile-title-block">
+    {%- if lc_title_series != blank -%}
+      <p class="lc-title-eyebrow">{{ lc_title_series }}</p>
+    {%- endif -%}
+    <h1 class="lc-mobile-title product-title title">{{ lc_title_subject }}</h1>
+  </div>
 {% endunless %}
 
 <div class="product_section
@@ -119,14 +134,30 @@
           </p>
 
         {%- elsif block.type == 'title' -%}
-          {% comment %} Name {% endcomment %}
+          {% comment %} Name - LC: split "Subject | Series" so series renders
+             as a small editorial eyebrow above the H1, fixing two-line wraps
+             on the narrow info column. {% endcomment %}
+          {%- liquid
+            assign lc_dt_parts = product.title | split: '|'
+            assign lc_dt_subject = lc_dt_parts | first | strip
+            if lc_dt_parts.size > 1
+              assign lc_dt_series = lc_dt_parts | last | strip
+            else
+              assign lc_dt_series = ''
+            endif
+          -%}
+          {%- unless is_product_modal or section_onboarding -%}
+            {%- if lc_dt_series != blank -%}
+              <p class="lc-title-eyebrow">{{ lc_dt_series }}</p>
+            {%- endif -%}
+          {%- endunless -%}
           <h1 class="product-title title">
             {% if is_product_modal %}
               <a href="{{ product.url }}">{{ product.title }}</a>
             {% elsif section_onboarding %}
               {{ 'homepage.onboarding.product_title' | t }}
             {% else %}
-              {{ product.title }}
+              {{ lc_dt_subject }}
             {% endif %}
           </h1>
 
@@ -393,3 +424,74 @@
     {%- endfor -%}
   </div>
 </div>
+
+{%- comment -%}
+  LC PDP detail band - mirrors the description, metafields and rating blocks
+  outside the two-column row so they sit full-width below the image+buybox
+  on desktop. The originals are hidden via CSS at >=750px so this band
+  becomes the sole rendered location, eliminating the right-column overflow
+  that left a tall white void below the gallery image.
+{%- endcomment -%}
+{%- unless is_product_modal or section_onboarding -%}
+  {%- assign lc_has_detail = false -%}
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+      {%- when 'description' or 'lc_metafields' or 'rating' -%}
+        {%- assign lc_has_detail = true -%}
+    {%- endcase -%}
+  {%- endfor -%}
+
+  {%- if lc_has_detail -%}
+    <div class="lc-pdp-detail-band">
+      <div class="lc-pdp-detail-band__inner container">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'description' -%}
+            {% liquid
+              if block.settings.product_description != blank
+                assign lc_band_description = block.settings.product_description
+              elsif product.description != blank
+                assign lc_band_description = product.description | split: '<!-- split -->' | first
+              endif
+            %}
+            {%- if lc_band_description != blank -%}
+              <div class="lc-pdp-detail-band__col lc-pdp-detail-band__col--description">
+                <div class="product__description content">{{ lc_band_description }}</div>
+              </div>
+            {%- endif -%}
+
+          {%- elsif block.type == 'lc_metafields' -%}
+            <div class="lc-pdp-detail-band__col lc-pdp-detail-band__col--meta">
+              {% render 'lc-product-metafields', product: product, selected_variant: selected_variant %}
+            </div>
+
+          {%- elsif block.type == 'rating' -%}
+            {%- if product.metafields.reviews.rating.value != blank -%}
+              <div class="lc-pdp-detail-band__rating">
+                {%
+                  render 'rating-stars',
+                  value: product.metafields.reviews.rating.value.rating,
+                  scale_max: product.metafields.reviews.rating.value.scale_max,
+                %}
+                <p class="rating__text">
+                  <span aria-hidden="true">
+                    {{ product.metafields.reviews.rating.value }} / {{ product.metafields.reviews.rating.value.scale_max }}
+                  </span>
+                </p>
+                <p class="rating__count">
+                  <span aria-hidden="true">
+                    {{ product.metafields.reviews.rating_count }}
+                    {% if product.metafields.reviews.rating_count > 1 %}
+                      {{ "general.accessibility.star_reviews_text" | t }}
+                    {% else %}
+                      {{ "general.accessibility.star_review_text" | t }}
+                    {% endif %}
+                  </span>
+                </p>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+{%- endunless -%}

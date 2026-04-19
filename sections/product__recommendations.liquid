@@ -32,6 +32,7 @@
     assign products_length = products.size
     assign show_dynamic_collection = true
   endif
+
 %}
 
 {% style %}
@@ -138,6 +139,39 @@
   }
 </script>
 <script data-theme-editor-load-script src="{{ 'z__jsRecommendedProducts.js' | asset_url }}"></script>
+
+{%- comment -%}
+  LC: hide the section when the Recommendations API returns nothing so the
+  heading doesn't appear orphaned above empty space. Hidden initially via
+  inline style; the observer below reveals it once a real product link is
+  injected. No flash of empty heading on first paint.
+{%- endcomment -%}
+<style>
+  #shopify-section-{{ id }} { visibility: hidden; }
+  #shopify-section-{{ id }}.lc-recs-ready { visibility: visible; }
+  #shopify-section-{{ id }}.lc-recs-empty { display: none; }
+</style>
+<script>
+  (function () {
+    var section = document.getElementById('shopify-section-{{ id }}');
+    if (!section) return;
+    var container = section.querySelector('.product-recommendations');
+    if (!container) return;
+    var settled = false;
+    var settle = function () {
+      if (settled) return;
+      settled = true;
+      var hasProduct = container.querySelector('a[href*="/products/"]');
+      section.classList.add(hasProduct ? 'lc-recs-ready' : 'lc-recs-empty');
+      observer.disconnect();
+    };
+    var observer = new MutationObserver(function () {
+      if (container.querySelector('a[href*="/products/"]')) settle();
+    });
+    observer.observe(container, { childList: true, subtree: true });
+    setTimeout(settle, 3500);
+  })();
+</script>
 
 {% schema %}
   {

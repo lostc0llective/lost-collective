@@ -68,11 +68,16 @@
       </li>
     {% endif %}
     {% if product.handle != blank %}
-      <li>
+      {%- comment -%}
+        LC: titles use "Subject | Series" - keep only the Subject in the
+        breadcrumb so it doesn't wrap to a second line on mobile.
+      {%- endcomment -%}
+      {%- assign lc_bc_subject = product.title | split: '|' | first | strip -%}
+      <li class="breadcrumb__current">
         <span class="breadcrumb-separator">
           {% render 'icon', name: breadcrumb_separator %}
         </span>
-        {{ product.title }}
+        {{ lc_bc_subject }}
       </li>
     {% endif %}
     {% if template.name == 'collection' %}

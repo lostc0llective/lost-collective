@@ -5198,20 +5198,169 @@ body.cart .shopify-section.banner .banner__heading,
   line-height: 1.55;
 }
 
-/* Mobile-only title: show above the image, hide the in-column title */
-.lc-mobile-title {
+/* Mobile-only title: show above the image, hide the in-column title.
+   The mobile title block also contains the series eyebrow. */
+.lc-mobile-title-block {
   display: none;
 }
 
+.lc-mobile-title {
+  margin: 0;
+  padding: 0;
+}
+
+/* Series eyebrow above the title - small Lato uppercase with brand-gold tint.
+   Renders both for the mobile-only title block and the desktop in-column
+   title block. */
+.lc-title-eyebrow {
+  margin: 0 0 4px;
+  padding: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-brand-gold, #ebac20);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 @media (max-width: 749px) {
-  .lc-mobile-title {
+  .lc-mobile-title-block {
     display: block;
     margin: 8px 16px 12px;
-    padding: 0;
+  }
+  .lc-mobile-title {
     line-height: 1.15;
   }
   .product__information .product-block--title {
     display: none;
+  }
+}
+
+/* Breadcrumb - keep on a single line on every viewport. The current page
+   item (product title) gets ellipsis truncation so we don't wrap.
+   Override Flex's default padding-top: 132px which leaves a giant void
+   above the breadcrumb on every PDP. */
+.shopify-section.product-breadcrumb nav.breadcrumb,
+.template-product nav.breadcrumb,
+#template-product nav.breadcrumb {
+  padding-top: 16px !important;
+  padding-bottom: 8px !important;
+}
+
+.breadcrumb ul {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breadcrumb__current {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+@media (max-width: 749px) {
+  .breadcrumb {
+    font-size: 11px;
+  }
+  .shopify-section.product-breadcrumb nav.breadcrumb,
+  .template-product nav.breadcrumb,
+  #template-product nav.breadcrumb {
+    padding-top: 12px !important;
+    padding-bottom: 6px !important;
+  }
+}
+
+/* Mobile title size - 27px wraps "3 SISTERS MOTEL SIGN" at 343px. Pull it
+   to 22px so the longest two-word product subjects fit on one line. */
+@media (max-width: 749px) {
+  .lc-mobile-title {
+    font-size: 22px !important;
+    line-height: 1.18 !important;
+    letter-spacing: 0.01em;
+  }
+}
+
+/* ================================
+   52. PDP detail band - description + metafields below the image+buybox
+   row on desktop. The originals inside .product__information are hidden
+   at >=750px so this band becomes the canonical detail surface, freeing
+   the right column to size to the buy box only and eliminating the tall
+   white void below the image where the right column used to overflow.
+================================ */
+
+.lc-pdp-detail-band {
+  display: none;
+}
+
+@media (min-width: 750px) {
+  .lc-pdp-detail-band {
+    display: block;
+    background: var(--lc-paper, #f8f6f2);
+    padding: 56px 0 64px;
+    margin: 24px 0 0;
+    border-top: 1px solid rgba(26, 26, 26, 0.08);
+    border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+  }
+
+  .lc-pdp-detail-band__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    column-gap: 64px;
+    row-gap: 24px;
+    align-items: start;
+    max-width: 1200px;
+    padding: 0 24px;
+  }
+
+  .lc-pdp-detail-band__col--description .product__description {
+    font-family: var(--font-body, 'Lato', sans-serif);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-dark, #1a1a1a);
+  }
+
+  .lc-pdp-detail-band__col--description .product__description > * + * {
+    margin-top: 14px;
+  }
+
+  .lc-pdp-detail-band__col--meta .lc-metafields {
+    margin: 0;
+  }
+
+  .lc-pdp-detail-band__rating {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(26, 26, 26, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .lc-pdp-detail-band__rating .rating__text,
+  .lc-pdp-detail-band__rating .rating__count {
+    margin: 0;
+    font-size: 13px;
+    color: rgba(26, 26, 26, 0.7);
+  }
+
+  /* Hide the originals on desktop so we don't render the description twice.
+     Mobile keeps the in-column originals because the band itself is hidden. */
+  .product__information .product-block--description,
+  .product__information .product-block--lc-metafields,
+  .product__information .product-block--rating {
+    display: none;
+  }
+}
+
+@media (min-width: 750px) and (max-width: 1024px) {
+  .lc-pdp-detail-band__inner {
+    grid-template-columns: 1fr;
+    column-gap: 0;
   }
 }
 
