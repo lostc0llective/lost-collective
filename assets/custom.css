@@ -4492,15 +4492,22 @@ html body .template-product .breadcrumb {
 .swatch-fieldset {
   border: 0;
   margin: 0;
-  padding: 18px 0 14px;
+  padding: 6px 0 10px;
   border-top: 0;
+  max-height: 240px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 260ms ease, opacity 180ms ease, padding 220ms ease;
 }
 
-/* Preserve layout space when the Colour fieldset is hidden so the ATC and
-   Buy with Shop buttons don't jump up. Custom class - Flex's .is-hidden
-   sets display:none which would collapse the layout. */
+/* Smoothly collapse instead of leaving permanent reserved space. The
+   transition keeps Type=Framed/Glass changes from jarring while reclaiming
+   the vertical room when Colour isn't relevant. */
 .swatch-fieldset.lc-is-hidden {
-  visibility: hidden;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -5102,63 +5109,119 @@ body.cart .shopify-section.banner .banner__heading,
   min-height: 44px;
 }
 
-/* --- Product info column rhythm: consistent vertical spacing between blocks --- */
+/* --- Product info column rhythm ---
+   Consistent vertical spacing scale on the info column. All inter-block
+   gaps are driven by the 'product-block--*' margin values below; nothing
+   else should add ad hoc top/bottom padding inside this column. */
 .product__information .product-block {
-  margin-bottom: 0;
+  margin: 0 0 14px;
+  padding: 0;
 }
 
-.product__information .product-block--title {
-  margin-bottom: 12px;
-}
-
-.product__information .product-block--price {
-  margin-bottom: 22px;
-}
-
-.product__information .product-block--form {
-  margin-top: 8px;
-}
-
-.product__information .product-block--description {
-  margin-top: 20px;
-  margin-bottom: 24px;
-}
-
-/* Tighten the swatch fieldset so options breathe but don't drift apart */
-.product__information .swatch-fieldset {
-  margin-bottom: 6px;
-}
-
-/* Description hairline below form to separate variant area from copy */
-.product__information .product-block--description {
-  padding-top: 24px;
-  border-top: 1px solid rgba(26, 26, 26, 0.08);
-}
-
-/* The metafield block we added in B1 also gets the hairline pattern so the
-   info column reads as a stack of sections rather than a wall of text. */
-.product__information .product-block--lc-metafields .lc-metafields {
+.product__information .product-block--first {
   margin-top: 0;
 }
 
-/* Title breathes a touch more from the breadcrumb above (ADHD-friendly) */
-.product__information .product-block--title h1,
-.product__information .product-block--title .product__title {
-  margin: 0 0 4px;
-  line-height: 1.2;
+.product__information .product-block--title {
+  margin-bottom: 4px;
 }
 
-/* Mobile: collapse vertical rhythm slightly so the page isn't excessively tall */
+.product__information .product-block--price {
+  margin-bottom: 14px;
+  padding-top: 0;
+}
+
+.product__information .product-block--form {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.product__information .product-block--description {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(26, 26, 26, 0.08);
+}
+
+.product__information .product-block--lc-metafields {
+  margin-bottom: 16px;
+}
+
+.product__information .product-block--lc-metafields .lc-metafields {
+  margin: 0;
+  padding: 14px 0 16px;
+}
+
+.product__information .product-block--rating {
+  margin-bottom: 14px;
+}
+
+/* Title sits right under the breadcrumb without extra cushion */
+.product__information .product-block--title h1,
+.product__information .product-block--title .product__title {
+  margin: 0;
+  line-height: 1.15;
+}
+
+/* Modal price wrapper drives its own padding by default; reset it */
+.product__information .modal_price {
+  padding: 0;
+  margin: 0;
+}
+
+/* Form internals - tighten the variant area and the ATC cluster */
+.product__information .product-block--form .purchase-details {
+  margin: 0;
+  padding: 0;
+}
+
+.product__information .purchase-details__buttons {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+}
+
+.product__information .shopify-payment-button {
+  margin-top: 0 !important;
+}
+
+.product__information .shopify-payment-button__more-options {
+  margin-top: 6px;
+  padding: 0;
+}
+
+/* Metafields internal density */
+.lc-metafields__list {
+  row-gap: 8px;
+}
+
+.lc-metafields__subject {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Mobile rhythm - slightly tighter so the page isn't excessively tall */
 @media (max-width: 749px) {
+  .product__information .product-block {
+    margin-bottom: 12px;
+  }
   .product__information .product-block--price {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+  }
+  .product__information .product-block--form {
+    margin-bottom: 14px;
   }
   .product__information .product-block--description {
-    padding-top: 18px;
-    margin-top: 14px;
-    margin-bottom: 18px;
+    padding-top: 14px;
+    margin-bottom: 12px;
   }
   .product__information .button--add-to-cart {
     width: 100%;
+  }
+  .product__information .purchase-details__buttons {
+    margin-top: 10px;
   }
 }
