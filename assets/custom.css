@@ -46,6 +46,7 @@
    40.  Collection Page — Responsiveness (White Bay audit)
    41.  Mobile Homepage — Layout compliance (audit 2026-04-09)
    42.  Accessibility & touch target fixes (audit 2026-04-09)
+   43.  Product Page — LC editorial metafields (Phase 7 Sprint B B1)
 ================================ */
 
 
@@ -4390,4 +4391,83 @@ html body .template-product .breadcrumb {
   padding-bottom: 16px;
   position: relative;
   z-index: 1;
+}
+
+
+/* ================================
+   43. Product Page — LC editorial metafields (Phase 7 Sprint B B1)
+   Two-column hairline list rendered between the description and the
+   accordion section. Stacks to single column at <=749px.
+   Decision 1: paper surface, hairline rules above and below, no heading.
+   Label is small-caps sans (Lato bold + tracking 0.08em). Value is serif.
+================================ */
+
+.lc-metafields {
+  margin: 24px 0;
+  padding: 20px 0 24px;
+  border-top: 1px solid rgba(26, 26, 26, 0.12);
+  border-bottom: 1px solid rgba(26, 26, 26, 0.12);
+}
+
+.lc-metafields__list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+}
+
+.lc-metafields__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 30%) 1fr;
+  column-gap: 24px;
+  align-items: baseline;
+}
+
+.lc-metafields__label {
+  margin: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--color-dark, #1a1a1a);
+  line-height: 1.4;
+}
+
+.lc-metafields__value {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-dark, #1a1a1a);
+}
+
+.lc-metafields__value--num {
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-metafields__subject {
+  margin: 16px 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 65ch;
+  color: var(--color-dark, #1a1a1a);
+}
+
+@media (max-width: 749px) {
+  .lc-metafields__list {
+    row-gap: 14px;
+  }
+
+  .lc-metafields__row {
+    grid-template-columns: 1fr;
+    row-gap: 2px;
+  }
+
+  .lc-metafields__label {
+    text-align: left;
+  }
 }

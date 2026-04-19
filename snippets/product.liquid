@@ -408,6 +408,11 @@
           <div class="product-text">
             {{ block.settings.text }}
           </div>
+
+        {%- elsif block.type == 'lc_metafields' -%}
+          {% comment %} LC editorial metafields (Phase 7 Sprint B - P0-1) {% endcomment %}
+          {% render 'lc-product-metafields', product: product, selected_variant: selected_variant %}
+
         {% elsif block.type == '@app' %}
           <div class="product-app">
             {% render block %}

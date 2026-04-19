@@ -1,0 +1,142 @@
+{% comment %}
+  LC editorial metafields for the PDP main column.
+
+  Two-column hairline-bordered list (Series, Location, Year photographed,
+  Print technique, Paper, Edition size, Edition number, Certificate of
+  authenticity), followed by an optional Subject notes paragraph.
+
+  Stacks to single column at <=749px. Rows whose source metafield is blank
+  are skipped entirely.
+
+  Edition size resolves from the selected variant's Size option:
+    M  -> custom.edition_size_m  (default 100)
+    L  -> custom.edition_size_l  (default 50)
+    XL -> custom.edition_size_xl (default 25)
+  S and XS are open editions and the row is hidden.
+
+  Edition number resolves from the selected variant's
+  custom.edition_number metafield. Open editions have it unset and the
+  row is hidden.
+
+  @param product           Required. The product object.
+  @param selected_variant  Optional. Defaults to product.selected_or_first_available_variant.
+{% endcomment %}
+
+{%- liquid
+  assign current_variant = selected_variant | default: product.selected_or_first_available_variant
+
+  assign mf_series       = product.metafields.custom.collection_series
+  assign mf_location     = product.metafields.custom.location
+  assign mf_year         = product.metafields.custom.year_photographed
+  assign mf_technique    = product.metafields.custom.print_technique
+  assign mf_paper        = product.metafields.custom.paper_type
+  assign mf_certificate  = product.metafields.custom.certificate_included
+  assign mf_subject_desc = product.metafields.custom.subject_description
+
+  assign size_value = ''
+  for opt in product.options_with_values
+    assign opt_name_dc = opt.name | downcase
+    if opt_name_dc == 'size'
+      assign size_value = opt.selected_value | upcase
+    endif
+  endfor
+
+  assign edition_size = ''
+  case size_value
+    when 'M'
+      assign mf_size = product.metafields.custom.edition_size_m
+      if mf_size != blank
+        assign edition_size = mf_size
+      else
+        assign edition_size = 100
+      endif
+    when 'L'
+      assign mf_size = product.metafields.custom.edition_size_l
+      if mf_size != blank
+        assign edition_size = mf_size
+      else
+        assign edition_size = 50
+      endif
+    when 'XL'
+      assign mf_size = product.metafields.custom.edition_size_xl
+      if mf_size != blank
+        assign edition_size = mf_size
+      else
+        assign edition_size = 25
+      endif
+  endcase
+
+  assign edition_number = ''
+  if current_variant != blank and current_variant.metafields.custom.edition_number != blank
+    assign edition_number = current_variant.metafields.custom.edition_number
+  endif
+
+  assign certificate_render = false
+  if mf_certificate == true
+    assign certificate_render = true
+  endif
+-%}
+
+<div class="lc-metafields" data-lc-metafields>
+  <dl class="lc-metafields__list">
+    {%- if mf_series != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Series</dt>
+        <dd class="lc-metafields__value">{{ mf_series }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if mf_location != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Location</dt>
+        <dd class="lc-metafields__value">{{ mf_location }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if mf_year != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Year photographed</dt>
+        <dd class="lc-metafields__value">{{ mf_year }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if mf_technique != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Print technique</dt>
+        <dd class="lc-metafields__value">{{ mf_technique }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if mf_paper != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Paper</dt>
+        <dd class="lc-metafields__value">{{ mf_paper }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if edition_size != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Edition size</dt>
+        <dd class="lc-metafields__value lc-metafields__value--num">{{ edition_size }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if edition_number != blank -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Edition number</dt>
+        <dd class="lc-metafields__value lc-metafields__value--num">{{ edition_number }}</dd>
+      </div>
+    {%- endif -%}
+
+    {%- if certificate_render -%}
+      <div class="lc-metafields__row">
+        <dt class="lc-metafields__label">Certificate of authenticity</dt>
+        <dd class="lc-metafields__value">Included, signed by the artist</dd>
+      </div>
+    {%- endif -%}
+  </dl>
+
+  {%- if mf_subject_desc != blank -%}
+    <p class="lc-metafields__subject">{{ mf_subject_desc }}</p>
+  {%- endif -%}
+</div>

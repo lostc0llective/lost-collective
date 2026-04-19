@@ -63,6 +63,10 @@
           "type": "description",
           "settings": {}
         },
+        "lc_metafields_block": {
+          "type": "lc_metafields",
+          "settings": {}
+        },
         "share": {
           "type": "share",
           "disabled": true,
@@ -75,6 +79,7 @@
         "size_chart_REA3TC",
         "form",
         "description",
+        "lc_metafields_block",
         "rating",
         "share"
       ],
