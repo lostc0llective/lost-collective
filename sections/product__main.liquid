@@ -91,6 +91,9 @@
   </div>
 </section>
 
+{% comment %} Phase 7 Sprint B - Task B5: LC mobile sticky Add-to-Cart bar {% endcomment %}
+{% render 'lc-sticky-atc', product: product %}
+
 {% comment %} JavaScript {% endcomment %}
 <script
   type="application/json"
@@ -118,6 +121,7 @@
 
 <script src="{{ 'z__jsProduct.js' | asset_url }}"></script>
 <script src="{{ 'z__lcVariantPicker.js' | asset_url }}" defer></script>
+<script src="{{ 'z__lcStickyAtc.js' | asset_url }}" defer></script>
 
 {% comment %} Shopify-XR {% endcomment %}
 {% assign model = product.media | where: 'media_type', 'model' | first %}

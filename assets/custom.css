@@ -50,6 +50,7 @@
    44.  Product Page — LC variant picker (Phase 7 Sprint B B2)
    45.  Product Page — LC price treatment (Phase 7 Sprint B B3)
    46.  Product Page — LC ATC lock icon (Phase 7 Sprint B B4)
+   47.  Product Page — LC sticky mobile ATC (Phase 7 Sprint B B5)
 ================================ */
 
 
@@ -4754,4 +4755,131 @@ html body .template-product .breadcrumb {
   vertical-align: middle;
   flex-shrink: 0;
   color: currentColor;
+}
+
+
+/* ================================
+   47. Product Page — LC sticky mobile ATC (Phase 7 Sprint B B5)
+   Decision 5: dark surface + paper text + gold button. IntersectionObserver
+   on the in-flow ATC drives .is-visible. Slides up by default; opacity
+   fade replaces the slide when prefers-reduced-motion: reduce matches.
+================================ */
+
+.lc-sticky-atc {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  background: #1a1a1a;
+  color: #f8f6f2;
+  padding: 10px 14px env(safe-area-inset-bottom, 10px);
+  transform: translateY(100%);
+  transition: transform 200ms ease;
+  pointer-events: none;
+  display: none;
+}
+
+@media (max-width: 749px) {
+  .lc-sticky-atc {
+    display: block;
+  }
+}
+
+.lc-sticky-atc.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.lc-sticky-atc__inner {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+}
+
+.lc-sticky-atc__info {
+  min-width: 0;
+}
+
+.lc-sticky-atc__title {
+  margin: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  color: #f8f6f2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.lc-sticky-atc__meta {
+  margin: 2px 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba(248, 246, 242, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.lc-sticky-atc__price-col {
+  text-align: right;
+}
+
+.lc-sticky-atc__price {
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-weight: 700;
+  font-size: 14px;
+  color: #f8f6f2;
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-sticky-atc__price-plus {
+  margin-left: 1px;
+  color: rgba(248, 246, 242, 0.7);
+}
+
+.lc-sticky-atc__btn {
+  appearance: none;
+  border: 0;
+  background: var(--color-brand-gold, #ebac20);
+  color: #1a1a1a;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 12px 18px;
+  min-height: 44px;
+  cursor: pointer;
+  transition: filter 150ms ease;
+}
+
+.lc-sticky-atc__btn:hover,
+.lc-sticky-atc__btn:focus-visible {
+  filter: brightness(0.92);
+}
+
+.lc-sticky-atc__btn:focus-visible {
+  outline: 2px solid #f8f6f2;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-sticky-atc {
+    transform: none;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .lc-sticky-atc.is-visible {
+    transform: none;
+    opacity: 1;
+  }
 }

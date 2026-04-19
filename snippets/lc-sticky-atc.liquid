@@ -1,0 +1,61 @@
+{% comment %}
+  LC mobile sticky Add-to-Cart bar.
+
+  Phase 7 Sprint B - Task B5 (P1-10) - Decision 5.
+
+  Mobile-only (<=749px). Slides up when the in-flow ATC button leaves the
+  viewport, slides back down when it re-enters. Honours
+  prefers-reduced-motion: reduce by swapping the slide for an opacity fade.
+
+  Tapping the sticky ATC forwards the click to the in-flow ATC button so
+  it shares the same form submission and selected variant state.
+
+  @param product  Required.
+{% endcomment %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign meta_initial = ''
+  if current_variant
+    assign meta_parts = ''
+    for opt in product.options_with_values
+      assign val = opt.selected_value | strip
+      if val != blank and val != 'N/A' and val != 'n/a'
+        if meta_parts == ''
+          assign meta_parts = val
+        else
+          assign meta_parts = meta_parts | append: ' / ' | append: val
+        endif
+      endif
+    endfor
+    assign meta_initial = meta_parts
+  endif
+
+  if product.price_varies
+    assign price_initial = product.price_min | money
+  else
+    assign price_initial = product.price | money
+  endif
+-%}
+
+<div class="lc-sticky-atc" data-lc-sticky-atc aria-hidden="true" hidden>
+  <div class="lc-sticky-atc__inner">
+    <div class="lc-sticky-atc__info">
+      <p class="lc-sticky-atc__title">{{ product.title | escape }}</p>
+      <p class="lc-sticky-atc__meta" data-lc-sticky-meta>{{ meta_initial }}</p>
+    </div>
+    <div class="lc-sticky-atc__price-col">
+      <span class="lc-sticky-atc__price" data-lc-sticky-price>
+        {{ price_initial }}{% if product.price_varies %}<span class="lc-sticky-atc__price-plus">+</span>{% endif %}
+      </span>
+    </div>
+    <button
+      type="button"
+      class="lc-sticky-atc__btn"
+      data-lc-sticky-trigger
+      aria-label="Add this variant to cart"
+    >
+      Add to cart
+    </button>
+  </div>
+</div>
