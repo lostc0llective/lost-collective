@@ -66,7 +66,20 @@ product_recommendations: <boolean>
     {%- assign collection_handles = product.collections | map: 'handle' -%}
 
     {% if product.id != skip_product.id %}
-      {%- assign feature_image = product.featured_image -%}
+      {%- liquid
+        # LC carousels show the white-framed variant image (SKU pattern *-FR-W).
+        # Falls back to product.featured_media if no white-frame variant or variant has no media.
+        assign display_media = product.featured_media
+        for v in product.variants
+          if v.sku contains '-FR-W'
+            if v.featured_media != blank
+              assign display_media = v.featured_media
+            endif
+            break
+          endif
+        endfor
+        assign feature_image = display_media.preview_image
+      -%}
       <div class="gallery-cell thumbnail visible-{{ visible_products }}
           {%
             render 'column-width',
@@ -88,10 +101,10 @@ product_recommendations: <boolean>
                   %}
                 {% endif %}
 
-                {% comment %} Primary image {% endcomment %}
+                {% comment %} Primary image — white-framed variant per LC feature_image logic above {% endcomment %}
                 {%
                   render 'image-element',
-                  image: product.featured_media.preview_image,
+                  image: display_media.preview_image,
                   alt: alt_text,
                   object_fit: align_height,
                   max_height: height,

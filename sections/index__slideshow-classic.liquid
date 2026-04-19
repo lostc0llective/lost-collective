@@ -1,3 +1,26 @@
+{% style %}
+  /* LC: inset each slide + rounded corners so images feel like cards,
+     consistent with other big photo sections (radius-lg).
+     Rules live inside a per-section style block so the bulk-push
+     empty-settings compile does not strip them. */
+  #shopify-section-{{ section.id }} .slideshow-slide {
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+  #shopify-section-{{ section.id }} .slideshow-slide__image-wrapper {
+    overflow: hidden;
+    border-radius: var(--radius-lg, 16px);
+  }
+  #shopify-section-{{ section.id }} .slideshow-slide__image-wrapper img {
+    border-radius: var(--radius-lg, 16px);
+  }
+  @media (max-width: 798px) {
+    #shopify-section-{{ section.id }} .slideshow-slide {
+      padding: 0 8px;
+    }
+  }
+{% endstyle %}
+
 {% render 'section.slideshow',
   autoplay_duration: section.settings.image_slideshow_speed,
   disable_timer_animation: true,

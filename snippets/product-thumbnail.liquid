@@ -12,11 +12,25 @@
 
 {% assign secondaryImage = product.media[1] %}
 
+{%- liquid
+  # LC thumbnails show the white-framed variant image (SKU pattern *-FR-W).
+  # Falls back to product.featured_media if no white-frame variant or variant has no media.
+  assign display_media = product.featured_media
+  for v in product.variants
+    if v.sku contains '-FR-W'
+      if v.featured_media != blank
+        assign display_media = v.featured_media
+      endif
+      break
+    endif
+  endfor
+-%}
+
 {% assign collection_handles = product.collections | map: 'handle' %}
-{% if product.featured_media.preview_image.alt contains 'youtube' or image.alt contains 'vimeo' %}
+{% if display_media.preview_image.alt contains 'youtube' or image.alt contains 'vimeo' %}
   {% assign alt_text = product.title %}
 {% else %}
-  {% assign alt_text = product.featured_media.preview_image.alt %}
+  {% assign alt_text = display_media.preview_image.alt %}
 {% endif %}
 
 {% if type == 'block' %}
@@ -78,10 +92,10 @@
               %}
             {% endif %}
 
-            {% comment %} Primary image {% endcomment %}
+            {% comment %} Primary image — white-framed variant per LC display_media logic above {% endcomment %}
             {%
               render 'image-element',
-              image: product.featured_media.preview_image,
+              image: display_media.preview_image,
               alt: alt_text,
               object_fit: align_height,
               max_height: height,

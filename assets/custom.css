@@ -903,24 +903,37 @@ html body .navbar-item.has-mega-menu .navbar-dropdown {
    separate heading timing, column stagger.
    Background rgba set via admin JSON → section inline <style>.             */
 
-/* Panel — hidden state.
-   position:absolute keeps element out of normal flow (no layout space when hidden).
-   Containing block = header.header (position:relative) since navbar-item is static.
-   left:50% + translateX(-50%) centres the max-content panel within the header width.
-   min-width:0 overrides theme's min-width:100% which otherwise forces full-width. */
+/* Mega menu — positioning override (high specificity).
+   WHY the #header .is-width-wide selector: Flex's theme.css sets
+   `#header .is-width-wide .mega-menu { left:-10px; width: calc(100% + 20px); }` at
+   specificity (1,2,0). Without matching that specificity here, the translateX(-50%)
+   transforms an element positioned at left:-10px and pushes the panel ~666px off-screen
+   left. Selector-list match at same specificity + later source order wins.
+   ONLY positioning/width properties here — visibility/opacity/pointer-events live in
+   the lower-specificity rule below so the :hover show rule at (0,4,1) can override. */
+#header .is-width-wide .mega-menu,
 html body .mega-menu {
-  display: block;
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
   position: absolute;
   left: 50%;
+  right: auto;
   /* WHY: overrides Flex navbar dropdown base state to enable custom chevron rotation */
   transform: translateX(-50%) !important;
   width: max-content;
   min-width: 0;
   max-width: calc(100vw - 4rem);
   margin: 0;
+}
+
+/* Mega menu — hidden state + styling.
+   Specificity (0,1,2) so the :hover show rule at (0,4,1) can override visibility/opacity.
+   position:absolute keeps element out of normal flow (no layout space when hidden).
+   Containing block = header.header (position:relative) since navbar-item is static.
+   min-width:0 (above) overrides theme's min-width:100% which otherwise forces full-width. */
+html body .mega-menu {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
   background-color: rgba(18, 18, 18, 0.55);
   border-radius: 0 0 12px 12px;
   transition:
@@ -1992,15 +2005,17 @@ html body .footer__block .footer__heading {
   }
 }
 
-/* Social icons — stacked vertically, left-aligned, with proper vertical gap.
+/* Social icons — horizontal row in the Connect column (desktop).
+   Mobile override at @media (max-width: 798px) stacks vertically for the 2-col grid.
    The theme's base CSS gives li { padding: 0 5px } which is horizontal only —
-   override here to provide vertical breathing room between each icon row. */
+   override here so the spacing comes from flex gap instead. */
 ul.social-icons.is-flex.is-flex-wrap {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 8px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
 }
 
 ul.social-icons.is-flex.is-flex-wrap li {
@@ -2012,7 +2027,7 @@ ul.social-icons.is-flex.is-flex-wrap li {
 ul.social-icons.is-flex.is-flex-wrap li a {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
 }
 
 
@@ -4310,4 +4325,69 @@ html body .header a:focus-visible,
 html body .mobile-header a:focus-visible,
 html body .footer a:focus-visible {
   outline-color: #ffffff;
+}
+
+/* ================================
+   P7 SPRINT A5 — P0 fixes 2026-04-19
+   ================================ */
+
+/* P0-3 Testimonial block — Flex default forces 100×100 avatar treatment;
+   LC uses in-situ customer interior photos (prints on walls, horizontal
+   compositions). Image is the lead element (the sell), quote + name support.
+   Natural aspect so horizontal photos show fully without crop. */
+html body .testimonial-block {
+  padding: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+html body .testimonial-block .testimonial__image {
+  position: static;
+  margin: 0;
+  height: auto;
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  top: auto;
+  aspect-ratio: auto;
+  overflow: hidden;
+  border-radius: var(--radius-md, 8px);
+  order: 1;
+}
+
+html body .testimonial-block .testimonial__image img,
+html body .testimonial-block .testimonial__image svg {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: var(--radius-md, 8px);
+}
+
+html body .testimonial-block .testimonial__description {
+  order: 2;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin: 0;
+  padding: 0 8px;
+}
+
+html body .testimonial-block .testimonial__name {
+  order: 3;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  padding: 0 8px;
+}
+
+/* P0-6 PDP breadcrumb — stop it sitting under the sticky transparent header.
+   Give it padding-top equal to approx sticky header height + a buffer.
+   Also subtle paper background so content under doesn't bleed through. */
+html body #template-product .breadcrumb,
+html body .template-product .breadcrumb {
+  padding-top: calc(var(--lc-header-height, 120px) + 12px);
+  padding-bottom: 16px;
+  position: relative;
+  z-index: 1;
 }

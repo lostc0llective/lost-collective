@@ -59,78 +59,112 @@
 {% endstyle %}
 
 {% if section.settings.show_icon_bar and section.blocks.size > 0 %}
+  {% style %}
+    #shopify-section-{{ id }} .icon-bar__marquee {
+      overflow: hidden;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+    }
+    #shopify-section-{{ id }} .icon-bar__track {
+      display: flex;
+      gap: 72px;
+      width: max-content;
+      align-items: center;
+      animation: lc-icon-bar-{{ id }} 45s linear infinite;
+      will-change: transform;
+    }
+    #shopify-section-{{ id }} .icon-bar__track:hover {
+      animation-play-state: paused;
+    }
+    #shopify-section-{{ id }} .icon-bar__block {
+      flex: 0 0 auto;
+      gap: 10px;
+    }
+    @keyframes lc-icon-bar-{{ id }} {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #shopify-section-{{ id }} .icon-bar__track {
+        animation: none;
+      }
+    }
+    @media (max-width: 798px) {
+      #shopify-section-{{ id }} .icon-bar__track {
+        gap: 40px;
+      }
+    }
+  {% endstyle %}
+
   <section
     class="
-      section
       has-padding-top
       has-padding-bottom
       is-width-{{ width }}
       {{ section.settings.css_class }}
     "
+    aria-label="Trust signals"
   >
-    <div
-      class="
-        container
-        is-justify-{{ section.settings.alignment }}
-        {% if section.settings.mobile_alignment != 'none' %}
-          is-mobile-justify-{{ section.settings.mobile_alignment }}
-        {% endif %}
-      "
-    >
-      {% for block in section.blocks %}
-        {% assign icon = block.settings.icon_library | downcase %}
+    <div class="icon-bar__marquee">
+      <div class="icon-bar__track" role="list">
+        {% for pass in (1..2) %}
+          {% for block in section.blocks %}
+            {% assign icon = block.settings.icon | downcase %}
 
-        {% if block.settings.link %}
-          <a
-            class="
-              icon-bar__block
-              is-{{ section.settings.size }}
-              is-flex
-              is-align-center
-              is-flex-{{ section.settings.icon_position }}
-            "
-            href="{{ block.settings.link }}"
-            {{ block.shopify_attributes }}
-          >
-        {% else %}
-          <div
-            class="
-              icon-bar__block
-              is-{{ section.settings.size }}
-              is-flex
-              is-align-center
-              is-flex-{{ section.settings.icon_position }}
-            "
-            {{ block.shopify_attributes }}
-          >
-        {% endif %}
+            {% if block.settings.link %}
+              <a
+                class="
+                  icon-bar__block
+                  is-{{ section.settings.size }}
+                  is-flex
+                  is-align-center
+                  is-flex-{{ section.settings.icon_position }}
+                "
+                href="{{ block.settings.link }}"
+                role="listitem"
+                {% if pass == 2 %}aria-hidden="true" tabindex="-1"{% endif %}
+                {% if pass == 1 %}{{ block.shopify_attributes }}{% endif %}
+              >
+            {% else %}
+              <div
+                class="
+                  icon-bar__block
+                  is-{{ section.settings.size }}
+                  is-flex
+                  is-align-center
+                  is-flex-{{ section.settings.icon_position }}
+                "
+                role="listitem"
+                {% if pass == 2 %}aria-hidden="true"{% endif %}
+                {% if pass == 1 %}{{ block.shopify_attributes }}{% endif %}
+              >
+            {% endif %}
 
-        {% if icon != blank %}
-          {%
-            render 'icon',
-            name: icon,
-          %}
-        {% endif %}
+            {% if icon != blank %}
+              {% render 'icon', name: icon %}
+            {% endif %}
 
-        {% if block.settings.text != blank %}
-          <p
-            class="
-              icon-bar__text
-              {% if section.settings.icon_position == 'column' %}
-                text-align-center
-              {% endif %}
-            "
-          >
-            {{- block.settings.text -}}
-          </p>
-        {% endif %}
+            {% if block.settings.text != blank %}
+              <p
+                class="
+                  icon-bar__text
+                  {% if section.settings.icon_position == 'column' %}
+                    text-align-center
+                  {% endif %}
+                "
+              >
+                {{- block.settings.text -}}
+              </p>
+            {% endif %}
 
-        {% if block.settings.link %}
-          </a>
-        {% else %}
-          </div>
-        {% endif %}
-      {% endfor %}
+            {% if block.settings.link %}
+              </a>
+            {% else %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
     </div>
   </section>
 {% endif %}

@@ -1,33 +1,72 @@
 {% comment %}
-** Logo list **
+** Logo list — infinite CSS marquee **
+Rebuilt 2026-04-19: replaced static grid with seamless marquee.
+Blocks render twice so translateX(-50%) loops without seam.
 {% endcomment %}
 
 {% liquid
-  # Is the color set to transparent?
   assign background_alpha = section.settings.background | color_extract: 'alpha'
   assign gradient_alpha = section.settings.gradient | color_extract: 'alpha'
+  assign blocks = section.blocks
+  assign blocks_size = blocks.size
+  assign speed = section.settings.scroll_speed | default: 60
+  assign logo_max_height = section.settings.logo_max_height | default: 60
+  assign logo_gap = section.settings.logo_gap | default: 60
 %}
-
-{% comment %} Section specific CSS {% endcomment %}
-{% capture section_css -%}
-  .section {
-    background-image: linear-gradient({{ section.settings.gradient_rotation }}deg, rgba(255,255,255,0), {{ section.settings.gradient }});
-    background-color: {%- if background_alpha != 0 -%}{{ section.settings.background }}{%- endif -%};
-  }
-{%- endcapture -%}
 
 {% style %}
   #shopify-section-{{ section.id }} {
     padding-top: {{ section.settings.padding_top }}px;
-    padding-right: {{ section.settings.padding_right }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
-    padding-left: {{ section.settings.padding_left }}px;
-
-    {% if section.settings.width == 'wide' %}
-      width: 100%;
-    {% elsif section.settings.width == 'half'  %}
-      width: 50%;
+    {% if background_alpha != 0 or gradient_alpha != 0 %}
+      background-image: linear-gradient({{ section.settings.gradient_rotation }}deg, rgba(255,255,255,0), {{ section.settings.gradient }});
+      background-color: {% if background_alpha != 0 %}{{ section.settings.background }}{% else %}transparent{% endif %};
     {% endif %}
+
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+
+  .lc-logo-marquee-{{ section.id }} {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    gap: {{ logo_gap }}px;
+    animation: lc-logo-marquee-{{ section.id }} {{ speed }}s linear infinite;
+    will-change: transform;
+  }
+
+  .lc-logo-marquee-{{ section.id }}:hover {
+    animation-play-state: paused;
+  }
+
+  .lc-logo-marquee-{{ section.id }} .lc-logo-marquee__item {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: {{ logo_max_height }}px;
+  }
+
+  .lc-logo-marquee-{{ section.id }} .lc-logo-marquee__item img,
+  .lc-logo-marquee-{{ section.id }} .lc-logo-marquee__item svg {
+    max-height: {{ logo_max_height }}px;
+    width: auto;
+    height: auto;
+    display: block;
+  }
+
+  @keyframes lc-logo-marquee-{{ section.id }} {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lc-logo-marquee-{{ section.id }} {
+      animation: none;
+    }
   }
 
   @media only screen and (max-width: 798px) {
@@ -35,102 +74,65 @@
       padding-top: {{ section.settings.padding_top_mobile }}px;
       padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
     }
+
+    .lc-logo-marquee-{{ section.id }} {
+      gap: {{ logo_gap | times: 0.6 | round }}px;
+    }
+
+    .lc-logo-marquee-{{ section.id }} .lc-logo-marquee__item {
+      height: {{ logo_max_height | times: 0.8 | round }}px;
+    }
+
+    .lc-logo-marquee-{{ section.id }} .lc-logo-marquee__item img,
+    .lc-logo-marquee-{{ section.id }} .lc-logo-marquee__item svg {
+      max-height: {{ logo_max_height | times: 0.8 | round }}px;
+    }
   }
 
-  {%
-    render 'css-loop',
-    css: section_css,
-    id: section.id,
-  %}
-
-  {%
-    render 'css-loop',
-    css: section.settings.custom_css,
-    id: section.id,
-  %}
+  {% render 'css-loop', css: section.settings.custom_css, id: section.id %}
 {% endstyle %}
 
 <section
-  class="
-    section
-    {{ section.settings.css_class }}
-    is-width-{{ section.settings.width }}
-    {% if background_alpha != 0 or gradient_alpha != 0  %}
-      has-background
-    {% endif %}
-  "
+  class="{{ section.settings.css_class }} lc-logo-marquee-section"
   {% if section.settings.animation != "none" %}
     data-scroll-class="{{ section.settings.animation }}"
   {% endif %}
+  aria-label="Press and media features"
 >
-  <div
-    class="
-      container
-      has-column-padding-bottom
-      is-justify-center
-      is-align-center
-      small-down--has-limit
-      is-{{ section.settings.logo_size }}
-      logo-list__wrapper
-    "
-  >
-    {% if section.blocks.size > 0 %}
-      {% for block in section.blocks %}
-        {% comment %}Add number to id for each loop{% endcomment %}
-        {% capture image %}image{{ index }}{% endcapture %}
-        {% capture link %}link{{ index }}{% endcapture %}
-
-        {% assign image = block.settings[image] %}
-
-        <div
-          class="
-            logo-list__item
-            small-down--one-half
-            column
-            {% if section.settings.logos_per_row == 1 %}
-              one-whole
-            {% elsif section.settings.logos_per_row == 2 %}
-              one-half
-            {% elsif section.settings.logos_per_row == 3 %}
-              one-third
-            {% elsif section.settings.logos_per_row == 4 %}
-              one-fourth
-            {% elsif section.settings.logos_per_row == 5 %}
-              one-fifth
-            {% elsif section.settings.logos_per_row == 6 %}
-              one-sixth
-            {% elsif section.settings.logos_per_row == 7 %}
-              one-seventh
-            {% elsif section.settings.logos_per_row == 8 %}
-              one-eighth
+  {% if blocks_size > 0 %}
+    <div class="lc-logo-marquee-{{ section.id }}" role="list">
+      {% for pass in (1..2) %}
+        {% for block in blocks %}
+          {% assign image = block.settings.image %}
+          <div
+            class="lc-logo-marquee__item"
+            role="listitem"
+            {% if pass == 2 %}aria-hidden="true"{% endif %}
+            {% if pass == 1 %}{{ block.shopify_attributes }}{% endif %}
+          >
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="lc-logo-marquee__link" {% if pass == 2 %}tabindex="-1" aria-hidden="true"{% endif %}>
             {% endif %}
-          "
-          {% if type != 'block' %}
-            {{ block.shopify_attributes }}
-          {% endif %}
-        >
-          {% if block.settings[link] != blank %}
-            <a href="{{ block.settings[link] }}" class="logo-list__link">
-          {% endif %}
 
-          {% if image != blank %}
-            {%
-              render 'image-element',
-              image: image,
-              alt: image.alt,
-              focal_point: image.presentation.focal_point,
-            %}
-          {% else %}
-            {{ 'logo' | placeholder_svg_tag: 'placeholder-svg' }}
-          {% endif %}
+            {% if image != blank %}
+              {%
+                render 'image-element',
+                image: image,
+                alt: image.alt,
+                focal_point: image.presentation.focal_point,
+              %}
+            {% else %}
+              {{ 'logo' | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
 
-          {% if block.settings[link] != blank %}
-            </a>
-          {% endif %}
-        </div>
+            {% if block.settings.link != blank %}
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
       {% endfor %}
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 </section>
 
 {% schema %}
@@ -140,33 +142,39 @@
     "max_blocks": 20,
     "settings": [
       {
-        "type": "range",
-        "id": "logos_per_row",
-        "label": "Logos per row",
-        "min": 1,
-        "max": 8,
-        "default": 5
+        "type": "paragraph",
+        "content": "Logos scroll as an infinite marquee. Animation pauses on hover and disables under prefers-reduced-motion."
       },
       {
-        "type": "select",
-        "id": "logo_size",
-        "label": "Logo size",
-        "info": "Applies to desktop only.",
-        "options": [
-          {
-            "value": "small",
-            "label": "Small"
-          },
-          {
-            "value": "medium",
-            "label": "Medium"
-          },
-          {
-            "value": "large",
-            "label": "Large"
-          }
-        ],
-        "default": "medium"
+        "type": "range",
+        "id": "logo_max_height",
+        "label": "Logo height",
+        "min": 30,
+        "max": 120,
+        "step": 5,
+        "default": 60,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "logo_gap",
+        "label": "Gap between logos",
+        "min": 20,
+        "max": 160,
+        "step": 10,
+        "default": 60,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "scroll_speed",
+        "label": "Scroll duration",
+        "info": "Seconds for one full loop. Higher = slower scroll.",
+        "min": 20,
+        "max": 180,
+        "step": 5,
+        "default": 60,
+        "unit": "s"
       },
       {
         "type": "header",
@@ -199,26 +207,6 @@
         "content": "Layout"
       },
       {
-        "type": "select",
-        "id": "width",
-        "label": "Width",
-        "default": "standard",
-        "options": [
-          {
-            "value": "half",
-            "label": "Half"
-          },
-          {
-            "value": "standard",
-            "label": "Standard"
-          },
-          {
-            "value": "wide",
-            "label": "Wide"
-          }
-        ]
-      },
-      {
         "type": "range",
         "id": "padding_top",
         "label": "Top spacing",
@@ -233,65 +221,24 @@
         "label": "Bottom spacing",
         "min": 0,
         "max": 80,
-        "default": 0,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "padding_left",
-        "label": "Left spacing",
-        "min": 0,
-        "max": 80,
-        "default": 0,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "padding_right",
-        "label": "Right spacing",
-        "default": 0,
-        "min": 0,
-        "max": 80,
+        "default": 20,
         "unit": "px"
       },
       {
         "type": "select",
         "id": "animation",
-        "label": "Animation",
+        "label": "Reveal animation",
+        "info": "Scroll-in animation applied to the section on first view (separate from the marquee scroll).",
         "default": "none",
         "options": [
-          {
-            "value": "none",
-            "label": "None"
-          },
-          {
-            "value": "fadeIn",
-            "label": "Fade in"
-          },
-          {
-            "value": "fadeInDown",
-            "label": "Fade in down"
-          },
-          {
-            "value": "fadeInLeft",
-            "label": "Fade in left"
-          },
-          {
-            "value": "fadeInRight",
-            "label": "Fade in right"
-          },
-          {
-            "value": "slideInLeft",
-            "label": "Slide in left"
-          },
-          {
-            "value": "slideInRight",
-            "label": "Slide in right"
-          },
-          {
-            "value": "zoomIn",
-            "label": "Zoom in"
-          }
+          { "value": "none", "label": "None" },
+          { "value": "fadeIn", "label": "Fade in" },
+          { "value": "fadeInDown", "label": "Fade in down" },
+          { "value": "fadeInLeft", "label": "Fade in left" },
+          { "value": "fadeInRight", "label": "Fade in right" },
+          { "value": "slideInLeft", "label": "Slide in left" },
+          { "value": "slideInRight", "label": "Slide in right" },
+          { "value": "zoomIn", "label": "Zoom in" }
         ]
       },
       {
@@ -313,16 +260,12 @@
         "label": "Mobile bottom spacing",
         "min": 0,
         "max": 80,
-        "default": 0,
+        "default": 20,
         "unit": "px"
       },
       {
         "type": "header",
         "content": "Advanced"
-      },
-      {
-        "type": "paragraph",
-        "content": "[Learn more](https://help.outofthesandbox.com/hc/en-us/articles/360022329373)"
       },
       {
         "type": "text",
@@ -344,7 +287,7 @@
             "type": "image_picker",
             "id": "image",
             "label": "Image",
-            "info": "800 x 800px recommended"
+            "info": "800 x 800px recommended. Transparent PNG or SVG preferred."
           },
           {
             "type": "url",
@@ -359,28 +302,16 @@
         "name": "Logo list",
         "category": "Image",
         "blocks": [
-          {
-            "type": "logo_image"
-          },
-          {
-            "type": "logo_image"
-          },
-          {
-            "type": "logo_image"
-          },
-          {
-            "type": "logo_image"
-          },
-          {
-            "type": "logo_image"
-          }
+          { "type": "logo_image" },
+          { "type": "logo_image" },
+          { "type": "logo_image" },
+          { "type": "logo_image" },
+          { "type": "logo_image" }
         ]
       }
     ],
     "disabled_on": {
-      "groups": [
-        "*"
-      ]
+      "groups": ["*"]
     }
   }
 {% endschema %}

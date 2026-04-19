@@ -873,6 +873,12 @@
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0
       }
+    },
+    "instagram_feed": {
+      "type": "index__instagram",
+      "settings": {
+        "heading": "See the Story Unfold on Instagram"
+      }
     }
   },
   "order": [
@@ -888,6 +894,7 @@
     "index_rich_text_aJTEX9",
     "index_featured_collection_EixxbM",
     "index_testimonial_YAdkq9",
-    "index_slideshow_classic_mewq3w"
+    "index_slideshow_classic_mewq3w",
+    "instagram_feed"
   ]
 }
