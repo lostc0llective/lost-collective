@@ -62,6 +62,13 @@
     %}
   </div>
 
+  {% comment %} Phase 7 Sprint B - Task B6: LC cart trust bar (Decision 4) {% endcomment %}
+  {% if cart.item_count > 0 %}
+    <div class="container">
+      {% render 'lc-cart-trust-bar' %}
+    </div>
+  {% endif %}
+
   <div
     class="
       container

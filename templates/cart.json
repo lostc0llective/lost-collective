@@ -13,7 +13,7 @@
       "type": "banner",
       "settings": {
         "image": "shopify://shop_images/lost-collective-wall-art-gallery-mockup.webp",
-        "image_darken": false,
+        "image_darken": true,
         "subtitle": "",
         "width": "wide",
         "banner_height": "small",

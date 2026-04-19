@@ -1,0 +1,66 @@
+{% comment %}
+  LC cart trust bar.
+
+  Phase 7 Sprint B - Task B6 (P1-3) - Decision 4. Three rows above the
+  cart line items:
+    1. Free shipping progress + state-aware copy.
+    2. Numbered-edition authenticity message.
+    3. Encrypted checkout assurance.
+
+  settings.free_shipping_threshold is a merchant-editable range setting
+  defined in config/settings_schema.json (default 250 AUD). cart.total_price
+  is in cents; threshold is in whole dollars, so it is scaled up.
+{% endcomment %}
+
+{%- liquid
+  assign threshold_aud = settings.free_shipping_threshold | default: 250
+  assign threshold_cents = threshold_aud | times: 100
+  assign cart_total = cart.total_price | default: 0
+  assign remaining_cents = threshold_cents | minus: cart_total
+
+  assign progress_pct = 0
+  if threshold_cents > 0
+    assign progress_pct = cart_total | times: 100 | divided_by: threshold_cents
+    if progress_pct > 100
+      assign progress_pct = 100
+    endif
+  endif
+
+  assign threshold_met = false
+  if remaining_cents <= 0
+    assign threshold_met = true
+  endif
+-%}
+
+<aside class="lc-cart-trust" aria-label="Shipping and trust signals">
+  <div class="lc-cart-trust__row lc-cart-trust__row--shipping">
+    <p class="lc-cart-trust__copy">
+      {% if threshold_met %}
+        Free Australian shipping unlocked.
+      {% else %}
+        You're {{ remaining_cents | money_without_trailing_zeros }} away from free Australian shipping.
+      {% endif %}
+    </p>
+    <div
+      class="lc-cart-trust__bar"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ progress_pct }}"
+    >
+      <span class="lc-cart-trust__bar-fill" style="--lc-fill-pct: {{ progress_pct }}%;"></span>
+    </div>
+  </div>
+
+  <div class="lc-cart-trust__row lc-cart-trust__row--authenticity">
+    <p class="lc-cart-trust__copy">
+      Every print is hand-numbered and shipped with a Certificate of Authenticity signed by the artist.
+    </p>
+  </div>
+
+  <div class="lc-cart-trust__row lc-cart-trust__row--checkout">
+    <p class="lc-cart-trust__copy">
+      Encrypted checkout. Secure payment via Shopify. All prices shown in AUD.
+    </p>
+  </div>
+</aside>

@@ -44,7 +44,7 @@
       var typeValue = checked ? checked.value.toLowerCase().trim() : '';
       var shouldHide = hideList.indexOf(typeValue) !== -1;
 
-      colourFieldset.classList.toggle('is-hidden', shouldHide);
+      colourFieldset.classList.toggle('lc-is-hidden', shouldHide);
       colourFieldset.toggleAttribute('aria-hidden', shouldHide);
       var inputs = colourFieldset.querySelectorAll('input[type="radio"]');
       inputs.forEach(function (i) {
@@ -65,7 +65,7 @@
     function getCurrentSelection(productVariants) {
       var selection = [];
       fieldsets.forEach(function (fs) {
-        if (fs.classList.contains('is-hidden')) {
+        if (fs.classList.contains('lc-is-hidden')) {
           selection.push(null);
           return;
         }
@@ -93,7 +93,7 @@
       var selection = getCurrentSelection(variants);
 
       fieldsets.forEach(function (fs) {
-        if (fs.classList.contains('is-hidden')) return;
+        if (fs.classList.contains('lc-is-hidden')) return;
         var idx = getOptionIndexFor(fs);
         var anyUnavailable = false;
 

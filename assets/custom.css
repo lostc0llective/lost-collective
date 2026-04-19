@@ -51,6 +51,8 @@
    45.  Product Page — LC price treatment (Phase 7 Sprint B B3)
    46.  Product Page — LC ATC lock icon (Phase 7 Sprint B B4)
    47.  Product Page — LC sticky mobile ATC (Phase 7 Sprint B B5)
+   48.  Cart Page — LC trust bar (Phase 7 Sprint B B6)
+   49.  Cart Page — LC hero contrast (Phase 7 Sprint B B6)
 ================================ */
 
 
@@ -4442,8 +4444,8 @@ html body .template-product .breadcrumb {
 
 .lc-metafields__value {
   margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 16px;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 15px;
   line-height: 1.5;
   color: var(--color-dark, #1a1a1a);
 }
@@ -4454,11 +4456,11 @@ html body .template-product .breadcrumb {
 
 .lc-metafields__subject {
   margin: 16px 0 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 16px;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 14px;
   line-height: 1.6;
   max-width: 65ch;
-  color: var(--color-dark, #1a1a1a);
+  color: var(--color-body-text, #6f6f6f);
 }
 
 @media (max-width: 749px) {
@@ -4493,8 +4495,12 @@ html body .template-product .breadcrumb {
   border-top: 1px solid rgba(26, 26, 26, 0.08);
 }
 
-.swatch-fieldset.is-hidden {
-  display: none !important;
+/* Preserve layout space when the Colour fieldset is hidden so the ATC and
+   Buy with Shop buttons don't jump up. Custom class - Flex's .is-hidden
+   sets display:none which would collapse the layout. */
+.swatch-fieldset.lc-is-hidden {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Hide the original size-chart block plain text link on PDP since the LC
@@ -4534,13 +4540,12 @@ html body .template-product .breadcrumb {
 
 .lc-fieldset-label__value {
   display: inline-block;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-style: italic;
+  font-family: var(--font-body, 'Lato', sans-serif);
   font-weight: 400;
-  font-size: 13px;
-  letter-spacing: 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
   text-transform: none;
-  color: var(--color-dark, #1a1a1a);
+  color: var(--color-body-text, #6f6f6f);
 }
 
 .lc-size-guide-link {
@@ -4607,14 +4612,14 @@ html body .template-product .breadcrumb {
 
 .swatch-fieldset .swatch-element {
   display: block;
-  background: #f8f6f2;
-  color: #1a1a1a;
-  border: 1px solid rgba(26, 26, 26, 0.24);
-  border-radius: 4px;
+  background: #ffffff;
+  color: var(--color-dark, #1a1a1a);
+  border: 1px solid rgba(26, 26, 26, 0.18);
+  border-radius: var(--radius-md, 10px);
   min-height: 48px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 200ms ease-out, transform 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out;
+  transition: border-color 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out;
   position: relative;
 }
 
@@ -4637,19 +4642,14 @@ html body .template-product .breadcrumb {
 }
 
 .swatch-fieldset .swatch-element:hover {
-  border-color: rgba(26, 26, 26, 0.6);
-  transform: translateY(-1px);
-}
-
-.swatch-fieldset .swatch-element:active {
-  transform: scale(0.98);
-  transition-duration: 100ms;
+  border-color: rgba(26, 26, 26, 0.5);
+  background: var(--lc-surface-light, #f5f5f5);
 }
 
 .swatch-fieldset .swatch__option input[type="radio"]:checked + .swatch-element {
-  background: #1a1a1a;
-  color: #f8f6f2;
-  border-color: var(--color-brand-gold, #ebac20);
+  background: var(--color-dark, #1a1a1a);
+  color: #ffffff;
+  border-color: var(--color-dark, #1a1a1a);
 }
 
 .swatch-fieldset .swatch__option input[type="radio"]:focus-visible + .swatch-element {
@@ -4690,9 +4690,7 @@ html body .template-product .breadcrumb {
 
 @media (prefers-reduced-motion: reduce) {
   .swatch-fieldset .swatch-element,
-  .swatch-fieldset .swatch-element:hover,
-  .swatch-fieldset .swatch-element:active {
-    transform: none;
+  .swatch-fieldset .swatch-element:hover {
     transition: background-color 1ms, color 1ms, border-color 1ms;
   }
 }
@@ -4817,10 +4815,9 @@ html body .template-product .breadcrumb {
 
 .lc-sticky-atc__meta {
   margin: 2px 0 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-style: italic;
+  font-family: var(--font-body, 'Lato', sans-serif);
   font-size: 12px;
-  color: rgba(248, 246, 242, 0.75);
+  color: rgba(248, 246, 242, 0.7);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4848,26 +4845,25 @@ html body .template-product .breadcrumb {
   appearance: none;
   border: 0;
   background: var(--color-brand-gold, #ebac20);
-  color: #1a1a1a;
+  color: var(--color-dark, #1a1a1a);
   font-family: var(--font-body, 'Lato', sans-serif);
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  border-radius: 4px;
-  padding: 12px 18px;
+  border-radius: var(--radius-pill, 35px);
+  padding: 12px 22px;
   min-height: 44px;
   cursor: pointer;
   transition: filter 150ms ease;
 }
 
-.lc-sticky-atc__btn:hover,
-.lc-sticky-atc__btn:focus-visible {
+.lc-sticky-atc__btn:hover {
   filter: brightness(0.92);
 }
 
 .lc-sticky-atc__btn:focus-visible {
-  outline: 2px solid #f8f6f2;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 
@@ -4882,4 +4878,117 @@ html body .template-product .breadcrumb {
     transform: none;
     opacity: 1;
   }
+}
+
+
+/* ================================
+   48. Cart Page — LC trust bar (Phase 7 Sprint B B6)
+   Three rows above the line items: free-shipping progress + state-aware
+   copy, authenticity message, encrypted-checkout assurance. Theme fonts
+   (Lato), light surface tokens, gold progress fill via brand token.
+================================ */
+
+.lc-cart-trust {
+  margin: 0 0 28px;
+  padding: 18px 20px;
+  background: var(--lc-surface-light, #f5f5f5);
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: var(--radius-md, 10px);
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 14px;
+}
+
+.lc-cart-trust__row {
+  display: grid;
+  row-gap: 8px;
+}
+
+.lc-cart-trust__copy {
+  margin: 0;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-dark, #1a1a1a);
+}
+
+.lc-cart-trust__row--authenticity .lc-cart-trust__copy,
+.lc-cart-trust__row--checkout .lc-cart-trust__copy {
+  font-size: 13px;
+  color: var(--color-body-text, #6f6f6f);
+}
+
+.lc-cart-trust__bar {
+  position: relative;
+  height: 6px;
+  background: rgba(26, 26, 26, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lc-cart-trust__bar-fill {
+  display: block;
+  height: 100%;
+  width: var(--lc-fill-pct, 0%);
+  background: linear-gradient(90deg, rgba(235, 172, 32, 0.45), var(--color-brand-gold, #ebac20));
+  transition: width 240ms ease-out;
+  border-radius: 999px;
+}
+
+@media (min-width: 750px) {
+  .lc-cart-trust {
+    grid-template-columns: 1.6fr 1fr 1fr;
+    column-gap: 24px;
+    align-items: center;
+  }
+
+  .lc-cart-trust__row {
+    margin: 0;
+  }
+
+  .lc-cart-trust__row--shipping {
+    grid-column: 1 / 2;
+  }
+}
+
+@media (max-width: 749px) {
+  .lc-cart-trust {
+    padding: 16px 16px;
+  }
+}
+
+
+/* ================================
+   49. Cart Page — LC hero contrast (Phase 7 Sprint B B6)
+   templates/cart.json now has image_darken: true so Flex's built-in dark
+   overlay applies. This adds a stronger gradient scrim and forces the
+   .banner__heading title to render in paper white for AA contrast over
+   the photograph.
+================================ */
+
+body.cart .shopify-section.banner,
+.template-cart .shopify-section.banner {
+  position: relative;
+}
+
+body.cart .shopify-section.banner::after,
+.template-cart .shopify-section.banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 13, 13, 0.5) 0%, rgba(13, 13, 13, 0.65) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+body.cart .shopify-section.banner .banner__text,
+.template-cart .shopify-section.banner .banner__text {
+  position: relative;
+  z-index: 2;
+}
+
+body.cart .shopify-section.banner .banner__heading,
+.template-cart .shopify-section.banner .banner__heading {
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
