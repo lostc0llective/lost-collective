@@ -54,6 +54,7 @@
    48.  Cart Page — LC trust bar (Phase 7 Sprint B B6)
    49.  Cart Page — LC hero contrast (Phase 7 Sprint B B6)
    50.  PDP polish — buttons + Shop Pay + spacing (post-Sprint B Brett pass)
+   51.  PDP accordion — museum-card hairline rows (replaces Flex's heavy bars)
 ================================ */
 
 
@@ -4421,29 +4422,35 @@ html body .template-product .breadcrumb {
   padding: 0;
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
+  row-gap: 6px;
 }
 
+/* Single-line label/value rows. Label is a fixed-width caption; value sits
+   inline beside it. No two-column grid, no stacking — same arrangement on
+   mobile and desktop, just text wraps if needed. */
 .lc-metafields__row {
-  display: grid;
-  grid-template-columns: minmax(140px, 30%) 1fr;
-  column-gap: 24px;
+  display: flex;
   align-items: baseline;
+  gap: 16px;
+  padding: 0;
+  margin: 0;
 }
 
 .lc-metafields__label {
+  flex: 0 0 110px;
   margin: 0;
-  font-family: var(--font-body, 'Lato', sans-serif);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-align: right;
-  color: var(--color-dark, #1a1a1a);
+  text-align: left;
+  color: var(--color-body-text, #6f6f6f);
   line-height: 1.4;
 }
 
 .lc-metafields__value {
+  flex: 1 1 auto;
   margin: 0;
   font-family: var(--font-body, 'Lato', sans-serif);
   font-size: 15px;
@@ -4455,27 +4462,13 @@ html body .template-product .breadcrumb {
   font-variant-numeric: tabular-nums;
 }
 
-.lc-metafields__subject {
-  margin: 16px 0 0;
-  font-family: var(--font-body, 'Lato', sans-serif);
-  font-size: 14px;
-  line-height: 1.6;
-  max-width: 65ch;
-  color: var(--color-body-text, #6f6f6f);
-}
-
 @media (max-width: 749px) {
-  .lc-metafields__list {
-    row-gap: 14px;
-  }
-
-  .lc-metafields__row {
-    grid-template-columns: 1fr;
-    row-gap: 2px;
-  }
-
   .lc-metafields__label {
-    text-align: left;
+    flex: 0 0 96px;
+    font-size: 10px;
+  }
+  .lc-metafields__value {
+    font-size: 14px;
   }
 }
 
@@ -5242,5 +5235,174 @@ body.cart .shopify-section.banner .banner__heading,
   }
   .product__information .purchase-details__buttons {
     margin-top: 10px;
+  }
+}
+
+
+/* ================================
+   51. PDP accordion — museum-card hairline rows
+   Replaces the heavy black-bar default Flex applies to .accordion on the
+   PDP. New treatment: paper background, thin hairline between rows, gold
+   '+' that rotates on open, content in body type. Scoped to PDP and to
+   the index_html section so it doesn't leak to other accordion uses.
+================================ */
+
+#template-product .accordion,
+.template-product .accordion,
+body.product .accordion {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#template-product .accordion dt,
+.template-product .accordion dt,
+body.product .accordion dt {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid rgba(26, 26, 26, 0.1);
+  margin: 0;
+  padding: 0;
+}
+
+#template-product .accordion dt:last-of-type,
+.template-product .accordion dt:last-of-type,
+body.product .accordion dt:last-of-type {
+  /* The matching dd sits between dts so we let dd carry the bottom hairline */
+}
+
+#template-product .accordion dt a,
+.template-product .accordion dt a,
+body.product .accordion dt a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 18px 4px;
+  background: transparent;
+  color: var(--color-dark, #1a1a1a);
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  text-decoration: none;
+  border-radius: 0;
+  text-align: left;
+  transition: background-color 150ms ease, color 150ms ease;
+  cursor: pointer;
+}
+
+#template-product .accordion dt a:hover,
+.template-product .accordion dt a:hover,
+body.product .accordion dt a:hover {
+  background: rgba(26, 26, 26, 0.025);
+  color: var(--color-dark, #1a1a1a);
+}
+
+#template-product .accordion dt a small.right,
+.template-product .accordion dt a small.right,
+body.product .accordion dt a small.right {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-family: var(--font-heading, 'Montserrat', sans-serif);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-brand-gold, #ebac20);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  transition: transform 220ms ease, color 200ms ease;
+  flex-shrink: 0;
+  order: 99;
+  margin: 0 0 0 auto;
+}
+
+#template-product .accordion dt a[aria-expanded="true"] small.right,
+.template-product .accordion dt a[aria-expanded="true"] small.right,
+body.product .accordion dt a[aria-expanded="true"] small.right {
+  transform: rotate(45deg);
+  color: var(--color-dark, #1a1a1a);
+}
+
+#template-product .accordion dd,
+.template-product .accordion dd,
+body.product .accordion dd {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid rgba(26, 26, 26, 0.06);
+  margin: 0;
+  padding: 4px 4px 22px;
+  font-family: var(--font-body, 'Lato', sans-serif);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-dark, #1a1a1a);
+  max-width: 70ch;
+}
+
+/* The very last dd in the accordion gets the closing hairline */
+#template-product .accordion dd:last-of-type,
+.template-product .accordion dd:last-of-type,
+body.product .accordion dd:last-of-type {
+  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+  padding-bottom: 24px;
+}
+
+/* Strong + body inside dd — keep readable but not heavy */
+#template-product .accordion dd strong,
+.template-product .accordion dd strong,
+body.product .accordion dd strong {
+  font-weight: 700;
+  color: var(--color-dark, #1a1a1a);
+}
+
+#template-product .accordion dd br + strong,
+.template-product .accordion dd strong + br + strong,
+.template-product .accordion dd br br {
+  /* Visual rhythm between sub-sections inside one panel */
+}
+
+/* The container the section sits in */
+#template-product .index__html,
+#template-product .shopify-section[id*="index_html"],
+.template-product .index__html,
+.template-product .shopify-section[id*="index_html"] {
+  background: transparent;
+}
+
+/* Mobile tweaks - slightly tighter padding so rows aren't oversized */
+@media (max-width: 749px) {
+  #template-product .accordion dt a,
+  .template-product .accordion dt a,
+  body.product .accordion dt a {
+    padding: 16px 4px;
+    font-size: 13px;
+  }
+  #template-product .accordion dd,
+  .template-product .accordion dd,
+  body.product .accordion dd {
+    padding: 4px 4px 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #template-product .accordion dt a small.right,
+  .template-product .accordion dt a small.right,
+  body.product .accordion dt a small.right {
+    transition: color 1ms;
   }
 }
