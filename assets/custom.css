@@ -4712,29 +4712,23 @@ html body .template-product .breadcrumb {
    so the digits don't shift width across variant changes.
 ================================ */
 
-.lc-price-block {
+.lc-price-wrap {
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 0;
 }
 
-.lc-price-block .price-ui {
+.lc-price-wrap .price-ui {
   display: inline-flex;
   align-items: baseline;
 }
 
-.lc-price-block .price,
-.lc-price-block .price-min,
-.lc-price-block .price-max,
-.lc-price-block .money {
+.lc-price-wrap .price,
+.lc-price-wrap .price-min,
+.lc-price-wrap .price-max,
+.lc-price-wrap .money {
   font-variant-numeric: tabular-nums;
-}
-
-.lc-price__prefix {
-  font-family: var(--font-body, 'Lato', sans-serif);
-  font-weight: 400;
-  color: inherit;
 }
 
 .lc-price__currency {
@@ -5177,14 +5171,22 @@ body.cart .shopify-section.banner .banner__heading,
 
 .product__information .purchase-details__buttons {
   margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   padding: 0;
 }
 
-.product__information .shopify-payment-button {
-  margin-top: 0 !important;
+/* Force ATC and Shop Pay to fill the available column width and stack
+   tightly. Avoid imposing flex-direction here - Flex's own .purchase-details
+   rules handle the layout; we only enforce widths and the inter-button gap. */
+.product__information .purchase-details__buttons > .button--add-to-cart,
+.product__information .purchase-details__buttons > .shopify-payment-button {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+.product__information .purchase-details__buttons > .shopify-payment-button {
+  margin-top: 8px !important;
 }
 
 .product__information .shopify-payment-button__more-options {
@@ -5201,6 +5203,23 @@ body.cart .shopify-section.banner .banner__heading,
   margin-top: 12px;
   font-size: 13px;
   line-height: 1.55;
+}
+
+/* Mobile-only title: show above the image, hide the in-column title */
+.lc-mobile-title {
+  display: none;
+}
+
+@media (max-width: 749px) {
+  .lc-mobile-title {
+    display: block;
+    margin: 8px 16px 12px;
+    padding: 0;
+    line-height: 1.15;
+  }
+  .product__information .product-block--title {
+    display: none;
+  }
 }
 
 /* Mobile rhythm - slightly tighter so the page isn't excessively tall */

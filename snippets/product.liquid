@@ -24,6 +24,13 @@
 
 {% comment %} HTML markup {% endcomment %}
 
+{% comment %} LC mobile-only title above the image column so the product name
+   is visible before the customer scrolls past the photo on small viewports.
+   The in-column title block is hidden via CSS at <=749px. {% endcomment %}
+{% unless is_product_modal or section_onboarding %}
+  <h1 class="lc-mobile-title product-title title">{{ product.title }}</h1>
+{% endunless %}
+
 <div class="product_section
             js-product_section
             container
@@ -158,34 +165,50 @@
                 {{- 'products.product.sold_out' | t -}}
               </span>
             {% else %}
-              {% comment %} Phase 7 Sprint B - Task B3 (P1-6): LC PDP price.
-                 Replaces the JS-managed @pixelunion/shopify-price-ui block
-                 entirely so the price displays the LC range or 'From' prefix
-                 statically (the JS would otherwise hydrate to the selected
-                 variant's price and clobber the spec-mandated copy). Range
-                 vs From is toggled by settings.price_range_display.
-              {% endcomment %}
-              {% if product.price_varies %}
-                {% if settings.price_range_display %}
-                  <span class="lc-price-block lc-price-block--range">
-                    <span class="money lc-price__min">{{ product.price_min | money }}</span>
-                    <span class="lc-price__sep" aria-hidden="true">&nbsp;–&nbsp;</span>
-                    <span class="money lc-price__max">{{ product.price_max | money }}</span>
-                    <span class="lc-price__currency">&nbsp;AUD</span>
-                  </span>
-                {% else %}
-                  <span class="lc-price-block lc-price-block--from">
-                    <span class="lc-price__prefix">From&nbsp;</span>
-                    <span class="money lc-price__min">{{ product.price_min | money }}</span>
-                    <span class="lc-price__currency">&nbsp;AUD</span>
-                  </span>
-                {% endif %}
-              {% else %}
-                <span class="lc-price-block lc-price-block--single">
-                  <span class="money lc-price__value">{{ product.price | money }}</span>
-                  <span class="lc-price__currency">&nbsp;AUD</span>
-                </span>
-              {% endif %}
+              {% comment %} B3 reverted per Brett: show the selected variant's
+                 price via the Pixel Union price-ui. The price-ui JS hydrates
+                 the inner [data-price] span and updates it on variant change.
+                 The AUD suffix is appended outside the JS-managed div so it
+                 isn't clobbered. {% endcomment %}
+              <div class="lc-price-wrap">
+                <div class="price-ui price-ui--loading" data-price-ui>
+                  <noscript>
+                    <style>
+                      .price-ui--loading { display: block !important; opacity: 1 !important; }
+                    </style>
+                  </noscript>
+                  {% assign compare_at_price = false %}
+
+                  {% if product.compare_at_price and product.compare_at_price != product.price %}
+                    {% if product.compare_at_price_varies %}
+                      {%- capture price_min -%}
+                        {%- render 'price-ui-templates', template: 'price-min', value: product.compare_at_price_min, -%}
+                      {%- endcapture -%}
+                      {%- capture price_max -%}
+                        {%- render 'price-ui-templates', template: 'price-max', value: product.compare_at_price_max, -%}
+                      {%- endcapture -%}
+                      {%- assign compare_at_price = 'product.price.range_html' | t: price_min: price_min, price_max: price_max -%}
+                    {% else %}
+                      {%- capture compare_at_price -%}
+                        {%- render 'price-ui-templates', template: 'price', value: product.compare_at_price, -%}
+                      {%- endcapture -%}
+                    {% endif %}
+                  {% endif %}
+
+                  {%- capture price -%}
+                    {%- render 'price-ui-templates', template: 'price', value: product.selected_or_first_available_variant.price, -%}
+                  {%- endcapture -%}
+
+                  {%-
+                    render 'price-ui-templates',
+                    template: 'price-ui',
+                    compare_at_price: compare_at_price,
+                    price: price,
+                    unit_pricing: false,
+                  -%}
+                </div>
+                <span class="lc-price__currency">&nbsp;AUD</span>
+              </div>
             {% endif %}
           </div>
 
